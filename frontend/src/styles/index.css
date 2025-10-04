@@ -1,5 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* optional additional imports */
+
 @import "tw-animate-css"; 
+
+/* body {
+background: #0a0916;
+background: linear-gradient(90deg, rgb(8, 7, 26) 0%, rgb(8, 8, 11) 100%, rgb(14, 8, 24) 100%);
+} */
