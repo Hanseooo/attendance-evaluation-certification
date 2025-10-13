@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-im4s5&6*vzq6rb2d!t!6a&04kc6a@uq+pl+o61=+^pn=x)goj5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -53,13 +53,15 @@ INSTALLED_APPS = [
     'users',
     'attendance',
     'certificates',
-    'evaluations',
+    'evaluation',
     'seminars',
+
+    'whitenoise.runserver_nostatic',  # for static files
+
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -68,7 +70,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -104,11 +108,23 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'seminar_app',
+        'USER': 'postgres',
+        'PASSWORD': 'qwerty1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+import dj_database_url
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
 
 
 # Password validation
@@ -121,9 +137,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
@@ -133,6 +149,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+print("Loaded settings.py")
+
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
+}
+
 
 
 # Internationalization
@@ -146,13 +169,32 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+
+CORS_ALLOW_CREDENTIALS = True  # This is key for sending cookies
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_NAME = "csrftoken"
+
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
-ACCOUNT_SIGNUP_FIELDS = ['first_name*', 'last_name*', 'username*', 'email*', 'password1*', 'password2*']
-ACCOUNT_LOGIN_ON_EMAIL = False
+ACCOUNT_SIGNUP_FIELDS = {
+    'first_name': {'required': True},
+    'last_name': {'required': True},
+    'username': {'required': True},
+    'email': {'required': True},
+    'password1': {'required': True},
+    'password2': {'required': True},
+}
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email' 
+# ACCOUNT_EMAIL_REQUIRED = True
 #LOGIN_REDIRECT_URL = '/'
 # LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
@@ -160,6 +202,15 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 REST_USE_JWT = False
+
+# Use secure cookie (only for HTTPS in production)
+# SIMPLE_JWT = {
+#     "AUTH_COOKIE": "access_token",        # Cookie name
+#     "AUTH_COOKIE_SECURE": False,          # Set True in production with HTTPS
+#     "AUTH_COOKIE_HTTP_ONLY": True,        # Prevent JS access
+#     "AUTH_COOKIE_PATH": "/",
+#     "AUTH_COOKIE_SAMESITE": "Lax",
+# }
 
 
 

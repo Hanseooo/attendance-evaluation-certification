@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.urls import re_path
 from dj_rest_auth.registration.views import VerifyEmailView
 from django.views.generic import RedirectView
+from api.views import CurrentUserView
 
 
 urlpatterns = [
