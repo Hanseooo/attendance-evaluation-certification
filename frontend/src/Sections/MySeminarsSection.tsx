@@ -135,7 +135,7 @@ export default function MySeminarsSection() {
               </div>
               <h3 className="text-lg font-semibold mb-2">No seminars yet</h3>
               <p className="text-sm text-muted-foreground max-w-md">
-                You haven't registered for any seminars. Browse available seminars and register to get started.
+                you have no seminars to attend at the moment, browse the seminars list and see what you might like.
               </p>
             </div>
           )}

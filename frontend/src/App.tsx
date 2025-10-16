@@ -8,11 +8,12 @@ import ProtectedRoute from "./ProtectedRoute";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Navbar from "./components/navbar/Navbar";
+import EventsPage from "./pages/EventsPage";
+import AdminPage from "./pages/AdminPage";
 
 export default function App() {
-  const { isAuthenticated, loadingUser } = useAuth();
+  const { isAuthenticated, loadingUser, user } = useAuth();
 
-  // 🔄 Show a spinner while checking auth state
   if (loadingUser) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -23,31 +24,72 @@ export default function App() {
 
   return (
     <AuthModalProvider>
-        {
-          isAuthenticated && <Navbar />
-        }
+      {isAuthenticated && <Navbar />}
+
       <Routes>
         {/* Public routes */}
         <Route
           path="/"
-          element={isAuthenticated ? <Navigate to="/home" replace /> : <LandingPage />}
-        />
-        <Route path="/notFound" element={<NotFound />} />
-
-        {/* Protected routes */}
-        <Route
-          path="/home"
           element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
+            isAuthenticated
+              ? user?.role === "admin"
+                ? <Navigate to="/admin" replace />
+                : <Navigate to="/home" replace />
+              : <LandingPage />
           }
         />
 
-        {/* Catch all unknown routes */}
+        {/* Participant routes */}
+        {user?.role === "participant" && (
+          <>
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute>
+                  <EventsPage />
+                </ProtectedRoute>
+              }
+            />
+          </>
+        )}
+
+        {/* Admin routes */}
+        {user?.role === "admin" && (
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+        )}
+
+        {/* Not Found route */}
+        <Route path="/notFound" element={<NotFound />} />
+
+        {/* Catch-all redirect */}
         <Route
           path="*"
-          element={<Navigate to={isAuthenticated ? "/home" : "/notFound"} replace />}
+          element={
+            isAuthenticated ? (
+              user?.role === "admin" ? (
+                <Navigate to="/admin" replace />
+              ) : (
+                <Navigate to="/home" replace />
+              )
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
       </Routes>
     </AuthModalProvider>

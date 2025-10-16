@@ -1,18 +1,7 @@
 import { MapPin, Calendar, Clock, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-interface Seminar {
-  id: number;
-  title: string;
-  description: string;
-  speaker: string;
-  venue: string;
-  date_start: string;
-  date_end: string;
-  duration_minutes: number;
-  is_done: boolean;
-}
+import { type Seminar } from "@/utils/types"
 
 interface MySeminarDetailModalProps {
   seminar: Seminar;
@@ -157,10 +146,10 @@ export function MySeminarDetailModal({
                   End
                 </p>
                 <p className="text-sm font-semibold mt-0.5">
-                  {formatDate(seminar.date_end)}
+                  {seminar.date_end ? formatDate(seminar.date_end) : ""}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {formatTime(seminar.date_end)}
+                  {seminar.date_end ? formatTime(seminar.date_end) : ""}
                 </p>
               </div>
             </div>
