@@ -41,3 +41,10 @@ export type Seminar = {
   certificate_template?: string | null;
   created_at?: string;
 };
+
+export type MySeminar = {
+  id: number;
+  user: number;
+  seminar: Seminar;
+  created_at: string
+}

@@ -7,7 +7,7 @@ import { type Seminar } from "@/utils/types"
 
 
 interface Props {
-  seminars: Seminar[];
+  seminars: Seminar[] | null;
   isOpen: boolean;
   onClose: () => void;
   onAttend?: (seminarId: number) => void | Promise<void>;
@@ -42,7 +42,7 @@ export function FeaturedSeminarsModal({ seminars, isOpen, onClose, onAttend }: P
           <div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Featured Seminars</h2>
             <p className="text-sm text-muted-foreground mt-1.5">
-              {seminars.length} {seminars.length === 1 ? "seminar" : "seminars"}
+              {seminars?.length} {seminars?.length === 1 ? "seminar" : "seminars"}
             </p>
           </div>
 
@@ -52,9 +52,9 @@ export function FeaturedSeminarsModal({ seminars, isOpen, onClose, onAttend }: P
         </div>
 
         <div className="flex-1 overflow-y-auto modal-scrollbar px-6 py-6">
-          {seminars.length > 0 ? (
+          {seminars != null && seminars?.length > 0  ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr">
-              {seminars.map((seminar) => (
+              {seminars?.map((seminar) => (
                 <div key={seminar.id} className="h-[220px]">
                   <SeminarCard seminar={seminar} onClick={() => handleOpenDetails(seminar)} />
                 </div>

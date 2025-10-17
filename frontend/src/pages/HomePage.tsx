@@ -4,23 +4,15 @@ import MySeminarsSection from '../Sections/MySeminarsSection';
 import UpcomingSeminarCard from '@/components/cards/UpcomingSeminarCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useMySeminarList } from '@/stores/SeminarStore';
 
 export default function HomePage() {
   const { user } = useAuth();
 
-  // Mock data - Get the nearest upcoming seminar
-  const nextSeminar = {
-    id: 1,
-    title: "Introduction to React and Modern Web Development",
-    description:
-      "Learn the fundamentals of React, including components, hooks, and state management. This seminar covers best practices for building scalable web applications.",
-    speaker: "Dr. Jane Smith",
-    venue: "University Hall, Room 301",
-    date_start: "2025-10-20T14:00:00Z",
-    date_end: "2025-10-20T16:30:00Z",
-    duration_minutes: 150,
-    is_done: false,
-  };
+  const { seminars } = useMySeminarList()
+
+  const nextSeminar = seminars ? [...seminars].filter(s => new Date(s.seminar.date_start) > new Date()).sort((a, b) =>
+    new Date(a.seminar.date_start).getTime() - new Date(b.seminar.date_start).getTime())[0] : null
 
   // Get user initials for avatar fallback
   const getInitials = (username: string) => {

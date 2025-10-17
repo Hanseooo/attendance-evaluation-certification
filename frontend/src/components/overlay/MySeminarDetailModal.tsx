@@ -1,10 +1,10 @@
 import { MapPin, Calendar, Clock, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { type Seminar } from "@/utils/types"
+import { type MySeminar } from "@/utils/types"
 
 interface MySeminarDetailModalProps {
-  seminar: Seminar;
+  seminar: MySeminar;
   isOpen: boolean;
   onClose: () => void;
   onCancelAttendance?: (seminarId: number) => void;
@@ -58,7 +58,7 @@ export function MySeminarDetailModal({
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <h2 className="text-2xl font-bold leading-tight pr-2">
-                {seminar.title}
+                {seminar.seminar.title}
               </h2>
             </div>
             <Button
@@ -75,10 +75,10 @@ export function MySeminarDetailModal({
         {/* Scrollable Content */}
         <div className="overflow-y-auto detail-scrollbar px-6 py-5">
           {/* Description */}
-          {seminar.description && (
+          {seminar.seminar.description && (
             <>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {seminar.description}
+                {seminar.seminar.description}
               </p>
               <Separator className="my-5" />
             </>
@@ -87,7 +87,7 @@ export function MySeminarDetailModal({
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Speaker */}
-            {seminar.speaker && (
+            {seminar.seminar.speaker && (
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors">
                 <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
                   <User className="h-4 w-4 text-primary" />
@@ -97,7 +97,7 @@ export function MySeminarDetailModal({
                     Speaker
                   </p>
                   <p className="text-sm font-semibold mt-0.5 truncate">
-                    {seminar.speaker}
+                    {seminar.seminar.speaker}
                   </p>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export function MySeminarDetailModal({
                   Venue
                 </p>
                 <p className="text-sm font-semibold mt-0.5 truncate">
-                  {seminar.venue}
+                  {seminar.seminar.venue}
                 </p>
               </div>
             </div>
@@ -128,10 +128,10 @@ export function MySeminarDetailModal({
                   Start
                 </p>
                 <p className="text-sm font-semibold mt-0.5">
-                  {formatDate(seminar.date_start)}
+                  {formatDate(seminar.seminar.date_start)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {formatTime(seminar.date_start)}
+                  {formatTime(seminar.seminar.date_start)}
                 </p>
               </div>
             </div>
@@ -146,10 +146,10 @@ export function MySeminarDetailModal({
                   End
                 </p>
                 <p className="text-sm font-semibold mt-0.5">
-                  {seminar.date_end ? formatDate(seminar.date_end) : ""}
+                  {seminar.seminar.date_end ? formatDate(seminar.seminar.date_end) : ""}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {seminar.date_end ? formatTime(seminar.date_end) : ""}
+                  {seminar.seminar.date_end ? formatTime(seminar.seminar.date_end) : ""}
                 </p>
               </div>
             </div>
@@ -164,7 +164,7 @@ export function MySeminarDetailModal({
                   Duration
                 </p>
                 <p className="text-sm font-semibold mt-0.5">
-                  {seminar.duration_minutes} minutes
+                  {seminar.seminar.duration_minutes} minutes
                 </p>
               </div>
             </div>
@@ -183,7 +183,7 @@ export function MySeminarDetailModal({
             </Button>
             {onCancelAttendance && (
               <Button
-                variant="destructive"
+                variant="default"
                 onClick={handleCancelAttendance}
                 className="w-full sm:w-auto"
               >

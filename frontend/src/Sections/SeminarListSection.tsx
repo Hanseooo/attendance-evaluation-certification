@@ -7,7 +7,7 @@ import FiltersPopover, { type Filters, } from "@/components/popover/FiltersPopov
 import { type Seminar } from "@/utils/types"
 
 type Props = {
-  seminars: Seminar[];
+  seminars: Seminar[] | null;
   attendingIds?: number[]; // ids the user is already attending
   onAttend?: (seminarId: number) => void | Promise<void>;
   className?: string;
@@ -33,15 +33,20 @@ export default function SeminarListSection({ seminars, attendingIds = [], onAtte
     setTimeout(() => setActive(null), 150);
   };
 
+
   // Combine isAttending info: if attendingIds includes id, treat as attending
   const processed = useMemo(() => {
-    const list = seminars.map((s) => ({
+    const list = seminars?.map((s) => ({
       ...s,
       isAttending: attendingIds.includes(s.id),
     }));
 
     // filter
-    const filtered = filters.hideAttending ? list.filter((s) => !s.isAttending) : list;
+    const filtered = filters.hideAttending
+      ? list != null
+        ? list.filter((s) => !s.isAttending)
+        : []
+      : list ?? [];
 
     // sort
     const cmp = (a: Seminar, b: Seminar) => {
@@ -94,7 +99,7 @@ export default function SeminarListSection({ seminars, attendingIds = [], onAtte
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr">
-            {processed.map((s) => (
+            {processed.map((s: Seminar) => (
               <div key={s.id} className="h-[220px]">
                 <SeminarCard seminar={s} onClick={openDetails} />
               </div>

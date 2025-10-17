@@ -19,9 +19,16 @@ class SeminarSerializer(serializers.ModelSerializer):
         ]
 
 class PlannedSeminarSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    seminar = SeminarSerializer(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    seminar = serializers.PrimaryKeyRelatedField(queryset=Seminar.objects.all())
 
     class Meta:
         model = PlannedSeminar
         fields = ["id", "user", "seminar", "created_at"]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['seminar'] = SeminarSerializer(instance.seminar).data
+        return rep
+
+

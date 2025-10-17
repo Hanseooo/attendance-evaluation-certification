@@ -1,68 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MySeminarCard from "@/components/cards/MySeminarCard";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { MyAttendingSeminarsModal } from "@/components/overlay/MyAttendingSeminarsModal";
+import { useMySeminarList } from "@/stores/SeminarStore";
+import { useDeleteMySeminar, useFetchMySeminars } from "@/hooks/useMySeminar";
 
 export default function MySeminarsSection() {
   const [showAllModal, setShowAllModal] = useState(false);
+  const myAttendingSeminars = useMySeminarList().seminars
+  const fetchMySeminars = useFetchMySeminars().fetchMySeminars
+  const deleteMySeminar = useDeleteMySeminar().deleteMySeminar
 
-  // Mock data - seminars the user IS attending (isAttendingSeminar = true)
-  const myAttendingSeminars = [
-    {
-      id: 1,
-      title: "Introduction to React and Modern Web Development",
-      description:
-        "Learn the fundamentals of React, including components, hooks, and state management. This seminar covers best practices for building scalable web applications.",
-      speaker: "Dr. Jane Smith",
-      venue: "University Hall, Room 301",
-      date_start: "2025-10-20T14:00:00Z",
-      date_end: "2025-10-20T16:30:00Z",
-      duration_minutes: 150,
-      is_done: false,
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Principles",
-      description:
-        "Master the art of creating beautiful and intuitive user interfaces.",
-      speaker: "Sarah Johnson",
-      venue: "Design Lab, Building C",
-      date_start: "2025-11-01T13:00:00Z",
-      date_end: "2025-11-01T15:00:00Z",
-      duration_minutes: 120,
-      is_done: false,
-    },
-    {
-      id: 5,
-      title: "Cybersecurity Fundamentals",
-      description:
-        "Learn essential security practices to protect your applications.",
-      speaker: "Dr. Emily Rodriguez",
-      venue: "Security Center, Room 101",
-      date_start: "2025-11-10T14:00:00Z",
-      date_end: "2025-11-10T17:00:00Z",
-      duration_minutes: 180,
-      is_done: false,
-    },
-    {
-      id: 7,
-      title: "Data Science with Python",
-      description:
-        "Comprehensive guide to data analysis and visualization using Python.",
-      speaker: "Prof. Michael Wong",
-      venue: "Data Lab, Floor 3",
-      date_start: "2025-11-15T10:00:00Z",
-      date_end: "2025-11-15T13:00:00Z",
-      duration_minutes: 180,
-      is_done: false,
-    },
-  ];
 
-  const handleCancelAttendance = (seminarId: number) => {
-    console.log("Canceling attendance for seminar ID:", seminarId);
-    // Add your API call here to cancel attendance
-    // Example: await api.cancelPlannedSeminar(seminarId);
+  useEffect(() => {
+    fetchMySeminars()
+  }, [fetchMySeminars])
+
+  const handleCancelAttendance =  (seminarId: number) => {
+    deleteMySeminar(seminarId)
   };
 
   return (
@@ -79,7 +35,7 @@ export default function MySeminarsSection() {
                 Seminars you've planned to attend
               </p>
             </div>
-            {myAttendingSeminars.length > 0 && (
+            {myAttendingSeminars != null && myAttendingSeminars?.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -93,7 +49,7 @@ export default function MySeminarsSection() {
           </div>
 
           {/* Content */}
-          {myAttendingSeminars.length > 0 ? (
+          {myAttendingSeminars != null && myAttendingSeminars.length > 0 ? (
             <div className="relative">
               <div className="custom-scrollbar flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
                 {myAttendingSeminars.slice(0, 6).map((seminar) => (

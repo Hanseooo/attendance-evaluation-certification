@@ -8,7 +8,7 @@ import { type Seminar } from "@/utils/types"
 
 
 type Props = {
-  seminars: Seminar[];
+  seminars: Seminar[] | null;
   onAttend?: (seminarId: number) => Promise<void> | void;
   className?: string;
 };
@@ -41,7 +41,7 @@ export default function FeaturedSeminarsSection({ seminars, onAttend, className 
             <p className="text-sm text-muted-foreground mt-1">Seminars you might like</p>
           </div>
 
-          {seminars.length > 0 && (
+          {seminars != null && seminars?.length > 0 && (
             <Button variant="ghost" size="sm" className="group hover:bg-primary/10" onClick={() => setOpenBrowseAll(true)}>
               Browse Featured
               <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -49,10 +49,10 @@ export default function FeaturedSeminarsSection({ seminars, onAttend, className 
           )}
         </div>
 
-        {seminars.length > 0 ? (
+        {seminars != null && seminars?.length > 0 ? (
           <div className="relative">
             <div className="custom-scrollbar flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
-              {seminars.map((s) => (
+              {seminars?.map((s) => (
                 <div key={s.id} className="snap-start flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-[220px]">
                   <SeminarCard seminar={s} onClick={openCardDetails} />
                 </div>

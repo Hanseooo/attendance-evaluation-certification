@@ -4,21 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MySeminarDetailModal } from "@/components/overlay/MySeminarDetailModal";
-
-interface Seminar {
-  id: number;
-  title: string;
-  description: string;
-  speaker: string;
-  venue: string;
-  date_start: string;
-  date_end: string;
-  duration_minutes: number;
-  is_done: boolean;
-}
+import { type MySeminar } from "@/utils/types"
 
 interface UpcomingSeminarCardProps {
-  seminar: Seminar | null;
+  seminar: MySeminar | null;
   onCancelAttendance?: (seminarId: number) => void;
 }
 
@@ -92,13 +81,13 @@ export default function UpcomingSeminarCard({
                 variant="secondary"
                 className="mb-3 bg-primary/10 text-primary hover:bg-primary/20"
               >
-                {getTimeUntil(seminar.date_start)}
+                {getTimeUntil(seminar.seminar.date_start)}
               </Badge>
               <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-2 group-hover:text-primary transition-colors">
-                {seminar.title}
+                {seminar.seminar.title}
               </h3>
               <p className="text-sm md:text-base text-muted-foreground line-clamp-2">
-                {seminar.description}
+                {seminar.seminar.description}
               </p>
             </div>
           </div>
@@ -106,7 +95,7 @@ export default function UpcomingSeminarCard({
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Speaker */}
-            {seminar.speaker && (
+            {seminar.seminar.speaker && (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <div className="rounded-full bg-primary/10 p-2 flex-shrink-0">
                   <User className="h-4 w-4 text-primary" />
@@ -114,7 +103,7 @@ export default function UpcomingSeminarCard({
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-muted-foreground">Speaker</p>
                   <p className="text-sm font-semibold truncate">
-                    {seminar.speaker}
+                    {seminar.seminar.speaker}
                   </p>
                 </div>
               </div>
@@ -127,7 +116,7 @@ export default function UpcomingSeminarCard({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">Venue</p>
-                <p className="text-sm font-semibold truncate">{seminar.venue}</p>
+                <p className="text-sm font-semibold truncate">{seminar.seminar.venue}</p>
               </div>
             </div>
 
@@ -139,10 +128,10 @@ export default function UpcomingSeminarCard({
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">Date & Time</p>
                 <p className="text-sm font-semibold">
-                  {formatDate(seminar.date_start)}
+                  {formatDate(seminar.seminar.date_start)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {formatTime(seminar.date_start)}
+                  {formatTime(seminar.seminar.date_start)}
                 </p>
               </div>
             </div>
@@ -155,7 +144,7 @@ export default function UpcomingSeminarCard({
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-muted-foreground">Duration</p>
                 <p className="text-sm font-semibold">
-                  {seminar.duration_minutes} min
+                  {seminar.seminar.duration_minutes} min
                 </p>
               </div>
             </div>

@@ -1,21 +1,10 @@
 import { X, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MySeminarCard from "@/components/cards/MySeminarCard";
-
-interface Seminar {
-  id: number;
-  title: string;
-  description: string;
-  speaker: string;
-  venue: string;
-  date_start: string;
-  date_end: string;
-  duration_minutes: number;
-  is_done: boolean;
-}
+import { type MySeminar } from "@/utils/types"
 
 interface MyAttendingSeminarsModalProps {
-  seminars: Seminar[];
+  seminars: MySeminar[] | null;
   isOpen: boolean;
   onClose: () => void;
   onCancelAttendance?: (seminarId: number) => void;
@@ -46,7 +35,7 @@ export function MyAttendingSeminarsModal({
               My Seminars
             </h2>
             <p className="text-sm text-muted-foreground mt-1.5">
-              {seminars.length} {seminars.length === 1 ? "seminar" : "seminars"}{" "}
+              {seminars?.length} {seminars?.length === 1 ? "seminar" : "seminars"}{" "}
               you're attending
             </p>
           </div>
@@ -62,7 +51,7 @@ export function MyAttendingSeminarsModal({
 
         {/* Scrollable Content with Custom Scrollbar */}
         <div className="flex-1 overflow-y-auto modal-scrollbar px-6 py-6">
-          {seminars.length > 0 ? (
+          {seminars != null && seminars?.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-fr">
               {seminars.map((seminar) => (
                 <div key={seminar.id} className="h-[180px]">

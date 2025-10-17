@@ -2,12 +2,12 @@ import { useState } from "react";
 import { MapPin, Calendar, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { MySeminarDetailModal } from "@/components/overlay/MySeminarDetailModal";
-import { type Seminar } from "@/utils/types"
+import { type MySeminar } from "@/utils/types"
 
 
 
 interface MySeminarCardProps {
-  seminar: Seminar;
+  seminar: MySeminar;
   onCancelAttendance?: (seminarId: number) => void;
 }
 
@@ -42,26 +42,26 @@ export default function MySeminarCard({
         <CardContent className="p-5 h-full flex flex-col">
           {/* Title - Fixed height with consistent spacing */}
           <h3 className="font-semibold text-base leading-tight line-clamp-2 mb-4 h-12 group-hover:text-primary transition-colors">
-            {seminar.title}
+            {seminar.seminar.title}
           </h3>
 
           {/* Info Section - Takes remaining space */}
           <div className="space-y-2.5 mt-auto">
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <MapPin className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm line-clamp-1">{seminar.venue}</span>
+              <span className="text-sm line-clamp-1">{seminar.seminar.venue}</span>
             </div>
 
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <Calendar className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm whitespace-nowrap">
-                {formatDate(seminar.date_start)} • {formatTime(seminar.date_start)}
+                {formatDate(seminar.seminar.date_start)} • {formatTime(seminar.seminar.date_start)}
               </span>
             </div>
 
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <Clock className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm">{seminar.duration_minutes} min</span>
+              <span className="text-sm">{seminar.seminar.duration_minutes} min</span>
             </div>
           </div>
         </CardContent>

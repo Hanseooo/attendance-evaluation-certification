@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,6 +14,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Seminar } from "@/utils/types"
 
 interface CreateSeminarModalProps {
@@ -22,19 +28,20 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
   const [form, setForm] = useState<Partial<Seminar>>({
     title: "",
     description: "",
+    speaker: "",
     venue: "",
     date_start: "",
     date_end: "",
     duration_minutes: 60,
   })
 
-  // ✅ Prefill when editing
   useEffect(() => {
     if (seminar) {
       setForm({
         id: seminar.id,
         title: seminar.title,
         description: seminar.description,
+        speaker: seminar.speaker,
         venue: seminar.venue,
         date_start: seminar.date_start,
         date_end: seminar.date_end,
@@ -44,6 +51,7 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
       setForm({
         title: "",
         description: "",
+        speaker: "",
         venue: "",
         date_start: "",
         date_end: "",
@@ -51,6 +59,16 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
       })
     }
   }, [seminar])
+
+  // Automatically compute duration when start or end changes
+  useEffect(() => {
+    if (form.date_start && form.date_end) {
+      const start = new Date(form.date_start)
+      const end = new Date(form.date_end)
+      const diffMinutes = Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000))
+      setForm((prev) => ({ ...prev, duration_minutes: diffMinutes }))
+    }
+  }, [form.date_start, form.date_end])
 
   const handleChange = (field: keyof Seminar, value: string | number | Date) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -65,7 +83,7 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-xl overflow-y-auto max-h-[90vh] rounded-2xl">
+      <DialogContent className="w-[95vw] max-w-md sm:max-w-lg overflow-y-auto max-h-[90vh] rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl font-semibold">
             {seminar ? "Edit Seminar" : "Create Seminar"}
@@ -90,6 +108,14 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
             />
           </Field>
 
+          <Field label="Speaker">
+            <Input
+              value={form.speaker ?? ""}
+              onChange={(e) => handleChange("speaker", e.target.value)}
+              placeholder="Enter speaker name"
+            />
+          </Field>
+
           <Field label="Venue">
             <Input
               value={form.venue ?? ""}
@@ -101,7 +127,12 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
           <DateTimePicker
             label="Start Date & Time"
             value={form.date_start}
-            onChange={(v) => handleChange("date_start", v)}
+            onChange={(v) => {
+              handleChange("date_start", v)
+              const start = new Date(v)
+              const end = new Date(start.getTime() + 60 * 60000) // auto +1 hour
+              handleChange("date_end", end.toISOString())
+            }}
           />
 
           <DateTimePicker
@@ -114,7 +145,12 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
             <Input
               type="number"
               value={form.duration_minutes ?? ""}
-              onChange={(e) => handleChange("duration_minutes", Number(e.target.value))}
+              onChange={(e) =>
+                handleChange(
+                  "duration_minutes",
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
+              }
               placeholder="e.g. 90"
             />
           </Field>
@@ -178,7 +214,10 @@ function DateTimePicker({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={cn("justify-start text-left font-normal w-full", !value && "text-muted-foreground")}
+            className={cn(
+              "justify-start text-left font-normal w-full",
+              !value && "text-muted-foreground"
+            )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
             {value ? format(new Date(value), "PPP hh:mm aa") : `Pick ${label.toLowerCase()}`}
@@ -189,6 +228,7 @@ function DateTimePicker({
           side="bottom"
           className="p-4 w-[95vw] sm:w-[360px] bg-background/95 backdrop-blur-md border border-border/40 rounded-xl shadow-md"
         >
+          {/* ✅ Restored normal-sized calendar */}
           <Calendar
             mode="single"
             selected={date}
@@ -216,17 +256,24 @@ function DateTimePicker({
               onChange={(e) => handleTimeChange("minute", e.target.value)}
               className="w-16 text-center"
             />
-            <select
+
+            {/* ✅ Modern AM/PM selector using shadcn Select */}
+            <Select
               value={date && date.getHours() >= 12 ? "PM" : "AM"}
-              onChange={(e) => handleTimeChange("ampm", e.target.value)}
-              className="border border-border rounded-md px-2 py-1 text-sm"
+              onValueChange={(v) => handleTimeChange("ampm", v)}
             >
-              <option>AM</option>
-              <option>PM</option>
-            </select>
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-background">
+                <SelectItem value="AM">AM</SelectItem>
+                <SelectItem value="PM">PM</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </PopoverContent>
       </Popover>
     </Field>
+
   )
 }

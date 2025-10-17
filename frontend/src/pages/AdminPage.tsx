@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,46 +10,60 @@ import { type Seminar } from "@/utils/types"
 import { PlusCircle } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-
-const mockSeminars: Seminar[] = [
-  {
-    id: 1,
-    title: "AI in Healthcare",
-    description: "Exploring ML innovations in medical diagnostics.",
-    venue: "Auditorium A",
-    date_start: "2025-11-20T14:00:00Z",
-    duration_minutes: 120,
-  },
-  {
-    id: 2,
-    title: "Cybersecurity Trends 2025",
-    description: "Defending modern infrastructures.",
-    venue: "Room 204",
-    date_start: "2025-11-22T09:30:00Z",
-    duration_minutes: 90,
-  },
-]
+import { useSeminarList } from "@/stores/SeminarStore"
+import { useDeleteSeminar, useFetchSeminars, usePostSeminar, useUpdateSeminar } from "@/hooks/useSeminar"
 
 export default function AdminPage() {
   const { user } = useAuth()
-  const [seminars, setSeminars] = useState(mockSeminars)
+
+  // Zustand stores
+  const seminars = useSeminarList((state) => state.seminar)
+  const setSeminars = useSeminarList((state) => state.setSeminar)
+
+
+  // Hooks for fetching and posting
+  const { fetchSeminars, loading: fetching } = useFetchSeminars()
+  const { postSeminar } = usePostSeminar()
+  const { updateSeminar } = useUpdateSeminar()
+  const { deleteSeminar } = useDeleteSeminar()
+
+  // Local state for modals
   const [editing, setEditing] = useState<Seminar | null>(null)
   const [creating, setCreating] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null)
 
-  const handleSave = (updated: Seminar) => {
+  // Fetch seminars on mount
+  useEffect(() => {
+    fetchSeminars()
+  }, [fetchSeminars])
+
+  // Handle save (create or edit)
+  const handleSave = async (updated: Seminar) => {
     if (creating) {
-      setSeminars((prev) => [...prev, { ...updated, id: Date.now() }])
+      // Add to store immediately
+      setSeminars([...(seminars || []), updated])
+      // Post to backend
+      await postSeminar(updated)
       setCreating(false)
-    } else {
-      setSeminars((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
+    } else if (editing) {
+      // Update store
+      setSeminars(
+        (seminars || []).map((s) => (s.id === updated.id ? updated : s))
+      )
+      await updateSeminar(updated)
       setEditing(null)
     }
+    // console.log(updated)
+    fetchSeminars()
   }
 
-  const handleDelete = (id: number) => {
-    setSeminars((prev) => prev.filter((s) => s.id !== id))
+  // Handle delete
+  const handleDelete = async (id: number) => {
+    // Optimistically remove from store
+    setSeminars((seminars || []).filter((s) => s.id !== id))
     setDeleteTarget(null)
+    // Call API to delete
+    await deleteSeminar(id)
   }
 
   const getInitials = (username: string) =>
@@ -95,16 +109,20 @@ export default function AdminPage() {
         {/* Seminar Cards */}
         <section className="space-y-6">
           <h2 className="text-2xl font-bold tracking-tight">Upcoming Seminars</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {seminars.map((s) => (
-              <AdminSeminarCard
-                key={s.id}
-                seminar={s}
-                onEdit={() => setEditing(s)}
-                onDelete={() => setDeleteTarget(s)}
-              />
-            ))}
-          </div>
+          {fetching ? (
+            <p>Loading seminars...</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {seminars?.map((s) => (
+                <AdminSeminarCard
+                  key={s.id}
+                  seminar={s}
+                  onEdit={() => setEditing(s)}
+                  onDelete={() => setDeleteTarget(s)}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Edit Modal */}
