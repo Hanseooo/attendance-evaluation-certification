@@ -4,15 +4,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { type SortDirection, type Filters } from "@/utils/types";
 
-export type SortDirection = "asc" | "desc";
-export type SortField = "date" | "duration";
-
-export type Filters = {
-  sortField: SortField;
-  sortDir: SortDirection;
-  hideAttending: boolean;
-};
 
 type Props = {
   value: Filters;
@@ -105,7 +98,7 @@ export default function FiltersPopover({ value, onChange }: Props) {
           <div className="flex justify-end">
             <Button
               size="sm"
-              variant="ghost"
+              variant="outline"
               onClick={() =>
                 onChange({
                   sortField: "date",

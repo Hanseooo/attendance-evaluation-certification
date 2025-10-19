@@ -18,10 +18,10 @@ export default function FeaturedSeminarsSection({ seminars, onAttend, className 
   const [openDetails, setOpenDetails] = useState(false);
   const [openBrowseAll, setOpenBrowseAll] = useState(false);
 
-  const openCardDetails = (seminar: Seminar) => {
-    setActive(seminar);
-    setOpenDetails(true);
-  };
+  // const openCardDetails = (seminar: Seminar) => {
+  //   setActive(seminar);
+  //   setOpenDetails(true);
+  // };
 
   const closeCardDetails = () => {
     setOpenDetails(false);
@@ -54,7 +54,7 @@ export default function FeaturedSeminarsSection({ seminars, onAttend, className 
             <div className="custom-scrollbar flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:snap-none">
               {seminars?.map((s) => (
                 <div key={s.id} className="snap-start flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-[220px]">
-                  <SeminarCard seminar={s} onClick={openCardDetails} />
+                  <SeminarCard seminar={s} />
                 </div>
               ))}
             </div>

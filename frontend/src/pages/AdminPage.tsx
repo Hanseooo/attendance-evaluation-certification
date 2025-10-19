@@ -12,59 +12,55 @@ import { useAuth } from "@/context/AuthContext"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { useSeminarList } from "@/stores/SeminarStore"
 import { useDeleteSeminar, useFetchSeminars, usePostSeminar, useUpdateSeminar } from "@/hooks/useSeminar"
+import QrModal from "@/components/overlay/QrModal"
 
 export default function AdminPage() {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   // Zustand stores
-  const seminars = useSeminarList((state) => state.seminar)
-  const setSeminars = useSeminarList((state) => state.setSeminar)
-
+  const seminars = useSeminarList((state) => state.seminar);
+  const setSeminars = useSeminarList((state) => state.setSeminar);
 
   // Hooks for fetching and posting
-  const { fetchSeminars, loading: fetching } = useFetchSeminars()
-  const { postSeminar } = usePostSeminar()
-  const { updateSeminar } = useUpdateSeminar()
-  const { deleteSeminar } = useDeleteSeminar()
+  const { fetchSeminars, loading: fetching } = useFetchSeminars();
+  const { postSeminar } = usePostSeminar();
+  const { updateSeminar } = useUpdateSeminar();
+  const { deleteSeminar } = useDeleteSeminar();
 
   // Local state for modals
-  const [editing, setEditing] = useState<Seminar | null>(null)
-  const [creating, setCreating] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null)
+  const [editing, setEditing] = useState<Seminar | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null);
+  const [qrSeminar, setQrSeminar] = useState<Seminar | null>(null);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   // Fetch seminars on mount
   useEffect(() => {
-    fetchSeminars()
-  }, [fetchSeminars])
+    fetchSeminars();
+  }, [fetchSeminars]);
 
   // Handle save (create or edit)
   const handleSave = async (updated: Seminar) => {
     if (creating) {
-      // Add to store immediately
-      setSeminars([...(seminars || []), updated])
-      // Post to backend
-      await postSeminar(updated)
-      setCreating(false)
+      setSeminars([...(seminars || []), updated]);
+      await postSeminar(updated);
+      setCreating(false);
     } else if (editing) {
-      // Update store
       setSeminars(
         (seminars || []).map((s) => (s.id === updated.id ? updated : s))
-      )
-      await updateSeminar(updated)
-      setEditing(null)
+      );
+      await updateSeminar(updated);
+      setEditing(null);
     }
-    // console.log(updated)
-    fetchSeminars()
-  }
+    fetchSeminars();
+  };
 
   // Handle delete
   const handleDelete = async (id: number) => {
-    // Optimistically remove from store
-    setSeminars((seminars || []).filter((s) => s.id !== id))
-    setDeleteTarget(null)
-    // Call API to delete
-    await deleteSeminar(id)
-  }
+    setSeminars((seminars || []).filter((s) => s.id !== id));
+    setDeleteTarget(null);
+    await deleteSeminar(id);
+  };
 
   const getInitials = (username: string) =>
     username
@@ -72,7 +68,7 @@ export default function AdminPage() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2) || "U"
+      .slice(0, 2) || "U";
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,7 +104,9 @@ export default function AdminPage() {
 
         {/* Seminar Cards */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-bold tracking-tight">Upcoming Seminars</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Upcoming Seminars
+          </h2>
           {fetching ? (
             <p>Loading seminars...</p>
           ) : (
@@ -119,6 +117,10 @@ export default function AdminPage() {
                   seminar={s}
                   onEdit={() => setEditing(s)}
                   onDelete={() => setDeleteTarget(s)}
+                  showQrModal={() => {
+                    setQrSeminar(s);
+                    setShowQrModal(true);
+                  }}
                 />
               ))}
             </div>
@@ -140,16 +142,29 @@ export default function AdminPage() {
           onSave={handleSave}
         />
 
+        {/* QR Modal: always rendered, visibility controlled by `showQrModal` */}
+        <QrModal
+          seminarTitle={qrSeminar?.title ?? ""}
+          seminarId={qrSeminar?.id ?? 0}
+          isOpen={showQrModal}
+          onClose={() => setShowQrModal(false)}
+        />
+
         {/* Delete Confirmation Dialog */}
-        <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <Dialog
+          open={!!deleteTarget}
+          onOpenChange={() => setDeleteTarget(null)}
+        >
           <DialogContent className="max-w-sm">
             <DialogHeader>
               <DialogTitle>Delete Seminar</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete <strong>{deleteTarget?.title}</strong>? This action cannot be undone.
+                Are you sure you want to delete{" "}
+                <strong>{deleteTarget?.title}</strong>? This action cannot be
+                undone.
               </DialogDescription>
             </DialogHeader>
-            <div className="flex justify-end gap-2 mt-4 ">
+            <div className="flex justify-end gap-2 mt-4">
               <Button variant="outline" onClick={() => setDeleteTarget(null)}>
                 Cancel
               </Button>
@@ -164,5 +179,5 @@ export default function AdminPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

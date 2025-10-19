@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,12 @@ SECRET_KEY = 'django-insecure-im4s5&6*vzq6rb2d!t!6a&04kc6a@uq+pl+o61=+^pn=x)goj5
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+BASE_URL = "http://localhost:5173"
+
+# settings.py
+MEDIA_URL = '/media/'  # URL to access media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Location to save uploaded files
 
 
 # Application definition

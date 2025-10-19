@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import type { User, RegisterPayload } from "../utils/types";
-import { Loader2 } from "lucide-react"; // ShadCN icon
+import LoadingPage from "@/pages/LoadingPage";
 
 interface AuthContextType {
   user: User | null;
@@ -17,9 +17,7 @@ const TOKEN_KEY = "authToken";
 
 // Loading screen component
 export const LoadingScreen = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-    <Loader2 className="h-10 w-10 animate-spin text-white" />
-  </div>
+  <LoadingPage />
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -142,5 +140,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");
+
+  // Ensure the token value is never null or undefined when needed
+  if (!context.token) {
+    console.error("Token is missing, please login again.");
+  }
+
   return context;
 };
+
