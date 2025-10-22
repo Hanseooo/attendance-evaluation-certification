@@ -18,7 +18,6 @@ export default function EventsPage() {
     fetchMySeminars();
   }, [fetchSeminars, fetchMySeminars]);
 
-  // 🧠 Dynamic filtering
   const filteredSeminars = useMemo(() => {
     if (!seminars) return [];
     if (!mySeminars) return seminars;

@@ -6,10 +6,12 @@
 /* Import animation plugin if you use tw-animate-css */
 @import "tw-animate-css";
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 /* Your global styles */
 @layer theme, base, components, utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 /* Theme variables */
 @theme inline {
@@ -79,6 +81,18 @@
     @apply bg-input text-foreground border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
   }
 }
+
+/* 🌈 Custom scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+.scrollbar-thumb-primary\/40::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--primary), 0.4);
+}
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 
 .poppins-thin {
   font-family: "Poppins", sans-serif;

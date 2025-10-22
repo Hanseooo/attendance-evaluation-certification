@@ -10,6 +10,7 @@ import EventsPage from "./pages/EventsPage";
 import AdminPage from "./pages/AdminPage";
 import LoadingPage from "./pages/LoadingPage";
 import AttendancePage from "./pages/AttendancePage";
+import FeedbackPage from "./pages/FeedbackPage";
 
 
 export default function App() {
@@ -60,6 +61,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <EventsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <FeedbackPage />
                 </ProtectedRoute>
               }
             />

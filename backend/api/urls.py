@@ -1,5 +1,5 @@
 # api/urls.py
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from users.views import CurrentUserView
@@ -15,5 +15,6 @@ urlpatterns = [
     path('generate-qr/<int:seminar_id>/', generate_qr_code, name='generate_qr_code'),
     path("attendance/<int:seminar_id>/<str:action>/", record_attendance, name="record_attendance"),
     path('download-qr/<int:seminar_id>/<str:action>/', download_qr_code, name='download_qr_code'),
+    path("evaluations/", include("evaluation.urls")),
 ] 
 

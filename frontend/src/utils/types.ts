@@ -64,3 +64,27 @@ export interface RecordAttendanceResponse {
   success?: string;
   error?: string;
 }
+
+export interface Evaluation {
+  id: number;
+  seminar: Seminar; // object, not just ID
+  user: User;
+  content_relevance: number;
+  presenter_effectiveness: number;
+  organization_structure: number;
+  usefulness_materials: number;
+  overall_satisfaction: number;
+  suggestions?: string;
+  is_completed: boolean;
+  created_at: string;
+}
+
+export interface EvaluationPayload {
+  seminar: number;
+  content_relevance: number;
+  presenter_effectiveness: number;
+  organization_structure: number;
+  usefulness_materials: number;
+  overall_satisfaction: number;
+  suggestions: string;
+}

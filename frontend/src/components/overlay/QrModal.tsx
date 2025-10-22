@@ -36,12 +36,10 @@ export default function QrModal({
 }: QrModalProps) {
   const { generateQrCodes } = useGenerateQrCode();
   const { downloadQr } = useDownloadQr();
-
   const [loading, setLoading] = useState(false);
   const [qrData, setQrData] = useState<QrResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Load cached QR codes on open
   useEffect(() => {
     if (isOpen) {
       const cached = localStorage.getItem(`qrData_${seminarId}`);
@@ -61,8 +59,6 @@ export default function QrModal({
     try {
       const data = await generateQrCodes(seminarId);
       setQrData(data);
-
-      // ✅ Cache result for future modal opens
       localStorage.setItem(`qrData_${seminarId}`, JSON.stringify(data));
     } catch (err) {
       console.error("QR generation failed:", err);
@@ -79,17 +75,20 @@ export default function QrModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg rounded-2xl shadow-2xl p-6 bg-background border border-border">
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-2xl font-semibold text-foreground">
+      <DialogContent
+        className="max-w-lg sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-background border border-border 
+        scrollbar-thin scrollbar-thumb-primary/40 scrollbar-track-transparent hover:scrollbar-thumb-primary/60"
+      >
+        <DialogHeader className="text-center  z-10 pb-2 border-b">
+          <DialogTitle className="text-2xl font-semibold">
             {seminarTitle}
           </DialogTitle>
-          <p className="text-muted-foreground text-sm mt-1">
-            QR Codes for attendance
+          <p className="text-muted-foreground text-sm">
+            QR Codes for Attendance
           </p>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-5">
+        <div className="flex flex-col items-center gap-5 mt-4">
           {!qrData && !loading && (
             <Button onClick={handleGenerate} className="w-full font-medium">
               Generate QR Codes
@@ -107,56 +106,37 @@ export default function QrModal({
           {qrData && (
             <>
               <div className="w-full grid sm:grid-cols-2 gap-6">
-                {/* Check-In */}
-                <div className="flex flex-col items-center gap-3 border rounded-xl p-4 bg-card">
-                  <h3 className="font-medium text-gray-700">Check-In</h3>
-                  <img
-                    src={qrData.check_in.qr_image}
-                    alt="Check-in QR"
-                    className="w-44 h-44 object-contain border rounded-lg"
-                  />
-                  <UrlDisplay url={qrData.check_in.url} />
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="w-full"
-                    onClick={() =>
-                      downloadQr(
-                        qrData.check_in.qr_image,
-                        `${seminarTitle}_Check-In`
-                      )
-                    }
-                  >
-                    Download QR
-                  </Button>
-                </div>
-
-                {/* Check-Out */}
-                <div className="flex flex-col items-center gap-3 border rounded-xl p-4 bg-card">
-                  <h3 className="font-medium text-gray-700">Check-Out</h3>
-                  <img
-                    src={qrData.check_out.qr_image}
-                    alt="Check-out QR"
-                    className="w-44 h-44 object-contain border rounded-lg"
-                  />
-                  <UrlDisplay url={qrData.check_out.url} />
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="w-full"
-                    onClick={() =>
-                      downloadQr(
-                        qrData.check_out.qr_image,
-                        `${seminarTitle}_Check-Out`
-                      )
-                    }
-                  >
-                    Download QR
-                  </Button>
-                </div>
+                {["check_in", "check_out"].map((type) => {
+                  const item = qrData[type as keyof QrResponse];
+                  return (
+                    <div
+                      key={type}
+                      className="flex flex-col items-center gap-3 border rounded-xl p-4 bg-card shadow-sm"
+                    >
+                      <h3 className="font-medium text-gray-700 capitalize">
+                        {type.replace("_", " ")}
+                      </h3>
+                      <img
+                        src={item.qr_image}
+                        alt={`${type} QR`}
+                        className="w-44 h-44 object-contain border rounded-lg"
+                      />
+                      <UrlDisplay url={item.url} />
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="w-full"
+                        onClick={() =>
+                          downloadQr(item.qr_image, `${seminarTitle}_${type}`)
+                        }
+                      >
+                        Download QR
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* 🔄 Optional clear cache button */}
               <Button
                 variant="outline"
                 size="sm"
