@@ -13,6 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useSeminarList } from "@/stores/SeminarStore"
 import { useDeleteSeminar, useFetchSeminars, usePostSeminar, useUpdateSeminar } from "@/hooks/useSeminar"
 import QrModal from "@/components/overlay/QrModal"
+import { CertificateEditorModal } from "@/components/overlay/CertificatedEditorModal"
+import { useUploadCertificateTemplate } from "@/hooks/useFetchCertificateTemplates"
+import defaultCertificate from "@/assets/images/default_certificate.png"
 
 export default function AdminPage() {
   const { user } = useAuth();
@@ -33,6 +36,9 @@ export default function AdminPage() {
   const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null);
   const [qrSeminar, setQrSeminar] = useState<Seminar | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [showUploadCertificate, setShowUploadCertificate] = useState(false);
+  const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
+  const { uploadTemplate } = useUploadCertificateTemplate();
 
   // Fetch seminars on mount
   useEffect(() => {
@@ -121,6 +127,10 @@ export default function AdminPage() {
                     setQrSeminar(s);
                     setShowQrModal(true);
                   }}
+                  onUploadCert={() => {
+                    setSelectedSeminar(s);
+                    setShowUploadCertificate(true);
+                  }}
                 />
               ))}
             </div>
@@ -149,6 +159,37 @@ export default function AdminPage() {
           isOpen={showQrModal}
           onClose={() => setShowQrModal(false)}
         />
+
+      {/**cert modal */}
+        <CertificateEditorModal
+          isOpen={showUploadCertificate}
+          onClose={() => setShowUploadCertificate(false)}
+          initialSrc={defaultCertificate}
+          onSave={async (coords) => {
+            if (!selectedSeminar) return;
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "image/*";
+            fileInput.onchange = async (e: Event) => {
+              const target = e.target as HTMLInputElement;
+              const file = target.files?.[0];
+              if (!file) return;
+
+              await uploadTemplate({
+                seminar: selectedSeminar.id,
+                template: file,
+                text_x: coords.x,
+                text_y: coords.y,
+                centered: coords.centered,
+              });
+
+              alert("Certificate template saved!");
+            };
+
+            fileInput.click();
+          }}
+        />
+
 
         {/* Delete Confirmation Dialog */}
         <Dialog

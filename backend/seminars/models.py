@@ -1,17 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from certificates.models import CertificateTemplate
 
 User = settings.AUTH_USER_MODEL
 
-class CertificateTemplate(models.Model):
-    name = models.CharField(max_length=120)
-    file = models.FileField(upload_to="certificate_templates/")  # html/pdf/image
-    # optionally store template metadata
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
 
 class Seminar(models.Model):
     title = models.CharField(max_length=255)
@@ -21,8 +14,7 @@ class Seminar(models.Model):
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     duration_minutes = models.PositiveIntegerField(null=True, blank=True)
-    is_done = models.BooleanField(default=False)   # your 'isdone'
-    certificate_template = models.ForeignKey(CertificateTemplate, null=True, blank=True, on_delete=models.SET_NULL)
+    is_done = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -30,6 +22,7 @@ class Seminar(models.Model):
 
     def __str__(self):
         return self.title
+
     
 
 class PlannedSeminar(models.Model):

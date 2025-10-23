@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { MoreVertical, Pencil, QrCode, Trash2 } from "lucide-react"
+import { Image, MoreVertical, Pencil, QrCode, Trash2 } from "lucide-react"
 import { type Seminar } from "@/utils/types"
 
 interface AdminSeminarCardProps {
@@ -9,9 +9,10 @@ interface AdminSeminarCardProps {
   onEdit: () => void
   onDelete: () => void
   showQrModal: () => void
+  onUploadCert: () => void
 }
 
-export default function AdminSeminarCard({ seminar, onEdit, onDelete, showQrModal }: AdminSeminarCardProps) {
+export default function AdminSeminarCard({ seminar, onEdit, onDelete, showQrModal, onUploadCert }: AdminSeminarCardProps) {
 
 
   return (
@@ -52,6 +53,14 @@ export default function AdminSeminarCard({ seminar, onEdit, onDelete, showQrModa
               <QrCode className="size-4" />
               Generate
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={onUploadCert}
+              className="flex items-center gap-2 hover:cursor-pointer hover:bg-black/5"
+            >
+              <Image className="size-4" />
+              Upload
+            </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>

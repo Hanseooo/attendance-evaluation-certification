@@ -53,19 +53,22 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Button */}
-        <button
+        { user?.role === "participant" ? <button
           onClick={() => setIsOpen(!isOpen)}
           className="inline-flex items-center justify-center rounded-md p-2 hover:bg-accent hover:text-accent-foreground md:hidden"
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        </button> :             
+            <Button onClick={logout} variant="ghost" className="justify-end px-3">
+              Logout
+            </Button>}
       </div>
 
       {/* Mobile Navigation */}
       {isOpen && (
         <div className="border-t md:hidden flex flex-col">
           <div className="container flex flex-col items-end space-y-1 px-4 py-4">
-            {navItems.map((item) => (
+            { navItems.map((item) => (
               <a
                 key={item.name}
                 href={item.href}

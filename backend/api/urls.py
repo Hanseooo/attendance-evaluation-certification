@@ -16,5 +16,6 @@ urlpatterns = [
     path("attendance/<int:seminar_id>/<str:action>/", record_attendance, name="record_attendance"),
     path('download-qr/<int:seminar_id>/<str:action>/', download_qr_code, name='download_qr_code'),
     path("evaluations/", include("evaluation.urls")),
+    path("api/certificates/", include("certificates.urls")),
 ] 
 

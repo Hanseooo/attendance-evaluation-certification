@@ -88,3 +88,21 @@ export interface EvaluationPayload {
   overall_satisfaction: number;
   suggestions: string;
 }
+
+export interface CertificateTemplate {
+  id: number;
+  seminar: number;
+  template: string; // URL
+  text_x: number;
+  text_y: number;
+  centered: boolean;
+  uploaded_at: string;
+}
+
+export interface CertificateTemplatePayload {
+  seminar: number;
+  template: File;
+  text_x: number;
+  text_y: number;
+  centered: boolean;
+}
