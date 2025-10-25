@@ -2,6 +2,8 @@ import { MapPin, Calendar, Clock, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { type Seminar } from "@/utils/types"
+import { usePostMySeminar } from "@/hooks/useMySeminar";
+import { useSeminarList } from "@/stores/SeminarStore";
 
 
 interface Props {
@@ -11,7 +13,9 @@ interface Props {
   onAttend: (seminarId: number) => void | Promise<void>;
 }
 
-export function SeminarDetailsModal({ seminar, isOpen, onClose, onAttend }: Props) {
+export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
+  const postMySeminar = usePostMySeminar().postMySeminar
+  const removeSeminar = useSeminarList().removeSeminar
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -32,7 +36,8 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose, onAttend }: Prop
 
   const handleAttend = async () => {
     if (!seminar) return;
-    await onAttend(seminar.id);
+    await postMySeminar(seminar.id);
+    removeSeminar(seminar.id)
     onClose();
   };
 

@@ -1,19 +1,18 @@
+// src/hooks/useAttendanceApi.ts
 import { useAuth } from "@/context/AuthContext";
 import {
   type AttendanceAction,
   type RecordAttendanceResponse,
+  type Attendee,
 } from "@/utils/types";
 
-// API base URL
 const BASE_URL = "http://127.0.0.1:8000/api";
 
-// Type for expected response
 interface ApiResponse<T> {
   status: number;
   data: T;
 }
 
-// Hook return type
 interface UseAttendanceApi {
   recordAttendance: (
     seminarId: number,
@@ -21,35 +20,31 @@ interface UseAttendanceApi {
     qrToken: string
   ) => Promise<ApiResponse<RecordAttendanceResponse>>;
   generateQrImage: (seminarId: number, action: AttendanceAction) => string;
+  getPresentUsers: (seminarId: number) => Promise<ApiResponse<Attendee[]>>;
 }
 
 export function useAttendanceApi(): UseAttendanceApi {
   const { token } = useAuth();
 
-  // Check for token availability before making the request
-    const recordAttendance = async (
+  const recordAttendance = async (
     seminarId: number,
     action: AttendanceAction,
     qrToken: string
-    ): Promise<ApiResponse<RecordAttendanceResponse>> => {
-    if (!token) {
-        console.error("Authentication token is missing");
-        throw new Error("Authentication token is missing");
-    }
+  ): Promise<ApiResponse<RecordAttendanceResponse>> => {
+    if (!token) throw new Error("Authentication token is missing");
 
     const res = await fetch(`${BASE_URL}/attendance/${seminarId}/${action}/`, {
-        method: "POST",
-        headers: {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json",
         Authorization: `Token ${token}`,
-        },
-        body: JSON.stringify({ qr_token: qrToken }),
+      },
+      body: JSON.stringify({ qr_token: qrToken }),
     });
 
     const data = await res.json();
     return { status: res.status, data };
-    };
-
+  };
 
   const generateQrImage = (
     seminarId: number,
@@ -58,8 +53,23 @@ export function useAttendanceApi(): UseAttendanceApi {
     return `${BASE_URL}/generate-qr/${seminarId}/${action}/`;
   };
 
+  const getPresentUsers = async (seminarId: number): Promise<ApiResponse<Attendee[]>> => {
+    if (!token) throw new Error("Missing authentication token");
+
+    const res = await fetch(
+      `${BASE_URL}/attendance/present-users/${seminarId}/`,
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    );
+
+    const data = await res.json();
+    return { status: res.status, data };
+  };
+
   return {
     recordAttendance,
     generateQrImage,
+    getPresentUsers,
   };
 }

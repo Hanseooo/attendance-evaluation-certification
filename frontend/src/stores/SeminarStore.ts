@@ -1,26 +1,11 @@
-import { create } from "zustand"
-import type { MySeminar, Seminar } from "@/utils/types"
+import { create } from "zustand";
+import type { MySeminar, Seminar } from "@/utils/types";
 
 interface UserSeminarState {
-  seminar: Seminar | null
-  setSeminar: (seminar: Seminar) => void
-  updateSeminar: (updates: Partial<Seminar>) => void
-  clearSeminar: () => void
-}
-
-interface SeminarListState {
-    seminar: Seminar[] | null
-    setSeminar: (seminar : Seminar[]) => void
-    updateSeminar: (updates: Partial<Seminar>) => void
-    clearSeminar: () => void
-}
-
- interface MySeminarListState {
-  seminars: MySeminar[] | null
-  setSeminar: (seminars: MySeminar[]) => void
-  addSeminar: (seminar: MySeminar) => void
-  removeSeminar: (id: number) => void
-  clearSeminar: () => void
+  seminar: Seminar | null;
+  setSeminar: (seminar: Seminar) => void;
+  updateSeminar: (updates: Partial<Seminar>) => void;
+  clearSeminar: () => void;
 }
 
 export const useUserSeminar = create<UserSeminarState>((set) => ({
@@ -34,20 +19,45 @@ export const useUserSeminar = create<UserSeminarState>((set) => ({
     })),
 
   clearSeminar: () => set({ seminar: null }),
-}))
+}));
 
-export const useSeminarList = create<SeminarListState> ((set) => ({
-    seminar: null,
+// ✅ Fixed: renamed from `seminar` to `seminars` everywhere
+interface SeminarListState {
+  seminars: Seminar[] | null;
+  setSeminar: (seminars: Seminar[]) => void;
+  addSeminar: (seminar: Seminar) => void;
+  removeSeminar: (id: number) => void;
+  clearSeminar: () => void;
+}
 
-    setSeminar: (seminar) => set({ seminar }),
+export const useSeminarList = create<SeminarListState>((set) => ({
+  seminars: null,
 
-    updateSeminar: (updates) =>
+  setSeminar: (seminars) => set({ seminars }),
+
+  addSeminar: (seminar) =>
     set((state) => ({
-      seminar: state.seminar ? { ...state.seminar, ...updates } : null,
+      seminars: state.seminars ? [...state.seminars, seminar] : [seminar],
     })),
 
-  clearSeminar: () => set({ seminar: null }),
-}))
+  removeSeminar: (id) =>
+    set((state) => ({
+      seminars: state.seminars
+        ? state.seminars.filter((s) => s.id !== id)
+        : null,
+    })),
+
+  clearSeminar: () => set({ seminars: null }),
+}));
+
+// ✅ MySeminar version (unchanged, just consistent naming)
+interface MySeminarListState {
+  seminars: MySeminar[] | null;
+  setSeminar: (seminars: MySeminar[]) => void;
+  addSeminar: (seminar: MySeminar) => void;
+  removeSeminar: (id: number) => void;
+  clearSeminar: () => void;
+}
 
 export const useMySeminarList = create<MySeminarListState>((set) => ({
   seminars: null,
@@ -67,4 +77,4 @@ export const useMySeminarList = create<MySeminarListState>((set) => ({
     })),
 
   clearSeminar: () => set({ seminars: null }),
-}))
+}));

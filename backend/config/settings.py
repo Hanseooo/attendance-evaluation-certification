@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,6 +65,9 @@ INSTALLED_APPS = [
     'certificates',
     'evaluation',
     'seminars',
+
+    'cloudinary',
+    'cloudinary_storage',
 
     'whitenoise.runserver_nostatic',  # for static files
 
@@ -206,7 +212,18 @@ ACCOUNT_SIGNUP_FIELDS = {
 # LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email backend
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Brevo SMTP config
+EMAIL_HOST = os.getenv("BREVO_EMAIL_HOST")
+EMAIL_PORT = os.getenv("BREVO_EMAIL_PORT")
+EMAIL_USE_TLS = os.getenv("BREVO_EMAIL_USE_TLS")
+EMAIL_HOST_USER = os.getenv("BREVO_EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("BREVO_EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("BREVO_DEFAULT_FROM_EMAIL")
 
 REST_USE_JWT = False
 
@@ -230,3 +247,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DEFAULT_CERTIFICATE_TEMPLATE_URL = "https://res.cloudinary.com/dcoc9jepl/image/upload/v1761304008/default_certificate_h09vbq.png"
+
+
+# CLOUDINARY CONFIGURATION
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+# Make Cloudinary the default file storage for uploaded media
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+

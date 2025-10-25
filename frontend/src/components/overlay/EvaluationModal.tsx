@@ -31,11 +31,11 @@ export function EvaluationModal({
   onSubmit,
 }: EvaluationModalProps) {
   const [form, setForm] = useState<EvaluationPayload>({
-    seminar: seminar.id,
-    content_relevance: 3,
-    presenter_effectiveness: 3,
-    organization_structure: 3,
-    usefulness_materials: 3,
+    seminar_id: seminar.id,
+    content_and_relevance: 3,
+    presenters_effectiveness: 3,
+    organization_and_structure: 3,
+    materials_usefulness: 3,
     overall_satisfaction: 3,
     suggestions: "",
   });
@@ -52,13 +52,14 @@ export function EvaluationModal({
     onClose();
   };
 
-  const ratingFields = [
-    ["content_relevance", "Content & Relevance"],
-    ["presenter_effectiveness", "Presenter's Effectiveness"],
-    ["organization_structure", "Organization & Structure"],
-    ["usefulness_materials", "Usefulness of Materials"],
-    ["overall_satisfaction", "Overall Satisfaction"],
-  ] as const;
+const ratingFields = [
+  ["content_and_relevance", "Content & Relevance"],
+  ["presenters_effectiveness", "Presenter's Effectiveness"],
+  ["organization_and_structure", "Organization & Structure"],
+  ["materials_usefulness", "Usefulness of Materials"],
+  ["overall_satisfaction", "Overall Satisfaction"],
+] as const;
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

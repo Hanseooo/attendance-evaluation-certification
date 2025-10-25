@@ -59,7 +59,7 @@ export default function Navbar() {
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button> :             
-            <Button onClick={logout} variant="ghost" className="justify-end px-3">
+            <Button onClick={logout} variant="ghost" className="justify-end px-3 md:hidden">
               Logout
             </Button>}
       </div>

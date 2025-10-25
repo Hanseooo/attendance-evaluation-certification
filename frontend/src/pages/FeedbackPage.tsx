@@ -1,33 +1,47 @@
-// src/pages/FeedbackPage.tsx
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEvaluationApi } from "@/hooks/useEvaluationApi";
 import EvaluationCard from "@/components/cards/EvaluationCard";
-import { type Evaluation, type Seminar, type EvaluationPayload } from "@/utils/types";
+import {
+  type Evaluation,
+  type Seminar,
+  type EvaluationPayload,
+} from "@/utils/types";
 import { EvaluationModal } from "@/components/overlay/EvaluationModal";
+import { CertificateModal } from "@/components/overlay/CertificateModal";
 
 export default function FeedbackPage() {
-  const { getAvailableEvaluations, submitEvaluation } = useEvaluationApi();
+  const { getAvailableEvaluations, submitEvaluationWithCertificate } =
+    useEvaluationApi();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
-  const fetchEvaluations = useCallback(async () => {
-  const { data } = await getAvailableEvaluations();
-  setEvaluations(data);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const fetchEvaluations = async () => {
+    const { data } = await getAvailableEvaluations();
+    setEvaluations(data);
+  };
 
 
   const handleSubmit = async (payload: EvaluationPayload) => {
-    await submitEvaluation(payload);
-    fetchEvaluations();
+    const response = await submitEvaluationWithCertificate(payload);
+
+    if (response?.certificate_url) {
+      setCertificateUrl(response.certificate_url);
+      setShowCertificateModal(true);
+    }
+
+    await fetchEvaluations();
+    setShowModal(false);
   };
 
   useEffect(() => {
     fetchEvaluations();
-  }, [fetchEvaluations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ✅ run only once on mount
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,6 +96,15 @@ export default function FeedbackPage() {
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           onSubmit={handleSubmit}
+        />
+      )}
+
+      {showCertificateModal && certificateUrl && selectedSeminar && (
+        <CertificateModal
+          isOpen={showCertificateModal}
+          onClose={() => setShowCertificateModal(false)}
+          certificateUrl={certificateUrl}
+          seminarTitle={selectedSeminar.title}
         />
       )}
     </div>

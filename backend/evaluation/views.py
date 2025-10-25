@@ -1,47 +1,60 @@
+# evaluation/views.py
 from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+
+from attendance.models import Attendance
 from .models import Evaluation
 from .serializers import EvaluationSerializer
-from attendance.models import Attendance
-from seminars.serializers import Seminar
+from certificates.utils import generate_certificate
 from seminars.serializers import SeminarSerializer
+from users.serializers import UserSerializer
+
 
 class EvaluationViewSet(viewsets.ModelViewSet):
-    """
-    list: list evaluations for current user
-    create: create evaluation for a seminar (user is taken from request)
-    retrieve/update/partial_update/destroy allowed for owner only
-    """
     serializer_class = EvaluationSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # restrict to current user's evaluations
         return Evaluation.objects.filter(user=self.request.user).select_related("seminar")
 
-    def perform_create(self, serializer):
-        # ensure the user is eligible before creating (attendance.is_present must be true)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+
         seminar = serializer.validated_data.get("seminar")
-        user = self.request.user
+        user = request.user
 
         attendance = Attendance.objects.filter(user=user, seminar=seminar, is_present=True).first()
         if not attendance:
-            raise serializers.ValidationError({"detail": "User not eligible to evaluate this seminar (not present)."})
-        # Make sure no existing completed evaluation exists (unique_together prevents duplicates but we want to allow update)
-        existing = Evaluation.objects.filter(user=user, seminar=seminar).first()
-        if existing:
-            raise serializers.ValidationError({"detail": "Evaluation for this seminar already exists. Use update instead."})
-        serializer.save(user=user)
+            raise serializers.ValidationError({"detail": "You must have attended this seminar to evaluate it."})
 
-    def perform_update(self, serializer):
-        # allow update normally
-        serializer.save()
+        existing_eval = Evaluation.objects.filter(user=user, seminar=seminar).first()
 
-# Endpoint to list seminars eligible for evaluation by current user
-from rest_framework.views import APIView
+        if existing_eval:
+            if existing_eval.is_completed:
+                raise serializers.ValidationError({"detail": "You have already completed this evaluation."})
+            else:
+                for field, value in serializer.validated_data.items():
+                    setattr(existing_eval, field, value)
+                existing_eval.is_completed = True
+                existing_eval.save()
+
+                # ✅ Generate certificate (returns base64 data URL)
+                certificate_url = generate_certificate(attendance)
+                response_data = EvaluationSerializer(existing_eval, context={"request": request}).data
+                response_data["certificate_url"] = certificate_url
+                return Response(response_data, status=status.HTTP_200_OK)
+
+        evaluation = serializer.save(user=user, is_completed=True)
+
+        # ✅ Generate certificate (returns base64 data URL)
+        certificate_url = generate_certificate(attendance)
+        response_data = EvaluationSerializer(evaluation, context={"request": request}).data
+        response_data["certificate_url"] = certificate_url
+        return Response(response_data, status=status.HTTP_201_CREATED)
+
 
 class AvailableEvaluationsAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -49,22 +62,54 @@ class AvailableEvaluationsAPIView(APIView):
     def get(self, request):
         user = request.user
 
-        # Get seminars the user attended
         attendances = Attendance.objects.filter(user=user, is_present=True).select_related("seminar")
-        eligible = []
+        evaluations_data = []
 
         for att in attendances:
             seminar = att.seminar
             evaluation = Evaluation.objects.filter(user=user, seminar=seminar).first()
 
-            # Eligible if user hasn't completed evaluation
-            if not evaluation or not evaluation.is_completed:
-                seminar_data = SeminarSerializer(seminar).data
-                eligible.append({
-                    "seminar": seminar_data,
-                    "evaluation_exists": evaluation is not None,
-                    "evaluation_id": evaluation.id if evaluation else None,
-                    "is_completed": evaluation.is_completed if evaluation else False,
-                })
+            # ✅ Since we're not storing certificates, no certificate_url for available evaluations
+            # They'll get it when they submit the evaluation
 
-        return Response(eligible, status=200)
+            # ✅ Serialize user and seminar
+            seminar_data = SeminarSerializer(seminar, context={"request": request}).data
+            user_data = UserSerializer(user, context={"request": request}).data
+
+            if evaluation:
+                eval_data = {
+                    "id": evaluation.id,
+                    "seminar": seminar_data,
+                    "user": user_data,
+                    "content_and_relevance": evaluation.content_and_relevance,
+                    "presenters_effectiveness": evaluation.presenters_effectiveness,
+                    "organization_and_structure": evaluation.organization_and_structure,
+                    "materials_usefulness": evaluation.materials_usefulness,
+                    "overall_satisfaction": evaluation.overall_satisfaction,
+                    "suggestions": evaluation.suggestions,
+                    "is_completed": evaluation.is_completed,
+                    "created_at": evaluation.created_at.isoformat(),
+                    "certificate_url": "",  # Empty since certificates are ephemeral
+                }
+            else:
+                # Default placeholder for not-yet-started evaluation
+                eval_data = {
+                    "id": None,
+                    "seminar": seminar_data,
+                    "user": user_data,
+                    "content_and_relevance": 0,
+                    "presenters_effectiveness": 0,
+                    "organization_and_structure": 0,
+                    "materials_usefulness": 0,
+                    "overall_satisfaction": 0,
+                    "suggestions": "",
+                    "is_completed": False,
+                    "created_at": "",
+                    "certificate_url": "",  # Empty since not yet generated
+                }
+
+            # Only include if evaluation is not completed
+            if not evaluation or not evaluation.is_completed:
+                evaluations_data.append(eval_data)
+
+        return Response(evaluations_data, status=status.HTTP_200_OK)

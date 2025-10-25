@@ -34,24 +34,24 @@ export default function QrModal({
   isOpen,
   onClose,
 }: QrModalProps) {
-  const { generateQrCodes } = useGenerateQrCode();
+  const generateQrCodes = useGenerateQrCode();
   const { downloadQr } = useDownloadQr();
   const [loading, setLoading] = useState(false);
   const [qrData, setQrData] = useState<QrResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      const cached = localStorage.getItem(`qrData_${seminarId}`);
-      if (cached) {
-        try {
-          setQrData(JSON.parse(cached));
-        } catch {
-          localStorage.removeItem(`qrData_${seminarId}`);
-        }
-      }
-    }
-  }, [isOpen, seminarId]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     const cached = localStorage.getItem(`qrData_${seminarId}`);
+  //     if (cached) {
+  //       try {
+  //         setQrData(JSON.parse(cached));
+  //       } catch {
+  //         localStorage.removeItem(`qrData_${seminarId}`);
+  //       }
+  //     }
+  //   }
+  // }, [isOpen, seminarId]);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -59,7 +59,7 @@ export default function QrModal({
     try {
       const data = await generateQrCodes(seminarId);
       setQrData(data);
-      localStorage.setItem(`qrData_${seminarId}`, JSON.stringify(data));
+      // localStorage.setItem(`qrData_${seminarId}`, JSON.stringify(data));
     } catch (err) {
       console.error("QR generation failed:", err);
       setError("Failed to generate QR codes. Please try again.");
@@ -68,10 +68,17 @@ export default function QrModal({
     }
   };
 
-  const handleClearCache = () => {
-    localStorage.removeItem(`qrData_${seminarId}`);
-    setQrData(null);
-  };
+  useEffect(()=> {
+    if (seminarId) {
+    handleGenerate();
+    }
+  },[seminarId])
+
+
+  // const handleClearCache = () => {
+  //   localStorage.removeItem(`qrData_${seminarId}`);
+  //   setQrData(null);
+  // };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -140,7 +147,7 @@ export default function QrModal({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleClearCache}
+                // onClick={handleClearCache}
                 className="mt-4"
               >
                 Regenerate QR Codes

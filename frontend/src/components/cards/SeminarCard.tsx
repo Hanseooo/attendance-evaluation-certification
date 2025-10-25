@@ -66,7 +66,7 @@ export default function SeminarCard({ seminar }: SeminarCardProps) {
         seminar={seminar}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAttend={() => {}}
+        onAttend={() => {} }
       />
     </>
   );

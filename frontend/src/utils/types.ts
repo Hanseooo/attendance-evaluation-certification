@@ -66,43 +66,73 @@ export interface RecordAttendanceResponse {
 }
 
 export interface Evaluation {
-  id: number;
-  seminar: Seminar; // object, not just ID
+  id: number | null;
+  seminar: Seminar;
   user: User;
-  content_relevance: number;
-  presenter_effectiveness: number;
-  organization_structure: number;
-  usefulness_materials: number;
+  content_and_relevance: number;
+  presenters_effectiveness: number;
+  organization_and_structure: number;
+  materials_usefulness: number;
   overall_satisfaction: number;
   suggestions?: string;
   is_completed: boolean;
   created_at: string;
+  certificate_url: string; // Can be empty string or base64 data URL
+}
+
+export interface SubmitEvaluationResponse {
+  id: number;
+  seminar: Seminar;
+  user: User;
+  content_and_relevance: number;
+  presenters_effectiveness: number;
+  organization_and_structure: number;
+  materials_usefulness: number;
+  overall_satisfaction: number;
+  suggestions?: string;
+  is_completed: boolean;
+  created_at: string;
+  certificate_url: string; // Base64 data URL
 }
 
 export interface EvaluationPayload {
-  seminar: number;
-  content_relevance: number;
-  presenter_effectiveness: number;
-  organization_structure: number;
-  usefulness_materials: number;
+  seminar_id: number;
+  content_and_relevance: number;
+  materials_usefulness: number;
+  organization_and_structure: number;
+  presenters_effectiveness: number;
   overall_satisfaction: number;
   suggestions: string;
 }
 
+export interface SubmitEvaluationResponse {
+  success: string;
+  certificate_url: string;
+}
+
 export interface CertificateTemplate {
   id: number;
-  seminar: number;
-  template: string; // URL
+  seminar: number | { id: number; title: string };
+  template_image_url: string | null;
   text_x: number;
   text_y: number;
   centered: boolean;
+  default_used: boolean;
   uploaded_at: string;
 }
 
 export interface CertificateTemplatePayload {
   seminar: number;
-  template: File;
+  template_image?: File;
   text_x: number;
   text_y: number;
   centered: boolean;
+}
+
+export interface Attendee {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
 }

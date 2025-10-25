@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const BACKEND_BASE_URL = "http://127.0.0.1:8000/api";
@@ -41,5 +40,5 @@ export function useGenerateQrCode() {
     return response.json() as Promise<QrResponse>;
   };
 
-  return useMemo(() => ({ generateQrCodes }), [token]);
+  return generateQrCodes;
 }

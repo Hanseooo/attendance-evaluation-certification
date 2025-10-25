@@ -5,6 +5,7 @@ import UpcomingSeminarCard from '@/components/cards/UpcomingSeminarCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMySeminarList } from '@/stores/SeminarStore';
+import Calendar from '@/components/calendar/Calendar';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ export default function HomePage() {
               <Avatar className="h-16 w-16 md:h-20 md:w-20 ring-2 ring-primary/10">
                 <AvatarImage src={blankPfp} alt={user?.username} />
                 <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
-                  {getInitials(user?.username || 'User')}
+                  {getInitials(user?.username || "User")}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
@@ -61,7 +62,21 @@ export default function HomePage() {
                 Your nearest scheduled seminar
               </p>
             </div>
-            <UpcomingSeminarCard seminar={nextSeminar} />
+
+            {/* Responsive layout: two columns on md and above (left: upcoming card, right: calendar) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+              {/* Upcoming Seminar Card (takes 2 columns on large screens) */}
+              <div className="lg:col-span-2">
+                <UpcomingSeminarCard seminar={nextSeminar} />
+              </div>
+
+              {/* Calendar Section */}
+              <div className="flex justify-center lg:justify-end w-full">
+                <div className="w-full max-w-sm">
+                  <Calendar seminars={seminars?.map((s) => s.seminar) ?? []} />
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* My Seminars Section */}

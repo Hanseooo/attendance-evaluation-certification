@@ -22,7 +22,6 @@ class Seminar(models.Model):
 
     def __str__(self):
         return self.title
-
     
 
 class PlannedSeminar(models.Model):

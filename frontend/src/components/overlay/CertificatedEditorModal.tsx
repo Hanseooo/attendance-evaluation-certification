@@ -140,7 +140,7 @@ export function CertificateEditorModal({
 
         {/* Editor */}
         {src && (
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 ">
             <div className="relative w-full flex justify-center items-center overflow-hidden rounded-xl border bg-muted shadow-sm max-h-[70vh] p-4">
               <img
                 ref={imgRef}
@@ -173,6 +173,20 @@ export function CertificateEditorModal({
                 Position: {pos.x.toFixed(1)}%, {pos.y.toFixed(1)}%
               </div>
               <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant={"secondary"}
+                  onClick={() => setPos({ x: 50, y: pos.y })}
+                >
+                  Center X
+                </Button>
+                <Button
+                  variant={"secondary"}
+                  onClick={() => setPos({ x: pos.x, y: 50 })}
+                >
+                  Center Y
+                </Button>
+              </div>
+              <div className="flex gap-2 flex-wrap ">
                 <Button
                   variant="outline"
                   onClick={() => setSrc(undefined)}

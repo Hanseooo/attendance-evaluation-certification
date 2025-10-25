@@ -15,7 +15,7 @@ class SeminarSerializer(serializers.ModelSerializer):
         fields = [
             "id", "title", "description", "speaker", "venue",
             "date_start", "date_end", "duration_minutes", 
-            "is_done", "certificate_template", "created_at"
+            "is_done", "certificate_template", "created_at", 
         ]
 
 class PlannedSeminarSerializer(serializers.ModelSerializer):

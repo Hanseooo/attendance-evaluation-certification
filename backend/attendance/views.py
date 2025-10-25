@@ -8,14 +8,34 @@ from seminars.models import Seminar
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta
 from PIL import Image, ImageDraw, ImageFont
 from django.conf import settings
 import base64
+from attendance.serializers import AttendanceUserSerializer
 
 
 base_url = settings.BASE_URL
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_present_users(request, seminar_id):
+    """
+    Returns users who are marked as present for a specific seminar.
+    Only includes participants (not admins).
+    """
+    attendances = Attendance.objects.filter(
+        seminar_id=seminar_id,
+        is_present=True,
+        user__role="participant"  # ✅ filters only participants
+    ).select_related("user")
+
+    users = [a.user for a in attendances]
+    serializer = AttendanceUserSerializer(users, many=True)
+    return Response(serializer.data, status=200)
 
 # Helper function to generate QR code image with label
 def generate_image_with_label(qr_img, label_text):

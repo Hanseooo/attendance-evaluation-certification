@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Attendance
 from seminars.serializers import SeminarSerializer
 from users.serializers import UserSerializer
+from users.models import CustomUser
 
 class AttendanceSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -18,3 +19,9 @@ class AttendanceUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ["check_in", "check_out"]
+
+
+class AttendanceUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["id", "username", "first_name", "last_name", "email"]

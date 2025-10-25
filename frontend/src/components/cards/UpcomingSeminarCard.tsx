@@ -19,7 +19,7 @@ export default function UpcomingSeminarCard({
 
   if (!seminar) {
     return (
-      <Card className="border-dashed border-2">
+      <Card className="relative overflow-hidden border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg group h-full">
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <Calendar className="h-8 w-8 text-muted-foreground" />

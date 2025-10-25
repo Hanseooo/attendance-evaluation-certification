@@ -11,14 +11,16 @@ export default function MySeminarsSection() {
   const myAttendingSeminars = useMySeminarList().seminars
   const fetchMySeminars = useFetchMySeminars().fetchMySeminars
   const deleteMySeminar = useDeleteMySeminar().deleteMySeminar
+  const removeSeminar = useMySeminarList().removeSeminar
 
 
   useEffect(() => {
     fetchMySeminars()
   }, [fetchMySeminars])
 
-  const handleCancelAttendance =  (seminarId: number) => {
-    deleteMySeminar(seminarId)
+  const handleCancelAttendance = async (seminarId: number) => {
+    await deleteMySeminar(seminarId)
+    removeSeminar(seminarId)
   };
 
   return (

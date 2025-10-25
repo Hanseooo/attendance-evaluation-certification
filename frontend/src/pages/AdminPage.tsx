@@ -21,8 +21,9 @@ export default function AdminPage() {
   const { user } = useAuth();
 
   // Zustand stores
-  const seminars = useSeminarList((state) => state.seminar);
+  const seminars = useSeminarList((state) => state.seminars);
   const setSeminars = useSeminarList((state) => state.setSeminar);
+  const removeSeminar = useSeminarList().removeSeminar
 
   // Hooks for fetching and posting
   const { fetchSeminars, loading: fetching } = useFetchSeminars();
@@ -66,6 +67,7 @@ export default function AdminPage() {
     setSeminars((seminars || []).filter((s) => s.id !== id));
     setDeleteTarget(null);
     await deleteSeminar(id);
+    removeSeminar(id)
   };
 
   const getInitials = (username: string) =>
@@ -177,7 +179,7 @@ export default function AdminPage() {
 
               await uploadTemplate({
                 seminar: selectedSeminar.id,
-                template: file,
+                template_image: file,
                 text_x: coords.x,
                 text_y: coords.y,
                 centered: coords.centered,

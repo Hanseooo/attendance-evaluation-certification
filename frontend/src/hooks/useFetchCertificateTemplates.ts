@@ -23,8 +23,11 @@ export function useUploadCertificateTemplate() {
   const uploadTemplate = useCallback(async (payload: CertificateTemplatePayload) => {
     const formData = new FormData();
     Object.entries(payload).forEach(([key, value]) => {
-      formData.append(key, value as string | Blob);
+      if (value !== undefined && value !== null) {
+        formData.append(key, value as string | Blob);
+      }
     });
+
 
     const res = await fetch(`${API_URL}/certificate-templates/`, {
       method: "POST",

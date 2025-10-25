@@ -8,7 +8,7 @@ import SeminarListSection from "@/Sections/SeminarListSection";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EventsPage() {
-  const seminars = useSeminarList((state) => state.seminar);
+  const seminars = useSeminarList((state) => state.seminars);
   const mySeminars = useMySeminarList((state) => state.seminars);
   const { fetchSeminars, loading: fetchingSeminars } = useFetchSeminars();
   const { fetchMySeminars, loading: fetchingMySeminars } = useFetchMySeminars();
