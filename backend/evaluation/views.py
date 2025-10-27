@@ -3,13 +3,17 @@ from rest_framework import viewsets, status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 from attendance.models import Attendance
 from .models import Evaluation
 from .serializers import EvaluationSerializer
 from certificates.utils import generate_certificate
 from seminars.serializers import SeminarSerializer
+from seminars.models import Seminar
 from users.serializers import UserSerializer
+from django.db.models import Avg
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):
@@ -48,6 +52,8 @@ class EvaluationViewSet(viewsets.ModelViewSet):
                 return Response(response_data, status=status.HTTP_200_OK)
 
         evaluation = serializer.save(user=user, is_completed=True)
+
+        
 
         # ✅ Generate certificate (returns base64 data URL)
         certificate_url = generate_certificate(attendance)
@@ -113,3 +119,40 @@ class AvailableEvaluationsAPIView(APIView):
                 evaluations_data.append(eval_data)
 
         return Response(evaluations_data, status=status.HTTP_200_OK)
+    
+class SeminarEvaluationAnalyticsAPIView(APIView):
+    """
+    Returns analytics for a seminar — includes:
+    - Raw evaluations (for frontend rendering)
+    - Average ratings per category
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, seminar_id):
+        seminar = get_object_or_404(Seminar, id=seminar_id)
+        evaluations = Evaluation.objects.filter(seminar=seminar, is_completed=True)
+
+        serializer = EvaluationSerializer(evaluations, many=True)
+
+        # Compute category averages
+        averages = evaluations.aggregate(
+            avg_content_and_relevance=Avg("content_and_relevance"),
+            avg_presenters_effectiveness=Avg("presenters_effectiveness"),
+            avg_organization_and_structure=Avg("organization_and_structure"),
+            avg_materials_usefulness=Avg("materials_usefulness"),
+            avg_overall_satisfaction=Avg("overall_satisfaction"),
+        )
+
+        # Clean out any binary/base64 fields if present
+        cleaned_evaluations = []
+        for e in serializer.data:
+            e.pop("certificate_url", None)  # Remove large binary data
+            cleaned_evaluations.append(e)
+
+        return Response({
+            "seminar_id": seminar.id,
+            "seminar_title": seminar.title,
+            "total_responses": evaluations.count(),
+            "averages": averages,
+            "evaluations": cleaned_evaluations,
+        }, status=status.HTTP_200_OK)

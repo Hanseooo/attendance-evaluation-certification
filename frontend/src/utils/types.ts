@@ -110,6 +110,14 @@ export interface SubmitEvaluationResponse {
   certificate_url: string;
 }
 
+export interface EvaluationAnalytics {
+  seminar_id: number;
+  seminar_title: string;
+  total_responses: number;
+  evaluations: Evaluation[];
+}
+
+
 export interface CertificateTemplate {
   id: number;
   seminar: number | { id: number; title: string };

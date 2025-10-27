@@ -51,7 +51,7 @@ export function CertificateModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-[95vw] max-h-[95vh] bg-gradient-to-br from-background to-muted/20 border-2 border-primary/20 shadow-2xl rounded-2xl overflow-hidden p-4 sm:p-6">
+      <DialogContent className="max-w-6xl w-[95vw] max-h-[95vh] border-2 border-primary/20 shadow-2xl rounded-2xl overflow-hidden p-4 sm:p-6">
         {/* Header */}
         <DialogHeader className="relative pb-3 sm:pb-4 border-b border-border/50">
           <div className="flex items-start sm:items-center justify-between gap-3">
@@ -97,7 +97,7 @@ export function CertificateModal({
             )}
 
             {/* Certificate Image */}
-            <div className="bg-gradient-to-br from-muted/5 to-muted/20 rounded-lg sm:rounded-xl p-3 sm:p-6 border border-border/30 sm:border-2 shadow-lg overflow-hidden">
+            <div className="bg-zinc-100 rounded-lg sm:rounded-xl p-3 sm:p-6 border border-border/30 sm:border-2 shadow-lg overflow-hidden">
               <img
                 src={certificateUrl}
                 alt="Certificate of Attendance"

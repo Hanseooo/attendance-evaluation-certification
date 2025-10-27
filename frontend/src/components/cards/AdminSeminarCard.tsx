@@ -14,9 +14,11 @@ import {
   QrCode,
   Trash2,
   Users,
+  BarChart3,
 } from "lucide-react";
 import { type Seminar } from "@/utils/types";
 import { PresentUsersModal } from "@/components/overlay/PresentUsersModal";
+import EvaluationAnalyticsModal from "../overlay/EvaluationAnalyticsModal";
 
 interface AdminSeminarCardProps {
   seminar: Seminar;
@@ -34,15 +36,14 @@ export default function AdminSeminarCard({
   onUploadCert,
 }: AdminSeminarCardProps) {
   const [showPresentUsers, setShowPresentUsers] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   return (
     <>
-      <Card
-        onClick={() => setShowPresentUsers(true)}
-        className="border border-border/50 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-      >
+      <Card className="border border-border/50 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 w-full">
+        {/* Header */}
         <CardHeader className="flex flex-row items-start justify-between pb-2">
-          <CardTitle className="text-base font-semibold leading-tight tracking-tight">
+          <CardTitle className="text-base font-semibold leading-tight tracking-tight max-w-[80%] truncate">
             {seminar.title}
           </CardTitle>
 
@@ -50,96 +51,100 @@ export default function AdminSeminarCard({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="icon"
                 className="text-muted-foreground hover:text-foreground"
-                onClick={(e) => e.stopPropagation()} // ✅ Prevent modal open on trigger
               >
                 <MoreVertical className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-36 bg-background"
-              onClick={(e) => e.stopPropagation()} // ✅ Prevent modal open on menu clicks
-            >
+
+            <DropdownMenuContent align="end" className="w-40 bg-background">
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-                className="flex items-center gap-2 hover:bg-black/5 hover:cursor-pointer"
+                onClick={onEdit}
+                className="gap-2 hover:cursor-pointer hover:bg-secondary"
               >
-                <Pencil className="size-4" />
+                <Pencil className="size-4  " />
                 Edit
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-                className="flex items-center gap-2 hover:bg-black/5 text-destructive focus:text-destructive hover:cursor-pointer"
+                onClick={onDelete}
+                className="gap-2 hover:cursor-pointer hover:bg-secondary text-destructive focus:text-destructive"
               >
                 <Trash2 className="size-4" />
                 Delete
               </DropdownMenuItem>
 
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  showQrModal();
-                }}
-                className="flex items-center gap-2 hover:bg-black/5 hover:cursor-pointer"
-              >
-                <QrCode className="size-4" />
-                Generate
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUploadCert();
-                }}
-                className="flex items-center gap-2 hover:bg-black/5 hover:cursor-pointer"
-              >
-                <Image className="size-4" />
-                Upload
-              </DropdownMenuItem>
+              {/* Only show generate/upload when seminar is not done */}
+              {!seminar.is_done && (
+                <>
+                  <DropdownMenuItem
+                    onClick={showQrModal}
+                    className="gap-2 hover:cursor-pointer hover:bg-secondary"
+                  >
+                    <QrCode className="size-4 " />
+                    Generate QR
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={onUploadCert}
+                    className="gap-2 hover:cursor-pointer hover:bg-secondary"
+                  >
+                    <Image className="size-4 " />
+                    Upload Cert
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
 
-        <CardContent className="space-y-2 text-sm">
+        {/* Content */}
+        <CardContent className="space-y-3 text-sm">
           <p className="text-muted-foreground line-clamp-2">
             {seminar.description}
           </p>
-          <div className="pt-2 text-xs text-muted-foreground">
+
+          <div className="text-xs text-muted-foreground space-y-0.5">
             <p>{new Date(seminar.date_start).toLocaleDateString()}</p>
-            <p>Duration: {seminar.duration_minutes} mins</p>
-            <p>{seminar.venue}</p>
+            <p>Speaker: {seminar.speaker}</p>
+            <p>Duration: {seminar.duration_minutes ?? "—"} mins</p>
+            <p>{seminar.venue ?? "—"}</p>
           </div>
-          <div className="flex items-center justify-end pt-2">
+
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 justify-end pt-3">
             <Button
               variant="outline"
               size="sm"
-              className="gap-1"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPresentUsers(true);
-              }}
+              className="gap-1 flex-1 sm:flex-none"
+              onClick={() => setShowPresentUsers(true)}
             >
-              <Users className="h-4 w-4" /> View Attendees
+              <Users className="h-4 w-4" /> Attendees
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-1 flex-1 sm:flex-none"
+              onClick={() => setShowAnalytics(true)}
+            >
+              <BarChart3 className="h-4 w-4" /> Analytics
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Modal */}
+      {/* Modals */}
       <PresentUsersModal
         isOpen={showPresentUsers}
         onClose={() => setShowPresentUsers(false)}
         seminarId={seminar.id}
         seminarTitle={seminar.title}
+      />
+
+      <EvaluationAnalyticsModal
+        isOpen={showAnalytics}
+        onClose={() => setShowAnalytics(false)}
+        seminarId={seminar.id}
       />
     </>
   );

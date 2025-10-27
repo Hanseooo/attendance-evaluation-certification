@@ -1,205 +1,135 @@
 /* index.css — imported in main.tsx */
 
-/* Import Tailwind v4 core */
+/* Tailwind v4 core */
 @import "tailwindcss";
-
-/* Import animation plugin if you use tw-animate-css */
 @import "tw-animate-css";
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* Google Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
+/* -------------------------------------------------------
+   🌈 THEME VARIABLES — Shadcn Blue + Gradient
+------------------------------------------------------- */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-/* Your global styles */
-@layer theme, base, components, utilities;
-
-
-/* Theme variables */
+/* ✅ Tailwind v4 Theme Layer */
 @theme inline {
-  --color-background: #ffffff;
-  --color-foreground: #1a1a1a;
-  --color-card: #f9f9f9;
-  --color-card-foreground: #1a1a1a;
-  --color-primary: #111111;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f5f5f5;
-  --color-secondary-foreground: #1a1a1a;
-  --color-muted: #f0f0f0;
-  --color-muted-foreground: #666666;
-  --color-border: #e5e5e5;
-  --color-input: #e5e5e5;
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.141 0.005 285.823);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.141 0.005 285.823);
+  --color-primary: oklch(0.488 0.243 264.376);
+  --color-primary-foreground: oklch(0.97 0.014 254.604);
+  --color-secondary: oklch(0.967 0.001 286.375);
+  --color-secondary-foreground: oklch(0.21 0.006 285.885);
+  --color-muted: oklch(0.967 0.001 286.375);
+  --color-muted-foreground: oklch(0.552 0.016 285.938);
+  --color-border: oklch(0.92 0.004 286.32);
+  --color-input: oklch(0.92 0.004 286.32);
 
+  /* Gradient tokens */
+  --gradient-start: oklch(0.546 0.245 262.881);
+  --gradient-end: oklch(0.488 0.243 264.376);
 }
 
-  .dark {
-    --color-background: #0a0a0a;
-    --color-foreground: #fafafa;
-    --color-card: #1a1a1a;
-    --color-card-foreground: #fafafa;
-    --color-primary: #fafafa;
-    --color-primary-foreground: #0a0a0a;
-    --color-secondary: #1a1a1a;
-    --color-secondary-foreground: #fafafa;
-    --color-muted: #262626;
-    --color-muted-foreground: #a3a3a3;
-    --color-border: #262626;
-    --color-input: #262626;
-  }
-
+/* Dark mode override */
+.dark {
+  --color-background: oklch(0.141 0.005 285.823);
+  --color-foreground: oklch(0.985 0 0);
+  --color-border: oklch(1 0 0 / 10%);
+}
 
 /* Base styles */
 @layer base {
   * {
-    @apply border-border;
-    @apply m-0;
-    @apply p-0;
-    box-sizing: border-box;
+    @apply border-border box-border;
+    font-family: "Poppins", sans-serif;
   }
   body {
     @apply bg-background text-foreground;
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
   }
 }
 
 
-/* Components */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  a {
+    @apply text-primary hover:underline;
+  }
+
+
+/* -------------------------------------------------------
+   🧩 COMPONENT STYLES — Shadcn-inspired
+------------------------------------------------------- */
 @layer components {
+  /* Card */
   .card {
-    @apply bg-card text-card-foreground border rounded-lg p-4 shadow-sm;
+    @apply bg-card text-card-foreground border border-border rounded-xl p-5 shadow-sm;
   }
+
+  /* Buttons */
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-colors;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-all active:scale-[0.98];
   }
+
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    color: var(--primary-foreground);
   }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
   }
+
+  .btn-outline {
+    @apply border border-input hover:bg-muted hover:text-foreground;
+  }
+
+  /* Inputs */
   .input {
-    @apply bg-input text-foreground border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+    @apply bg-input text-foreground border border-input rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-accent text-accent-foreground;
+  }
+
+  /* Container */
+  .container {
+    @apply mx-auto max-w-6xl px-4;
+  }
+
+  /* Gradient text (for app name, hero titles, etc.) */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
-/* 🌈 Custom scrollbar */
+/* -------------------------------------------------------
+   🎨 SCROLLBAR
+------------------------------------------------------- */
 .scrollbar-thin {
   scrollbar-width: thin;
 }
-.scrollbar-thumb-primary\/40::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--primary), 0.4);
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
 }
-.scrollbar-track-transparent::-webkit-scrollbar-track {
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--gradient-start), var(--gradient-end));
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }
-
-
-.poppins-thin {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: normal;
-}
-
-.poppins-extralight {
-  font-family: "Poppins", sans-serif;
-  font-weight: 200;
-  font-style: normal;
-}
-
-.poppins-light {
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.poppins-regular {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.poppins-medium {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-}
-
-.poppins-semibold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-style: normal;
-}
-
-.poppins-bold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.poppins-extrabold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-style: normal;
-}
-
-.poppins-black {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-style: normal;
-}
-
-.poppins-thin-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.poppins-extralight-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 200;
-  font-style: italic;
-}
-
-.poppins-light-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.poppins-regular-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.poppins-medium-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.poppins-semibold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.poppins-bold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.poppins-extrabold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.poppins-black-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-style: italic;
-}
-
-

@@ -4,6 +4,7 @@ import {
   type EvaluationPayload,
   type SubmitEvaluationResponse,
 } from "@/utils/types";
+import { type EvaluationAnalytics } from "@/utils/types";
 
 const BASE_URL = "http://127.0.0.1:8000/api";
 
@@ -20,6 +21,9 @@ interface UseEvaluationApi {
   submitEvaluationWithCertificate: (
     payload: EvaluationPayload
   ) => Promise<SubmitEvaluationResponse>;
+  getSeminarAnalytics: (
+    seminarId: number
+  ) => Promise<ApiResponse<EvaluationAnalytics>>;
 }
 
 export function useEvaluationApi(): UseEvaluationApi {
@@ -68,7 +72,6 @@ export function useEvaluationApi(): UseEvaluationApi {
     return { status: res.status, data };
   };
 
-
   const submitEvaluationWithCertificate = async (
     payload: EvaluationPayload
   ): Promise<SubmitEvaluationResponse> => {
@@ -88,9 +91,25 @@ export function useEvaluationApi(): UseEvaluationApi {
     return data as SubmitEvaluationResponse;
   };
 
+  
+  const getSeminarAnalytics = async (
+    seminarId: number
+  ): Promise<ApiResponse<EvaluationAnalytics>> => {
+    if (!token) throw new Error("Missing authentication token");
+    const res = await fetch(
+      `${BASE_URL}/evaluations/seminar/${seminarId}/analytics/`,
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    );
+    const data = await res.json();
+    return { status: res.status, data };
+  };
+
   return {
     getAvailableEvaluations,
     submitEvaluation,
     submitEvaluationWithCertificate,
+    getSeminarAnalytics,
   };
 }

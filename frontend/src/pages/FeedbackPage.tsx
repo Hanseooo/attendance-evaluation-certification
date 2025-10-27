@@ -1,6 +1,9 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useEvaluationApi } from "@/hooks/useEvaluationApi";
 import EvaluationCard from "@/components/cards/EvaluationCard";
 import {
@@ -10,38 +13,68 @@ import {
 } from "@/utils/types";
 import { EvaluationModal } from "@/components/overlay/EvaluationModal";
 import { CertificateModal } from "@/components/overlay/CertificateModal";
+import { toast } from "sonner";
+// import { useDeleteMySeminar } from "@/hooks/useMySeminar";
 
 export default function FeedbackPage() {
   const { getAvailableEvaluations, submitEvaluationWithCertificate } =
     useEvaluationApi();
+
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
+  // const deleteMySeminar = useDeleteMySeminar().deleteMySeminar
+
+  // local loading states
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchEvaluations = async () => {
-    const { data } = await getAvailableEvaluations();
-    setEvaluations(data);
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await getAvailableEvaluations();
+      setEvaluations(data);
+    } catch (err) {
+      console.error("Failed to fetch evaluations", err);
+      setError("Unable to load your evaluations. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-
   const handleSubmit = async (payload: EvaluationPayload) => {
-    const response = await submitEvaluationWithCertificate(payload);
+    try {
+      const response = await submitEvaluationWithCertificate(payload);
 
-    if (response?.certificate_url) {
-      setCertificateUrl(response.certificate_url);
-      setShowCertificateModal(true);
+      // Remove evaluated seminar from list
+      setEvaluations((prev) =>
+        prev.filter((ev) => ev.seminar.id !== payload.seminar_id)
+      );
+
+      if (response?.certificate_url) {
+        setCertificateUrl(response.certificate_url);
+        setShowCertificateModal(true);
+      }
+
+      toast.success("Evaluation submitted successfully!");
+      // await deleteMySeminar(payload.seminar_id);
+
+      setShowModal(false);
+    } catch (err) {
+      console.error("Submission failed", err);
+      toast.error("Failed to submit evaluation. Please try again.");
     }
-
-    await fetchEvaluations();
-    setShowModal(false);
   };
 
   useEffect(() => {
     fetchEvaluations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // ✅ run only once on mount
+  }, []);
+
+  // skeleton placeholders count
+  const skeletonCount = 6;
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,13 +96,40 @@ export default function FeedbackPage() {
           </CardContent>
         </Card>
 
+        {/* Inline error display */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-md p-4 mb-6 text-destructive text-sm flex items-center justify-between">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={fetchEvaluations}>
+              Retry
+            </Button>
+          </div>
+        )}
+
         {/* Evaluation Cards Section */}
         <div>
-          {evaluations.length > 0 ? (
+          {loading ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: skeletonCount }).map((_, i) => (
+                <div
+                  key={i}
+                  className="p-4 border border-border/40 rounded-lg animate-pulse bg-muted/10"
+                >
+                  <div className="h-5 bg-muted/30 rounded w-2/3 mb-3" />
+                  <div className="h-3 bg-muted/20 rounded w-full mb-2" />
+                  <div className="h-3 bg-muted/20 rounded w-5/6 mb-4" />
+                  <div className="flex gap-2">
+                    <div className="flex-1 h-8 bg-muted/20 rounded" />
+                    <div className="w-24 h-8 bg-muted/20 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : evaluations.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {evaluations.map((evalItem) => (
                 <EvaluationCard
-                  key={evalItem.id}
+                  key={evalItem.id ?? `${evalItem.seminar.id}`}
                   seminar={evalItem.seminar}
                   onOpen={() => {
                     setSelectedSeminar(evalItem.seminar);
@@ -94,7 +154,10 @@ export default function FeedbackPage() {
         <EvaluationModal
           seminar={selectedSeminar}
           isOpen={showModal}
-          onClose={() => setShowModal(false)}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedSeminar(null);
+          }}
           onSubmit={handleSubmit}
         />
       )}
@@ -102,7 +165,10 @@ export default function FeedbackPage() {
       {showCertificateModal && certificateUrl && selectedSeminar && (
         <CertificateModal
           isOpen={showCertificateModal}
-          onClose={() => setShowCertificateModal(false)}
+          onClose={() => {
+            setShowCertificateModal(false);
+            setSelectedSeminar(null)
+          }}
           certificateUrl={certificateUrl}
           seminarTitle={selectedSeminar.title}
         />
