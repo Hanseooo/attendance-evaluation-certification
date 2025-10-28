@@ -31,8 +31,7 @@ export default function RatingsSummary({ averages }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Overall average card */}
-      <Card className="shadow-sm border border-border/60">
+      <Card className="shadow-sm border border-border/60 bg-card text-card-foreground">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold">
             Overall Average
@@ -51,7 +50,7 @@ export default function RatingsSummary({ averages }: Props) {
         </CardContent>
       </Card>
 
-      {/* Individual categories */}
+      {/* Individual Categories */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {rows.map((r) => (
           <div

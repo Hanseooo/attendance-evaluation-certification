@@ -15,6 +15,7 @@ interface CertificateModalProps {
   onClose: () => void;
   certificateUrl: string;
   seminarTitle: string;
+  seminarId: number;
 }
 
 export function CertificateModal({
@@ -29,6 +30,8 @@ export function CertificateModal({
   const fullName = user
     ? `${user.first_name} ${user.last_name}`
     : "Participant";
+
+
 
   const handleDownload = async () => {
     try {
@@ -48,6 +51,7 @@ export function CertificateModal({
       setDownloading(false);
     }
   };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

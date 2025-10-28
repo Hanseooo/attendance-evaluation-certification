@@ -83,7 +83,7 @@ export default function AttendancePage() {
           <CheckCircle className="w-12 h-12 text-green-500" />
         )}
         {!loading && success === false && (
-          <CheckCircle className="w-12 h-12 text-destructive" />
+          <CheckCircle className="w-12 h-12 text-primary" />
         )}
 
         <h2
@@ -91,7 +91,7 @@ export default function AttendancePage() {
             success === true
               ? "text-green-600"
               : success === false
-                ? "text-destructive"
+                ? "text-primary"
                 : "text-foreground"
           }`}
         >

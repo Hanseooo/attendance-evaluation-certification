@@ -20,7 +20,18 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { EvaluationAnalytics, Evaluation } from "@/utils/types";
 
-const COLORS = ["#0f172a", "#334155", "#475569", "#64748b", "#94a3b8"];
+const COLORS = [
+  "#c2beff", // Light violet — high contrast on dark, soft on light
+  "#8a84ff", // Mid violet — versatile and vibrant
+  "#6a64ff", // Strong violet — anchors mid-range bars
+  "#524bff", // Deep violet — readable on light mode
+  "#3a32ff", // Bold indigo — excellent for dark mode contrast
+];
+
+
+
+
+
 
 interface Props {
   chartType: "bar" | "pie" | "radar";
@@ -111,7 +122,7 @@ export default function ChartSwitcher({
               dataKey="name"
               tick={{
                 fontSize: isMobile ? 10 : 12,
-                fill: "hsl(var(--foreground))",
+                fill: "#6a64ff",
                 // whiteSpace: "nowrap",
               }}
               interval={0}
@@ -123,7 +134,7 @@ export default function ChartSwitcher({
               allowDecimals={false}
               tick={{
                 fontSize: isMobile ? 10 : 12,
-                fill: "hsl(var(--foreground))",
+                fill: "#6a64ff",
               }}
             />
             <Tooltip
@@ -195,20 +206,20 @@ export default function ChartSwitcher({
               dataKey="name"
               tick={{
                 fontSize: isMobile ? 10 : 12,
-                fill: "hsl(var(--foreground))",
+                fill: "#6a64ff",
               }}
             />
             <PolarRadiusAxis
               tick={{
                 fontSize: isMobile ? 9 : 11,
-                fill: "hsl(var(--foreground))",
+                fill: "#6a64ff",
               }}
             />
             <Radar
               name="Average"
               dataKey="value"
               stroke="#0f172a"
-              fill="#0f172a"
+              fill="#c2beff"
               fillOpacity={0.5}
             />
             <Tooltip

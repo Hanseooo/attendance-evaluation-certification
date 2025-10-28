@@ -14,7 +14,6 @@ import {
 import { EvaluationModal } from "@/components/overlay/EvaluationModal";
 import { CertificateModal } from "@/components/overlay/CertificateModal";
 import { toast } from "sonner";
-// import { useDeleteMySeminar } from "@/hooks/useMySeminar";
 
 export default function FeedbackPage() {
   const { getAvailableEvaluations, submitEvaluationWithCertificate } =
@@ -25,7 +24,6 @@ export default function FeedbackPage() {
   const [showModal, setShowModal] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState<string | null>(null);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
-  // const deleteMySeminar = useDeleteMySeminar().deleteMySeminar
 
   // local loading states
   const [loading, setLoading] = useState(false);
@@ -45,29 +43,29 @@ export default function FeedbackPage() {
     }
   };
 
-  const handleSubmit = async (payload: EvaluationPayload) => {
-    try {
-      const response = await submitEvaluationWithCertificate(payload);
+const handleSubmit = async (payload: EvaluationPayload) => {
+  try {
+    const response = await submitEvaluationWithCertificate(payload);
 
-      // Remove evaluated seminar from list
-      setEvaluations((prev) =>
-        prev.filter((ev) => ev.seminar.id !== payload.seminar_id)
-      );
+    setEvaluations((prev) =>
+      prev.filter((ev) => ev.seminar.id !== payload.seminar_id)
+    );
 
-      if (response?.certificate_url) {
-        setCertificateUrl(response.certificate_url);
-        setShowCertificateModal(true);
-      }
-
-      toast.success("Evaluation submitted successfully!");
-      // await deleteMySeminar(payload.seminar_id);
-
+    if (response?.certificate_url) {
+      setCertificateUrl(response.certificate_url);
+      setShowCertificateModal(true);
+    } else {
       setShowModal(false);
-    } catch (err) {
-      console.error("Submission failed", err);
-      toast.error("Failed to submit evaluation. Please try again.");
+      setSelectedSeminar(null);
     }
-  };
+
+    toast.success("Evaluation submitted successfully!");
+  } catch (err) {
+    console.error("Submission failed", err);
+    toast.error("Failed to submit evaluation. Please try again.");
+  }
+};
+
 
   useEffect(() => {
     fetchEvaluations();
@@ -162,15 +160,16 @@ export default function FeedbackPage() {
         />
       )}
 
-      {showCertificateModal && certificateUrl && selectedSeminar && (
+      {showCertificateModal && certificateUrl && (
         <CertificateModal
           isOpen={showCertificateModal}
           onClose={() => {
             setShowCertificateModal(false);
-            setSelectedSeminar(null)
+            setCertificateUrl(null);
           }}
           certificateUrl={certificateUrl}
-          seminarTitle={selectedSeminar.title}
+          seminarTitle={selectedSeminar?.title ?? "Seminar Certificate"}
+          seminarId={selectedSeminar?.id ?? 0}
         />
       )}
     </div>

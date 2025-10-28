@@ -6,11 +6,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMySeminarList } from '@/stores/SeminarStore';
 import Calendar from '@/components/calendar/Calendar';
+import { useState } from 'react';
+import SettingsModal from '@/components/overlay/SettingsModal';
+import { Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
   const { user } = useAuth();
 
   const { seminars } = useMySeminarList()
+
+  const [openSettings, setOpenSettings] = useState(false);
 
   const nextSeminar = seminars ? [...seminars].filter(s => new Date(s.seminar.date_start) > new Date()).sort((a, b) =>
     new Date(a.seminar.date_start).getTime() - new Date(b.seminar.date_start).getTime())[0] : null
@@ -29,23 +35,38 @@ export default function HomePage() {
     <div className="min-h-screen  bg-background min-w-[350px]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl">
         {/* Header Section */}
-        <Card className="mb-8 border-0 shadow-sm bg-gradient-to-br from-primary/5 via-background to-background">
+        <Card className="mb-8 border-0 shadow-sm bg-gradient-to-br from-primary/10 via-background to-foreground/5">
           <CardContent className="p-6 md:p-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 md:h-20 md:w-20 ring-2 ring-primary/10">
-                <AvatarImage src={blankPfp} alt={user?.username} />
-                <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
-                  {getInitials(user?.username || "User")}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">
-                  Welcome back, {user?.username}!
-                </h1>
-                <p className="text-sm md:text-base text-muted-foreground mt-1">
-                  Here's what's coming up for you
-                </p>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16 md:h-20 md:w-20 ring-2 ring-primary/10">
+                  <AvatarImage src={blankPfp} alt={user?.username} />
+                  <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+                    {getInitials(user?.username || "User")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">
+                    Welcome back, {user?.username}!
+                  </h1>
+                  <p className="text-sm md:text-base text-muted-foreground mt-1">
+                    Here's what's coming up for you
+                  </p>
+                </div>
               </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-foreground hover:text-primary transition"
+                onClick={() => setOpenSettings(true)}
+              >
+                <Settings className="h-6 w-6" />
+              </Button>
+              <SettingsModal
+                open={openSettings}
+                onOpenChange={setOpenSettings}
+              />
             </div>
           </CardContent>
         </Card>

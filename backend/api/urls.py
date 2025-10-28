@@ -18,4 +18,5 @@ urlpatterns = [
     path('download-qr/<int:seminar_id>/<str:action>/', download_qr_code, name='download_qr_code'),
     path("evaluations/", include("evaluation.urls")),
     path("certificates/", include("certificates.urls")),
+    path('', include('certificates.urls')),
 ] 

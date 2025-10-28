@@ -99,8 +99,7 @@ export default function SuggestionsListDrawer({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] sm:max-w-2xl rounded-2xl bg-background p-4 sm:p-6 max-h-[75vh] flex flex-col">
-        {/* Header */}
+      <DialogContent className="w-[95vw] sm:max-w-2xl rounded-2xl bg-card text-card-foreground p-4 sm:p-6 max-h-[75vh] flex flex-col border border-border/70">
         <DialogHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -133,7 +132,7 @@ export default function SuggestionsListDrawer({
           </div>
         </DialogHeader>
 
-        <Separator className="my-3" />
+        <Separator className="my-3 bg-border/50" />
 
         {/* Search */}
         <div className="relative mb-3">
@@ -147,7 +146,7 @@ export default function SuggestionsListDrawer({
               setCurrentPage(1);
               setVisibleCount(10);
             }}
-            className="w-full rounded-md border bg-background pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -161,7 +160,7 @@ export default function SuggestionsListDrawer({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
               >
-                <Card className="p-4 hover:shadow-sm transition-all">
+                <Card className="p-4 hover:shadow-sm transition-all bg-muted/30 border border-border/60">
                   <div className="flex items-start gap-3">
                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 text-primary shrink-0">
                       <User className="h-5 w-5" />
@@ -206,7 +205,6 @@ export default function SuggestionsListDrawer({
               </div>
             )}
 
-            {/* Infinite Scroll Trigger */}
             {pageData.length < currentPageData.length && (
               <div
                 ref={observerRef}

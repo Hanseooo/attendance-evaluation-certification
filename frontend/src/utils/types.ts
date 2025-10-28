@@ -118,23 +118,61 @@ export interface EvaluationAnalytics {
 }
 
 
+// src/utils/types.ts (additions)
+
+export interface FontOption {
+  value: string;
+  label: string;
+}
+
 export interface CertificateTemplate {
-  id: number;
-  seminar: number | { id: number; title: string };
+  id?: number;
+  seminar_id: number;
+  seminar_title?: string;
+  template_image?: File | null;
   template_image_url: string | null;
-  text_x: number;
-  text_y: number;
-  centered: boolean;
-  default_used: boolean;
-  uploaded_at: string;
+  template_width: number;
+  template_height: number;
+  
+  // Name placeholder (percentages)
+  name_x_percent: number;
+  name_y_percent: number;
+  name_font_size: number;
+  name_font: string;
+  name_color: string;
+  
+  // Title placeholder (percentages)
+  title_x_percent: number;
+  title_y_percent: number;
+  title_font_size: number;
+  title_font: string;
+  title_color: string;
+  
+  // Metadata
+  default_used?: boolean;
+  uploaded_at?: string;
+  available_fonts?: FontOption[];
 }
 
 export interface CertificateTemplatePayload {
-  seminar: number;
+  seminar_id: number;
   template_image?: File;
-  text_x: number;
-  text_y: number;
-  centered: boolean;
+  template_width?: number;
+  template_height?: number;
+  
+  // Name settings (percentages)
+  name_x_percent: number;
+  name_y_percent: number;
+  name_font_size: number;
+  name_font: string;
+  name_color: string;
+  
+  // Title settings (percentages)
+  title_x_percent: number;
+  title_y_percent: number;
+  title_font_size: number;
+  title_font: string;
+  title_color: string;
 }
 
 export interface Attendee {

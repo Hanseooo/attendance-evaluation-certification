@@ -3,55 +3,119 @@
 /* Tailwind v4 core */
 @import "tailwindcss";
 @import "tw-animate-css";
-
-/* Google Font */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+@custom-variant dark (&where:(.dark, .dark *));
+
+
 
 /* -------------------------------------------------------
-   🌈 THEME VARIABLES — Shadcn Blue + Gradient
+   🌈 THEME VARIABLES — Shadcn-inspired Blue + Gradient
 ------------------------------------------------------- */
-@import "tailwindcss";
-@import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@theme {
+  --radius: 0.65rem;
 
-/* ✅ Tailwind v4 Theme Layer */
-@theme inline {
+  /* Base colors (light mode) */
   --color-background: oklch(1 0 0);
   --color-foreground: oklch(0.141 0.005 285.823);
+
   --color-card: oklch(1 0 0);
   --color-card-foreground: oklch(0.141 0.005 285.823);
+
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.141 0.005 285.823);
+
   --color-primary: oklch(0.488 0.243 264.376);
   --color-primary-foreground: oklch(0.97 0.014 254.604);
+
   --color-secondary: oklch(0.967 0.001 286.375);
   --color-secondary-foreground: oklch(0.21 0.006 285.885);
+
   --color-muted: oklch(0.967 0.001 286.375);
   --color-muted-foreground: oklch(0.552 0.016 285.938);
+
+  --color-accent: oklch(0.967 0.001 286.375);
+  --color-accent-foreground: oklch(0.21 0.006 285.885);
+
+  --color-destructive: oklch(0.577 0.245 27.325);
   --color-border: oklch(0.92 0.004 286.32);
   --color-input: oklch(0.92 0.004 286.32);
+  --color-ring: oklch(0.708 0 0);
+
+  /* Sidebar & charts */
+  --color-sidebar: oklch(0.985 0 0);
+  --color-sidebar-foreground: oklch(0.141 0.005 285.823);
+  --color-sidebar-primary: oklch(0.546 0.245 262.881);
+  --color-sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --color-sidebar-accent: oklch(0.967 0.001 286.375);
+  --color-sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --color-sidebar-border: oklch(0.92 0.004 286.32);
+  --color-sidebar-ring: oklch(0.708 0 0);
+
+  /* Chart colors */
+  --color-chart-1: oklch(0.809 0.105 251.813);
+  --color-chart-2: oklch(0.623 0.214 259.815);
+  --color-chart-3: oklch(0.546 0.245 262.881);
+  --color-chart-4: oklch(0.488 0.243 264.376);
+  --color-chart-5: oklch(0.424 0.199 265.638);
 
   /* Gradient tokens */
   --gradient-start: oklch(0.546 0.245 262.881);
   --gradient-end: oklch(0.488 0.243 264.376);
 }
 
-/* Dark mode override */
+/* -------------------------------------------------------
+   🌙 DARK MODE OVERRIDES
+------------------------------------------------------- */
 .dark {
   --color-background: oklch(0.141 0.005 285.823);
   --color-foreground: oklch(0.985 0 0);
+
+  --color-card: oklch(0.21 0.006 285.885);
+  --color-card-foreground: oklch(0.985 0 0);
+
+  --color-popover: oklch(0.21 0.006 285.885);
+  --color-popover-foreground: oklch(0.985 0 0);
+
+  --color-primary: oklch(0.488 0.243 264.376);
+  --color-primary-foreground: oklch(0.97 0.014 254.604);
+
+  --color-secondary: oklch(0.274 0.006 286.033);
+  --color-secondary-foreground: oklch(0.985 0 0);
+
+  --color-muted: oklch(0.274 0.006 286.033);
+  --color-muted-foreground: oklch(0.705 0.015 286.067);
+
+  --color-accent: oklch(0.274 0.006 286.033);
+  --color-accent-foreground: oklch(0.985 0 0);
+
+  --color-destructive: oklch(0.704 0.191 22.216);
   --color-border: oklch(1 0 0 / 10%);
+  --color-input: oklch(1 0 0 / 15%);
+  --color-ring: oklch(0.556 0 0);
+
+  --color-sidebar: oklch(0.21 0.006 285.885);
+  --color-sidebar-foreground: oklch(0.985 0 0);
+  --color-sidebar-primary: oklch(0.623 0.214 259.815);
+  --color-sidebar-primary-foreground: oklch(0.97 0.014 254.604);
+  --color-sidebar-accent: oklch(0.274 0.006 286.033);
+  --color-sidebar-accent-foreground: oklch(0.985 0 0);
+  --color-sidebar-border: oklch(1 0 0 / 10%);
+  --color-sidebar-ring: oklch(0.439 0 0);
 }
 
-/* Base styles */
+/* -------------------------------------------------------
+   🧱 BASE STYLES
+------------------------------------------------------- */
 @layer base {
   * {
     @apply border-border box-border;
     font-family: "Poppins", sans-serif;
   }
+
   body {
     @apply bg-background text-foreground;
   }
-}
-
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
@@ -60,25 +124,23 @@
   a {
     @apply text-primary hover:underline;
   }
-
+}
 
 /* -------------------------------------------------------
    🧩 COMPONENT STYLES — Shadcn-inspired
 ------------------------------------------------------- */
 @layer components {
-  /* Card */
   .card {
     @apply bg-card text-card-foreground border border-border rounded-xl p-5 shadow-sm;
   }
 
-  /* Buttons */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-all active:scale-[0.98];
   }
 
   .btn-primary {
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    color: var(--primary-foreground);
+    color: var(--color-primary-foreground);
   }
 
   .btn-primary:hover {
@@ -93,22 +155,18 @@
     @apply border border-input hover:bg-muted hover:text-foreground;
   }
 
-  /* Inputs */
   .input {
     @apply bg-input text-foreground border border-input rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary;
   }
 
-  /* Badge */
   .badge {
     @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-accent text-accent-foreground;
   }
 
-  /* Container */
   .container {
     @apply mx-auto max-w-6xl px-4;
   }
 
-  /* Gradient text (for app name, hero titles, etc.) */
   .text-gradient {
     background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
     -webkit-background-clip: text;
@@ -123,13 +181,16 @@
 .scrollbar-thin {
   scrollbar-width: thin;
 }
+
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: linear-gradient(var(--gradient-start), var(--gradient-end));
   border-radius: 9999px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }

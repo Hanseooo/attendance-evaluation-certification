@@ -59,16 +59,19 @@ export default function Calendar({ seminars }: CalendarProps) {
   };
 
   return (
-    <Card className="h-full bg-zinc-50 shadow-sm border border-border/85">
-      <div className="p-4 flex justify-between items-center">
+    <Card className="h-full bg-card shadow-sm border border-border/85">
+      {/* Header */}
+      <div className="p-4 flex justify-between items-center border-b border-border/50 bg-muted/20">
         <Button variant="ghost" size="icon" onClick={handlePrevMonth}>
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 text-foreground/80" />
         </Button>
-        <h2 className="text-lg font-semibold">
+
+        <h2 className="text-lg font-semibold text-foreground">
           {format(currentMonth, "MMMM yyyy")}
         </h2>
+
         <Button variant="ghost" size="icon" onClick={handleNextMonth}>
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 text-foreground/80" />
         </Button>
       </div>
 
@@ -106,14 +109,14 @@ export default function Calendar({ seminars }: CalendarProps) {
                   "aspect-square flex items-center justify-center rounded-md text-center transition-all relative select-none",
                   !isCurrentMonth && "text-muted-foreground/40",
                   hasSeminar
-                    ? "bg-black text-white cursor-pointer hover:bg-black/85"
+                    ? "bg-primary text-primary-foreground cursor-pointer hover:brightness-110"
                     : "text-foreground/80 cursor-default",
                   !hasSeminar && "hover:bg-transparent"
                 )}
               >
                 {format(day, "d")}
                 {isToday && (
-                  <div className="absolute inset-0 rounded-md ring-1 ring-primary/30 pointer-events-none bg-zinc-400/10" />
+                  <div className="absolute inset-0 rounded-md ring-1 ring-primary/30 pointer-events-none bg-primary/5" />
                 )}
               </motion.div>
             );
@@ -121,11 +124,11 @@ export default function Calendar({ seminars }: CalendarProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Drawer for seminars (original smooth version) */}
+      {/* Drawer for seminars */}
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="bg-zinc-100 border-t mx-auto border-border p-4 sm:max-w-[95vw] rounded-t-3xl">
-          <DrawerHeader className="flex justify-between items-center">
-            <DrawerTitle>
+        <DrawerContent className="bg-background border-t mx-auto border-border p-4 sm:max-w-[95vw] rounded-t-3xl shadow-lg">
+          <DrawerHeader className="flex justify-between items-center border-b border-border/40 pb-2">
+            <DrawerTitle className="text-foreground">
               {selectedDay ? format(selectedDay, "MMMM d, yyyy") : ""}
             </DrawerTitle>
           </DrawerHeader>
@@ -135,9 +138,11 @@ export default function Calendar({ seminars }: CalendarProps) {
               getSeminarsForDay(selectedDay).map((seminar) => (
                 <Card
                   key={seminar.id}
-                  className="p-3 bg-zinc-200/50 hover:bg-muted/80 transition-all"
+                  className="p-3 bg-muted hover:bg-muted/80 border border-border/60 transition-all"
                 >
-                  <p className="text-sm font-medium">{seminar.title}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {seminar.title}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {format(new Date(seminar.date_start), "h:mm a")} –{" "}
                     {format(new Date(seminar.date_end!), "h:mm a")}
