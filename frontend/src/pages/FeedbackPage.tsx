@@ -75,7 +75,7 @@ const handleSubmit = async (payload: EvaluationPayload) => {
   const skeletonCount = 6;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background via-foreground/5 to-primary/5">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl">
         {/* Header Section */}
         <Card className="mb-8 border-0 shadow-sm bg-gradient-to-br from-primary/5 via-background to-background">

@@ -29,7 +29,7 @@ export default function EventsPage() {
   const loading = fetchingSeminars || fetchingMySeminars;
 
   return (
-    <div className="container p-4 sm:p-8 mx-auto space-y-6">
+    <div className="container bg-background via-foreground/5 to-primary/5 p-4 sm:p-8 mx-auto space-y-6">
       {loading ? (
         <div className="space-y-10 animate-pulse">
           <div className="space-y-4">
