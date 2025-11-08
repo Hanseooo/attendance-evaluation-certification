@@ -71,10 +71,10 @@ export default function AdminPage() {
   const { saveTemplate } = useSaveCertificateTemplate();
 
   // --- UI state for All Seminars & Upcoming ---
-  const [tab, setTab] = useState<"upcoming" | "all">("upcoming");
+  const [tab, setTab] = useState<"upcoming" | "all">("all");
   const [query, setQuery] = useState("");
   const [filterDone, setFilterDone] = useState<"all" | "done" | "not_done">(
-    "not_done"
+    "all"
   );
   const [sortField, setSortField] = useState<
     "date_start" | "created_at" | "duration"

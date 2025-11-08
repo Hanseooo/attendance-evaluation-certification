@@ -32,7 +32,7 @@ class SeminarListCreateAPIView(APIView):
         if request.user.role == 'admin':
             seminars = Seminar.objects.all()
         else:
-            seminars = Seminar.objects.filter(is_done=True)
+            seminars = Seminar.objects.filter(is_done=False)
 
         serializer = SeminarSerializer(seminars, many=True)
         return Response(serializer.data)
