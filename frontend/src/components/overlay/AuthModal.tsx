@@ -659,7 +659,7 @@ export default function AuthModal() {
                   )}
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-2 p-6 pt-0 border-t bg-muted/30">
+                <CardFooter className="flex flex-col gap-2 p-6  border-t">
                   <Button
                     variant="default"
                     type="submit"

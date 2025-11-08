@@ -127,7 +127,7 @@ export function useDeleteMySeminar() {
           const data = await res.json();
           if (data.detail) errorMsg = data.detail;
         } catch {
-          // response is likely empty (204)
+          
         }
         throw new Error(errorMsg);
       }

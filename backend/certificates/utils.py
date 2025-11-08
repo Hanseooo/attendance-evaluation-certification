@@ -63,14 +63,14 @@ def generate_certificate(attendance):
             # Absolute defaults
             name_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.442),  # 44.2%
+                'y': int(img_height * 0.39),  # 39%
                 'font_size': 128,
                 'font_path': 'arial.ttf',
                 'color': '#000000',
             }
             title_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.636),  # 63.6%
+                'y': int(img_height * 0.60),  # 60%
                 'font_size': 80,
                 'font_path': 'arial.ttf',
                 'color': '#1a1a1a',

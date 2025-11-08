@@ -13,20 +13,39 @@ from .models import Seminar
 from .serializers import SeminarSerializer
 from django.shortcuts import get_object_or_404
 
-# List and create seminars
+from django.utils import timezone
+from rest_framework import status, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import Seminar
+from .serializers import SeminarSerializer
+
 class SeminarListCreateAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request):
-        seminars = Seminar.objects.all()
+        # Automatically mark seminars as done if past end date
+        Seminar.objects.filter(date_end__lt=timezone.now(), is_done=False).update(is_done=True)
+
+        # Filter based on user role
+        if request.user.role == 'admin':
+            seminars = Seminar.objects.all()
+        else:
+            seminars = Seminar.objects.filter(is_done=True)
+
         serializer = SeminarSerializer(seminars, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admins can create seminars."}, status=status.HTTP_403_FORBIDDEN)
+        
         serializer = SeminarSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # Retrieve, update, delete a specific seminar by ID
 class SeminarDetailAPIView(APIView):
@@ -57,7 +76,7 @@ class PlannedSeminarAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        planned_seminars = PlannedSeminar.objects.filter(user=request.user)
+        planned_seminars = PlannedSeminar.objects.filter(user=request.user, seminar__is_done=False)
         serializer = PlannedSeminarSerializer(planned_seminars, many=True)
         return Response(serializer.data)
 
@@ -75,7 +94,7 @@ class PlannedSeminarDetailAPIView(APIView):
 
     def get_object(self, pk, user):
         # ensures user can only access their own planned seminars
-        return get_object_or_404(PlannedSeminar, pk=pk, user=user)
+        return get_object_or_404(PlannedSeminar, pk=pk, user=user, seminar__is_done=False)
 
     def delete(self, request, pk):
         planned_seminar = self.get_object(pk, request.user)

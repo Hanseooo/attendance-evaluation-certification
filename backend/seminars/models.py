@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from certificates.models import CertificateTemplate
+from .managers import SeminarManager
 
 User = settings.AUTH_USER_MODEL
 
@@ -16,6 +17,8 @@ class Seminar(models.Model):
     duration_minutes = models.PositiveIntegerField(null=True, blank=True)
     is_done = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = SeminarManager()
 
     class Meta:
         ordering = ['-date_start']

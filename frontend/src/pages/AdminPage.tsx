@@ -245,7 +245,7 @@ const handleSaveCertificateTemplate = async (
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl space-y-8">
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/10 via-background to-foreground/5">
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-background via-background to-foreground/5">
           <CardContent className="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             {/* Avatar */}
             <Avatar className="h-14 w-14 md:h-16 md:w-16 ring-2 ring-primary/10">

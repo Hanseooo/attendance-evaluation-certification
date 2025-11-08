@@ -7,11 +7,18 @@ export function useFetchSeminars() {
   const { setSeminar } = useSeminarList() // get setter from Zustand
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const token = useAuth().token
 
   const fetchSeminars = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/seminars") // your DRF endpoint
+      const res = await fetch("http://127.0.0.1:8000/api/seminars", 
+        {headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+      ) // your DRF endpoint
       if (!res.ok) throw new Error("Failed to fetch seminars")
       const data: Seminar[] = await res.json()
       setSeminar(data) // update Zustand store
