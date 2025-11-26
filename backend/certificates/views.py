@@ -596,3 +596,61 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
         except CertificateTemplate.DoesNotExist:
             # Return default config if no template exists
             return self.default_config(request)
+        
+# certificates/api.py (or certificates/views.py)
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+
+from attendance.models import Attendance
+from evaluation.models import Evaluation
+from certificates.services import CertificateService  # you will create this
+
+
+# certificates/views.py (add this to your existing views)
+
+
+
+from attendance.models import Attendance
+from evaluation.models import Evaluation
+from certificates.services import CertificateService
+
+
+class ResendCertificateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, seminar_id, user_id):
+        try:
+            attendance = Attendance.objects.get(seminar_id=seminar_id, user_id=user_id)
+        except Attendance.DoesNotExist:
+            return Response(
+                {"status": "error", "message": "Attendance not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Check if the user has completed the evaluation
+        evaluation_done = Evaluation.objects.filter(
+            seminar_id=seminar_id,
+            user_id=user_id,
+            is_completed=True
+        ).exists()
+
+        if not evaluation_done:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Cannot send certificate. Evaluation is not completed."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Generate certificate (this automatically sends email via generate_certificate)
+        cert = CertificateService.generate(attendance)
+
+        return Response({
+            "status": "success",
+            "message": f"Certificate sent to {attendance.user.email}",
+            "certificate_base64": cert["base64"],  # Format: "data:image/png;base64,..."
+        })

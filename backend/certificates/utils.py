@@ -182,7 +182,7 @@ def send_certificate_email(user, seminar, certificate_bytes):
             f"Good day {user.first_name or user.username},\n\n"
             f"Congratulations! Here is your certificate for attending '{seminar.title}'.\n\n"
             f"Best regards,\n"
-            f"Seminar Management Team"
+            f"The Podium"
         ),
         to=[user.email],
     )
