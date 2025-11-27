@@ -6,9 +6,10 @@ import { type Seminar } from "@/utils/types";
 
 interface SeminarCardProps {
   seminar: Seminar;
+  onClick?: () => void;
 }
 
-export default function SeminarCard({ seminar }: SeminarCardProps) {
+export default function SeminarCard({ seminar, onClick }: SeminarCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -31,7 +32,7 @@ export default function SeminarCard({ seminar }: SeminarCardProps) {
     <>
       <Card
         className="cursor-pointer transition-all duration-100 hover:shadow-lg border-1 border-primary/50 hover:border-primary hover:border-2 w-full h-full group "
-        onClick={() => setIsModalOpen(true)}
+        onClick={onClick ?? (() => setIsModalOpen(true))}
       >
         <CardContent className="p-5 h-full flex flex-col">
           {/* Title */}
@@ -66,7 +67,7 @@ export default function SeminarCard({ seminar }: SeminarCardProps) {
         seminar={seminar}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAttend={() => {} }
+        onAttend={() => {}}
       />
     </>
   );
