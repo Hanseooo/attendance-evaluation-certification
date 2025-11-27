@@ -196,8 +196,8 @@ USE_TZ = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://hcdc-podium.vercel.app/",
-    "https://attendance-evaluation-certification-production.up.railway.app/api"
+    "https://hcdc-podium.vercel.app",
+    "https://attendance-evaluation-certification-production.up.railway.app"
 ]
 
 
