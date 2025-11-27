@@ -31,3 +31,4 @@ __pycache__/
 .qodo
 
 .venv
+backend/.env 
