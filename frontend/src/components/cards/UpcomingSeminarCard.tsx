@@ -71,7 +71,7 @@ export default function UpcomingSeminarCard({
 
   return (
     <>
-<Card className="relative overflow-hidden border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg group">
+<Card className="relative overflow-hidden border-primary/75 hover:border-primary/40 transition-all duration-300 hover:shadow-lg group">
   <div className="absolute -top-8 -right-8 w-32 h-32 bg-primary/5 rounded-full" />
         <CardContent className="p-6 md:p-8 relative">
           {/* Header */}

@@ -59,7 +59,7 @@ export default function Calendar({ seminars }: CalendarProps) {
   };
 
   return (
-    <Card className="h-full bg-card shadow-sm border border-border/85">
+    <Card className="h-full bg-card border-primary border shadow-sm">
       {/* Header */}
       <div className="p-4 flex justify-between items-center border-b border-border/50 bg-muted/20">
         <Button variant="ghost" size="icon" onClick={handlePrevMonth}>

@@ -68,7 +68,7 @@ export default function MySeminarsSection() {
               </div>
 
               {/* Gradient Fade Effect */}
-              <div className="absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-sidebar/25 to-transparent pointer-events-none" />
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center border-2 border-dashed rounded-lg">

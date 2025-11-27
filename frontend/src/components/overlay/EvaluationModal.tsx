@@ -108,7 +108,7 @@ export function EvaluationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg w-[95vw] md:w-full rounded-2xl overflow-y-auto max-h-[90vh]  backdrop-blur-md border border-border/40 shadow-lg">
+      <DialogContent className="max-w-lg w-[95vw] md:w-full rounded-2xl bg-sidebar overflow-y-auto max-h-[90vh]  backdrop-blur-md border border-border/40 shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-xl md:text-2xl font-bold flex items-center gap-2">
             <Star className="w-5 h-5 text-primary" />
@@ -127,10 +127,10 @@ export function EvaluationModal({
                 value={(form as any)[key].toString()}
                 onValueChange={(v) => handleChange(key, Number(v))}
               >
-                <SelectTrigger className="w-full bg-background border-border/50 focus:ring-2 focus:ring-primary/30">
+                <SelectTrigger className="w-full bg-sidebar border-border/50 focus:ring-2 focus:ring-primary/30">
                   <SelectValue placeholder="Select rating" />
                 </SelectTrigger>
-                <SelectContent className="bg-background/95 backdrop-blur-md border border-border/30 rounded-lg shadow-md">
+                <SelectContent className="bg-sidebar backdrop-blur-md border border-border/30 rounded-lg shadow-md">
                   <SelectItem value="1">1 — Very Poor</SelectItem>
                   <SelectItem value="2">2 — Poor</SelectItem>
                   <SelectItem value="3">3 — Fair</SelectItem>
@@ -150,7 +150,7 @@ export function EvaluationModal({
               placeholder="Write your comments..."
               value={form.suggestions}
               onChange={(e) => handleChange("suggestions", e.target.value)}
-              className="resize-none h-24 bg-background border-border/50 focus:ring-2 focus:ring-primary/30"
+              className="resize-none h-24 bg-sidebar border-border/50 focus:ring-2 focus:ring-primary/30"
             />
           </div>
 

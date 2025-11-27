@@ -25,7 +25,7 @@ export default function EvaluationCard({ seminar, onOpen }: EvaluationCardProps)
 
   return (
     <Card
-      className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-primary/60 w-full h-full group"
+      className="cursor-pointer border-primary/50 border-2 bg-muted/75 transition-all duration-200 hover:shadow-lg hover:border-primary/60 w-full h-full group"
       onClick={onOpen}
     >
       <CardContent className="p-5 h-full flex flex-col">

@@ -5,6 +5,18 @@ from rest_framework import status
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .serializers import UserSerializer
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .models import CustomUser
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -67,3 +79,111 @@ class CurrentUserView(APIView):
 
     def put(self, request):
         return self.patch(request)
+
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email', '').strip()
+
+        if not email:
+            return Response(
+                {'error': 'Email is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            # Don't reveal if email exists or not (security)
+            return Response(
+                {'message': 'If an account exists with this email, a password reset link has been sent.'},
+                status=status.HTTP_200_OK
+            )
+
+        # Generate reset token
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Build reset URL
+        reset_url = f"{settings.BASE_URL}/reset-password?uid={uid}&token={token}"
+
+        # Render HTML email template
+        html_message = render_to_string('emails/password_reset.html', {
+            'user': user,
+            'reset_url': reset_url,
+            'site_name': 'The Podium',
+        })
+        plain_message = strip_tags(html_message)
+
+        # Send email
+        email_message = EmailMessage(
+            subject='Reset Your Password - The Podium',
+            body=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
+        )
+        email_message.content_subtype = 'html'
+        email_message.body = html_message
+
+        try:
+            email_message.send()
+        except Exception as e:
+            print(f"Error sending password reset email: {e}")
+            return Response(
+                {'error': 'Failed to send reset email. Please try again later.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(
+            {'message': 'If an account exists with this email, a password reset link has been sent.'},
+            status=status.HTTP_200_OK
+        )
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        uid = request.data.get('uid')
+        token = request.data.get('token')
+        new_password = request.data.get('password')
+
+        if not all([uid, token, new_password]):
+            return Response(
+                {'error': 'All fields are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Validate password length
+        if len(new_password) < 8:
+            return Response(
+                {'error': 'Password must be at least 8 characters long'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = CustomUser.objects.get(pk=user_id)
+        except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            return Response(
+                {'error': 'Invalid reset link'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Validate token
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {'error': 'Invalid or expired reset link'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {'message': 'Password has been reset successfully'},
+            status=status.HTTP_200_OK
+        )

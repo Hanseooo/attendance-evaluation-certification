@@ -102,7 +102,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -197,7 +197,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 
 SITE_ID = 1
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_SIGNUP_FIELDS = {
     'first_name': {'required': True},
     'last_name': {'required': True},
@@ -211,6 +211,9 @@ ACCOUNT_SIGNUP_FIELDS = {
 #LOGIN_REDIRECT_URL = '/'
 # LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

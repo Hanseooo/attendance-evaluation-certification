@@ -35,7 +35,7 @@ export default function HomePage() {
     <div className="min-h-screen  bg-gradient-to-tr from bg-background via-foreground/5 to-background min-w-[350px]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl">
         {/* Header Section */}
-        <Card className="mb-8 border-0 shadow-sm bg-gradient-to-br from-primary/10 via-background to-foreground/5">
+        <Card className="mb-8 shadow-sm bg-gradient-to-br from-primary/10 via-background to-foreground/5 border-1 border-b-8 border-primary/90">
           <CardContent className="p-6 md:p-8">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">

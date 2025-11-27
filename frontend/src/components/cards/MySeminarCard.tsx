@@ -36,7 +36,7 @@ export default function MySeminarCard({
   return (
     <>
       <Card
-        className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-primary/60 w-full h-full group"
+        className="cursor-pointer transition-all duration-200 border-primary/50 border hover:shadow-lg hover:border-primary w-full h-full group"
         onClick={() => setIsModalOpen(true)}
       >
         <CardContent className="p-5 h-full flex flex-col">
