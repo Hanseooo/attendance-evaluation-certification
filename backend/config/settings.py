@@ -36,6 +36,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     ".vercel.app",
     ".railway.app",
+    "attendance-evaluation-certification-production.up.railway.app", 
     "localhost",
     "127.0.0.1"
 ]
@@ -219,7 +220,16 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "content-type",
 ]
 
-CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
