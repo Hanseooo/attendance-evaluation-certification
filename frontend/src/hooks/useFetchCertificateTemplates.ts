@@ -2,7 +2,8 @@
 import { useState, useCallback } from "react";
 import { type CertificateTemplate, type CertificateTemplatePayload } from "@/utils/types";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app/api"; //added /api
 
 export function useFetchCertificateTemplates() {
   const [templates, setTemplates] = useState<CertificateTemplate[]>([]);

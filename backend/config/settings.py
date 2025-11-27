@@ -26,14 +26,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-im4s5&6*vzq6rb2d!t!6a&04kc6a@uq+pl+o61=+^pn=x)goj5'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-BASE_URL = "http://localhost:5173"
+BASE_URL = "https://hcdc-podium.vercel.app/"
 
 # settings.py
 MEDIA_URL = '/media/'  # URL to access media files
@@ -196,6 +196,8 @@ USE_TZ = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://hcdc-podium.vercel.app/",
+    "attendance-evaluation-certification-production.up.railway.app"
 ]
 
 

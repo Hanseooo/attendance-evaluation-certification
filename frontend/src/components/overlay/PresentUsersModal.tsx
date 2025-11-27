@@ -113,7 +113,7 @@ export function PresentUsersModal({
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/resend-certificate/${seminarId}/${user.id}/`,
+        `https://attendance-evaluation-certification-production.up.railway.app/api/resend-certificate/${seminarId}/${user.id}/`,
 
         {
           method: "POST",

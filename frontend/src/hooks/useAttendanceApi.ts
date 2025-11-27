@@ -6,7 +6,8 @@ import {
   type Attendee,
 } from "@/utils/types";
 
-const BASE_URL = "http://127.0.0.1:8000/api";
+const BASE_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app/api";
 
 interface ApiResponse<T> {
   status: number;

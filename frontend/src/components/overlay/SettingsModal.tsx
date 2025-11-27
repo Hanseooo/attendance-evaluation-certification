@@ -43,6 +43,9 @@ interface PasswordForm {
   confirm_password: string;
 }
 
+const BASE_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app";
+
 export default function SettingsModal({
   open,
   onOpenChange,
@@ -113,7 +116,7 @@ export default function SettingsModal({
     setProfileStatus(null);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/user/`, {
+      const res = await fetch(`${BASE_URL}/api/user/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +152,7 @@ export default function SettingsModal({
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/dj-rest-auth/password/change/`,
+        `${BASE_URL}/dj-rest-auth/password/change/`,
         {
           method: "POST",
           headers: {

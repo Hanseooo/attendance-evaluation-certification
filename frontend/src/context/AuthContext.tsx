@@ -14,6 +14,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY = "authToken";
+const BASE_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app";
 
 // Loading screen component
 export const LoadingScreen = () => (
@@ -31,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Helper: fetch current user
   const fetchUser = async (authToken: string) => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/user/", {
+      const res = await fetch(`${BASE_URL}/api/user/`, {
         headers: { Authorization: `Token ${authToken}` },
       });
 
@@ -67,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       ? { email: usernameOrEmail, password }
       : { username: usernameOrEmail, password };
 
-    const res = await fetch("http://127.0.0.1:8000/dj-rest-auth/login/", {
+    const res = await fetch(`${BASE_URL}/dj-rest-auth/login/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -91,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     if (token) {
       try {
-        await fetch("http://127.0.0.1:8000/dj-rest-auth/logout/", {
+        await fetch(`${BASE_URL}/dj-rest-auth/logout/`, {
           method: "POST",
           headers: { Authorization: `Token ${token}` },
         });
@@ -107,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Register
   const register = async (payload: RegisterPayload) => {
-    const res = await fetch("http://127.0.0.1:8000/dj-rest-auth/registration/", {
+    const res = await fetch(`${BASE_URL}/dj-rest-auth/registration/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

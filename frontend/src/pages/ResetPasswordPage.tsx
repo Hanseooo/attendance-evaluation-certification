@@ -14,6 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+
+const BASE_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app";
+
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -92,7 +96,7 @@ export default function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/reset-password/",
+        `${BASE_URL}/api/reset-password/`,
         {
           method: "POST",
           headers: {

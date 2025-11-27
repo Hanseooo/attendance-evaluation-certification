@@ -3,6 +3,9 @@ import { useMySeminarList } from "@/stores/SeminarStore";
 import type { MySeminar, Seminar } from "@/utils/types";
 import { useAuth } from "@/context/AuthContext";
 
+const BASE_URL =
+  "https://attendance-evaluation-certification-production.up.railway.app";
+
 export function useFetchMySeminars() {
   const { setSeminar } = useMySeminarList(); // get setter from Zustand
   const [loading, setLoading] = useState(false);
@@ -12,7 +15,7 @@ export function useFetchMySeminars() {
   const fetchMySeminars = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/planned-seminars/", {
+      const res = await fetch(`${BASE_URL}/api/planned-seminars/`, {
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -58,7 +61,7 @@ export function usePostMySeminar() {
     setSuccess(false);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/planned-seminars/", {
+      const res = await fetch(`${BASE_URL}/api/planned-seminars/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +115,7 @@ export function useDeleteMySeminar() {
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/planned-seminars/${id}/`,
+        `${BASE_URL}/api/planned-seminars/${id}/`,
         {
           method: "DELETE",
           headers: {
