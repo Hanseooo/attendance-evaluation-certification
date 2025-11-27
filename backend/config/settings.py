@@ -31,7 +31,16 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "attendance-evaluation-certification-production.up.railway.app",
+    "hcdc-podium.vercel.app",
+    "localhost",
+    "127.0.0.1"
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
+]
 
 BASE_URL = "https://hcdc-podium.vercel.app"
 
@@ -201,9 +210,9 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
-CORS_ALLOW_CREDENTIALS = True  # This is key for sending cookies
+CORS_ALLOW_CREDENTIALS = False
 SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_NAME = "csrftoken"
+# CSRF_COOKIE_NAME = "csrftoken"
 
 
 AUTH_USER_MODEL = 'users.CustomUser'
