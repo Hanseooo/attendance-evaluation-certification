@@ -30,4 +30,4 @@ __pycache__/
 
 .qodo
 
-.venv
+backend.venv

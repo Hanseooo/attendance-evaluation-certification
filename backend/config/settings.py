@@ -167,6 +167,7 @@ print("Loaded settings.py")
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
+    'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer',
 }
 
 
@@ -213,7 +214,7 @@ ACCOUNT_SIGNUP_FIELDS = {
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

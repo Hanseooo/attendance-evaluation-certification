@@ -28,7 +28,7 @@
   --color-primary: oklch(38.385% 0.14737 27.845);
   --color-primary-foreground: oklch(0.97 0.014 254.604);
 
-  --color-secondary: oklch(0.488 0.243 264.376);
+  --color-secondary: oklch(90.06% 0.0001 271.152);
   --color-secondary-foreground: oklch(0.21 0.006 285.885);
 
   --color-muted: oklch(0.967 0.001 286.375);
@@ -53,11 +53,11 @@
   --color-sidebar-ring: oklch(0.708 0 0);
 
   /* Chart colors */
-  --color-chart-1: oklch(0.809 0.105 251.813);
-  --color-chart-2: oklch(0.623 0.214 259.815);
-  --color-chart-3: oklch(0.546 0.245 262.881);
-  --color-chart-4: oklch(0.488 0.243 264.376);
-  --color-chart-5: oklch(0.424 0.199 265.638);
+  --color-chart-1: oklch(76.85% 0.13691 20.696);
+  --color-chart-2: oklch(64.333% 0.24229 27.491);
+  --color-chart-3: oklch(62.543% 0.24955 28.611);
+  --color-chart-4: oklch(58.61% 0.23296 28.532);
+  --color-chart-5: oklch(50.158% 0.19147 27.738);
 
   /* Gradient tokens */
   --gradient-start: oklch(0.546 0.245 262.881);
@@ -163,6 +163,13 @@
   * {
     @apply border-border box-border;
     font-family: "Poppins", sans-serif;
+      /* For Firefox */
+    scrollbar-width: none;
+    /* For IE and Edge */
+    -ms-overflow-style: none;  
+  }
+  *::-webkit-scrollbar {
+    display: none;
   }
 
   body {
