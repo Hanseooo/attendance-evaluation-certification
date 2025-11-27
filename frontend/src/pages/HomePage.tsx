@@ -37,17 +37,26 @@ export default function HomePage() {
         {/* Header Section */}
         <Card className="mb-8 shadow-sm bg-gradient-to-br from-primary/10 via-background to-foreground/5 border-1 border-b-8 border-primary/90">
           <CardContent className="p-6 md:p-8">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-4 min-w-0 flex-1">
                 <Avatar className="h-16 w-16 md:h-20 md:w-20 ring-2 ring-primary/10">
                   <AvatarImage src={blankPfp} alt={user?.username} />
                   <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
                     {getInitials(user?.username || "User")}
                   </AvatarFallback>
                 </Avatar>
+
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">
-                    Welcome back, {user?.username}!
+                  <h1 className="font-bold tracking-tight truncate">
+                    {/* Mobile text */}
+                    <span className="block text-xl sm:hidden">
+                      Hello, {user?.username}!
+                    </span>
+
+                    {/* Desktop/tablet text */}
+                    <span className="hidden sm:block text-2xl md:text-3xl">
+                      Welcome back, {user?.username}!
+                    </span>
                   </h1>
                   <p className="text-sm md:text-base text-muted-foreground mt-1">
                     Here's what's coming up for you
@@ -58,11 +67,12 @@ export default function HomePage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-foreground hover:text-primary transition"
+                className="text-foreground hover:text-primary transition shrink-0"
                 onClick={() => setOpenSettings(true)}
               >
                 <Settings className="h-6 w-6" />
               </Button>
+
               <SettingsModal
                 open={openSettings}
                 onOpenChange={setOpenSettings}
