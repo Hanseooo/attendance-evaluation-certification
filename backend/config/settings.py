@@ -18,6 +18,8 @@ load_dotenv()
 
 import dj_database_url
 
+from corsheaders.defaults import default_headers
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,10 +40,10 @@ ALLOWED_HOSTS = [
     "127.0.0.1"
 ]
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https:\/\/.*\.vercel\.app$",
-    r"^https:\/\/.*\.railway\.app$",
-]
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https:\/\/.*\.vercel\.app$",
+#     r"^https:\/\/.*\.railway\.app$",
+# ]
 
 BASE_URL = "https://hcdc-podium.vercel.app"
 
@@ -91,7 +93,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -187,7 +189,11 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer',
     'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer',
+
+    'USE_JWT': False,
+    'SESSION_LOGIN': False,
 }
+
 
 
 
@@ -208,9 +214,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "authorization",
+    "content-type",
+]
 
 CORS_ALLOW_CREDENTIALS = False
 SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = "Lax"
 # CSRF_COOKIE_NAME = "csrftoken"
 
 
