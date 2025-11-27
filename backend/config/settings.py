@@ -33,7 +33,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-BASE_URL = "https://hcdc-podium.vercel.app/"
+BASE_URL = "https://hcdc-podium.vercel.app"
 
 # settings.py
 MEDIA_URL = '/media/'  # URL to access media files
@@ -197,7 +197,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://hcdc-podium.vercel.app/",
-    "attendance-evaluation-certification-production.up.railway.app"
+    "https://attendance-evaluation-certification-production.up.railway.app/api"
 ]
 
 
