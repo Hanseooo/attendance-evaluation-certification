@@ -10,9 +10,8 @@ export default function AttendancePage() {
   const [message, setMessage] = useState<string>("Processing Attendance");
   const [loading, setLoading] = useState<boolean>(true);
   const [success, setSuccess] = useState<boolean | null>(null); // null = pending
-  const { token: authToken } = useAuth();
+  const { token: authToken, setRedirectTo } = useAuth();
   const { recordAttendance } = useAttendanceApi();
-  const { setRedirectTo } = useAuth();
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -20,21 +19,11 @@ export default function AttendancePage() {
     const seminarId = query.get("seminar");
     let qrToken = query.get("token");
 
-    if (!authToken) {
-      setRedirectTo(location.pathname + location.search);
-      navigate("/", { replace: true });
-      return;
-    }
 
-    if (!qrToken) {
-      const newSearchParams = new URLSearchParams(location.search);
-      newSearchParams.set("token", authToken);
-      navigate(
-        { pathname: location.pathname, search: newSearchParams.toString() },
-        { replace: true }
-      );
-      return;
-    }
+  if (!qrToken) {
+    qrToken = authToken ?? "";
+  }
+
 
     if (!action || !seminarId || !qrToken) {
       setMessage("Invalid QR Code.");
@@ -48,14 +37,13 @@ export default function AttendancePage() {
         const response = await recordAttendance(
           parseInt(seminarId),
           action,
-          qrToken || authToken
+          (qrToken ?? authToken) as string
         );
 
         if (response.status === 200) {
           setMessage(response.data.success || "Attendance recorded.");
           setSuccess(true);
-
-          // Redirect to home after 3 seconds
+          setRedirectTo(null);
           setTimeout(() => {
             navigate("/", { replace: true });
           }, 5000);

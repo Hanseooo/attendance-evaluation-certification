@@ -48,7 +48,14 @@ export default function App() {
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        <Route path="/attendance" element={<AttendancePage />} />
+        <Route
+          path="/attendance"
+          element={
+            <ProtectedRoute>
+              <AttendancePage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Participant routes */}
         {user?.role === "participant" && (
