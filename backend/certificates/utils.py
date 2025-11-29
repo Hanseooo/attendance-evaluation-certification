@@ -82,14 +82,14 @@ def generate_certificate(attendance):
                 'x': img_width // 2,
                 'y': int(img_height * 0.39),
                 'font_size': 128,
-                'font_path': "arial.ttf",
+                'font_path': "Arial.ttf",
                 'color': "#000000"
             }
             title_config = {
                 'x': img_width // 2,
                 'y': int(img_height * 0.60),
                 'font_size': 80,
-                'font_path': "arial.ttf",
+                'font_path': "Arial.ttf",
                 'color': "#1a1a1a"
             }
 
@@ -176,20 +176,6 @@ def generate_certificate(attendance):
     
     return certificate_data_url
 
-
-def _load_font(font_path, font_size):
-    """Helper to load font with fallback"""
-    try:
-        return ImageFont.truetype(font_path, font_size)
-    except (OSError, IOError):
-        # Try without .ttf extension
-        try:
-            font_name = font_path.replace('.ttf', '')
-            return ImageFont.truetype(font_name, font_size)
-        except (OSError, IOError):
-            # Final fallback to default font
-            print(f"Warning: Could not load font {font_path}, using default")
-            return ImageFont.load_default()
 
 
 def send_certificate_email(user, seminar, certificate_bytes):

@@ -1,0 +1,74 @@
+@font-face {
+  font-family: "Arial";
+  src: url("/fonts/Arial.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Regular";
+  src: url("/fonts/Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("/fonts/Roboto-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica-Bold";
+  src: url("/fonts/Helvetica-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Calibri";
+  src: url("/fonts/Calibri.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Calibri-Bold";
+  src: url("/fonts/Calibri-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "EBGaramond-Regular";
+  src: url("/fonts/EBGaramond-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Baskervville-Regular";
+  src: url("/fonts/Baskervville-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times New Roman";
+  src: url("/fonts/Times-New-Roman.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Georgia";
+  src: url("/fonts/Georgia.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "GreatVibes-Regular";
+  src: url("/fonts/GreatVibes-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "AlexBrush-Regular";
+  src: url("/fonts/AlexBrush-Regular.ttf") format("truetype");
+}

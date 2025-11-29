@@ -1,5 +1,6 @@
 // src/components/overlay/CertificateEditorModal.tsx
 import { useState, useRef, useEffect, useCallback } from "react";
+import '@/styles/fonts.css'
 import {
   Dialog,
   DialogContent,
