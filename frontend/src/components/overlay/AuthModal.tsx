@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { useAuth } from "@/context/AuthContext";
 import ForgotPasswordDialog from "./ForgotPasswordDialog";
+import { useNavigate } from "react-router-dom";
 
 const checkPasswordStrength = (password: string) => {
   let score = 0;
@@ -51,6 +52,8 @@ export default function AuthModal() {
     color: "",
   });
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const navigate = useNavigate();
+  const { redirectTo, setRedirectTo } = useAuth();
 
   const ids = {
     firstName: useId(),
@@ -146,7 +149,12 @@ export default function AuthModal() {
           password2: formData.confirmPassword,
         });
       }
-      closeModal();
+      if (redirectTo) {
+        navigate(redirectTo, { replace: true });
+        setRedirectTo(null);
+      } else {
+        closeModal();
+      }
     } catch (err: any) {
       // ✅ Handle API error responses properly
       if (err.response?.data) {

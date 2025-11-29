@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAttendanceApi } from "@/hooks/useAttendanceApi";
-import { Loader2, CheckCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
 
 export default function AttendancePage() {
   const location = useLocation();
@@ -12,6 +12,7 @@ export default function AttendancePage() {
   const [success, setSuccess] = useState<boolean | null>(null); // null = pending
   const { token: authToken } = useAuth();
   const { recordAttendance } = useAttendanceApi();
+  const { setRedirectTo } = useAuth();
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -20,21 +21,19 @@ export default function AttendancePage() {
     let qrToken = query.get("token");
 
     if (!authToken) {
-      navigate(
-        `/?next=${encodeURIComponent(location.pathname + location.search)}`,
-        { replace: true }
-      );
+      setRedirectTo(location.pathname + location.search);
+      navigate("/", { replace: true });
       return;
     }
 
-    if (!qrToken || qrToken === "token_placeholder") {
-      qrToken = authToken;
+    if (!qrToken) {
       const newSearchParams = new URLSearchParams(location.search);
-      newSearchParams.set("token", qrToken);
+      newSearchParams.set("token", authToken);
       navigate(
         { pathname: location.pathname, search: newSearchParams.toString() },
         { replace: true }
       );
+      return;
     }
 
     if (!action || !seminarId || !qrToken) {
@@ -83,7 +82,7 @@ export default function AttendancePage() {
           <CheckCircle className="w-12 h-12 text-green-500" />
         )}
         {!loading && success === false && (
-          <CheckCircle className="w-12 h-12 text-primary" />
+          <XCircle className="w-12 h-12 text-primary" />
         )}
 
         <h2

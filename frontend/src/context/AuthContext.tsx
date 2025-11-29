@@ -9,7 +9,9 @@ interface AuthContextType {
   login: (usernameOrEmail: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
-  token: string | null
+  token: string | null;
+  redirectTo: string | null;
+  setRedirectTo: (path: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem(TOKEN_KEY));
   const [loadingUser, setLoadingUser] = useState(true);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+
 
   // Derive authentication directly from user
   const isAuthenticated = !!user;
@@ -130,7 +134,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, loadingUser, login, logout, register, token }}
+      value={{
+        user,
+        isAuthenticated,
+        loadingUser,
+        login,
+        logout,
+        register,
+        token,
+        redirectTo,
+        setRedirectTo,
+      }}
     >
       {children}
     </AuthContext.Provider>
