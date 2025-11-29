@@ -204,6 +204,7 @@ def send_certificate_email(user, seminar, certificate_bytes):
     <head>
         <style>
             body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            h1 {{ color: #FFFFFF;}}
             .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
             .header {{ background: linear-gradient(135deg, #800000, #ff0000, #800000); padding: 30px; text-align: center; color: white; }}
             .content {{ padding: 30px; background: #f9f9f9; }}
