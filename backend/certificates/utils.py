@@ -17,13 +17,26 @@ import os
 
 FONT_DIR = os.path.join(settings.BASE_DIR, "certificates", "fonts")
 
-def _load_font(font_path, font_size):
-    font_full_path = os.path.join(FONT_DIR, font_path)
-    try:
-        return ImageFont.truetype(font_full_path, font_size)
-    except (OSError, IOError):
-        print(f"Warning: Could not load font {font_path}, using default")
+from pathlib import Path
+from PIL import ImageFont
+
+def _load_font(font_name, font_size):
+    # Move 2 levels up: /backend/config → /app
+    project_root = Path(__file__).resolve().parent.parent.parent
+
+    # Correct path: /app/certificates/fonts/<font_name>
+    font_path = project_root / "certificates" / "fonts" / font_name
+
+    if not font_path.exists():
+        print(f"[ERROR] Font not found: {font_path}")
         return ImageFont.load_default()
+
+    try:
+        return ImageFont.truetype(str(font_path), font_size)
+    except Exception as e:
+        print(f"[ERROR] Failed to load font {font_path}: {e}")
+        return ImageFont.load_default()
+
 
 
 def generate_certificate(attendance):
