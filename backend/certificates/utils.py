@@ -21,10 +21,10 @@ from pathlib import Path
 from PIL import ImageFont
 
 def _load_font(font_name, font_size):
-    # Move 2 levels up: /backend/config → /app
-    project_root = Path(__file__).resolve().parent.parent.parent
+    # Move up 2 levels: utils.py → certificates → backend
+    project_root = Path(__file__).resolve().parent.parent   # /backend
 
-    # Correct path: /app/certificates/fonts/<font_name>
+    # Correct path: /backend/certificates/fonts/<font_name>
     font_path = project_root / "certificates" / "fonts" / font_name
 
     if not font_path.exists():
@@ -36,8 +36,6 @@ def _load_font(font_name, font_size):
     except Exception as e:
         print(f"[ERROR] Failed to load font {font_path}: {e}")
         return ImageFont.load_default()
-
-
 
 def generate_certificate(attendance):
     """Generate certificate WITHOUT saving to Cloudinary."""

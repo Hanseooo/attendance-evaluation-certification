@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAttendanceApi } from "@/hooks/useAttendanceApi";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle } from "lucide-react";
 
 export default function AttendancePage() {
   const location = useLocation();
@@ -82,7 +82,7 @@ export default function AttendancePage() {
           <CheckCircle className="w-12 h-12 text-green-500" />
         )}
         {!loading && success === false && (
-          <XCircle className="w-12 h-12 text-primary" />
+          <CheckCircle className="w-12 h-12 text-primary" />
         )}
 
         <h2
