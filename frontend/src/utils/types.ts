@@ -123,6 +123,7 @@ export interface EvaluationAnalytics {
 export interface FontOption {
   value: string;
   label: string;
+  family: string;
 }
 
 export interface CertificateTemplate {

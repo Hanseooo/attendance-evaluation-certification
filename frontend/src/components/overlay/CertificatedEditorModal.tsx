@@ -44,12 +44,47 @@ interface Props {
 }
 
 const AVAILABLE_FONTS: FontOption[] = [
-  { value: "arial.ttf", label: "Arial" },
-  { value: "times.ttf", label: "Times New Roman" },
-  { value: "cour.ttf", label: "Courier New" },
-  { value: "verdana.ttf", label: "Verdana" },
-  { value: "georgia.ttf", label: "Georgia" },
+  { value: "Arial.ttf", label: "Arial", family: "Arial" },
+  { value: "Poppins-Regular.ttf", label: "Poppins", family: "Poppins-Regular" },
+  { value: "Poppins-Bold.ttf", label: "Poppins Bold", family: "Poppins-Bold" },
+  { value: "Roboto-Regular.ttf", label: "Roboto", family: "Roboto-Regular" },
+  { value: "Roboto-Bold.ttf", label: "Roboto Bold", family: "Roboto-Bold" },
+  { value: "Helvetica.ttf", label: "Helvetica", family: "Helvetica" },
+  {
+    value: "Helvetica-Bold.ttf",
+    label: "Helvetica Bold",
+    family: "Helvetica-Bold",
+  },
+  { value: "Calibri.ttf", label: "Calibri", family: "Calibri" },
+  { value: "Calibri-Bold.ttf", label: "Calibri Bold", family: "Calibri-Bold" },
+  {
+    value: "EBGaramond-Regular.ttf",
+    label: "EB Garamond",
+    family: "EBGaramond-Regular",
+  },
+  {
+    value: "Baskervville-Regular.ttf",
+    label: "Baskervville",
+    family: "Baskervville-Regular",
+  },
+  {
+    value: "Times-New-Roman.ttf",
+    label: "Times New Roman",
+    family: "Times New Roman",
+  },
+  { value: "Georgia.ttf", label: "Georgia", family: "Georgia" },
+  {
+    value: "GreatVibes-Regular.ttf",
+    label: "Great Vibes",
+    family: "GreatVibes-Regular",
+  },
+  {
+    value: "AlexBrush-Regular.ttf",
+    label: "Alex Brush",
+    family: "AlexBrush-Regular",
+  },
 ];
+
 
 export function CertificateEditorModal({
   isOpen,
@@ -359,7 +394,10 @@ export function CertificateEditorModal({
                           top: `${titleElement.yPercent}%`,
                           transform: "translate(-50%, -50%)",
                           fontSize: `${getScaledFontSize(titleElement.fontSize)}px`,
-                          fontFamily: titleElement.font.replace(".ttf", ""),
+                          fontFamily: AVAILABLE_FONTS.find(
+                            (f) => f.value === titleElement.font
+                          )?.family,
+
                           color: titleElement.color,
                         }}
                         className={clsx(
@@ -388,7 +426,9 @@ export function CertificateEditorModal({
                           top: `${nameElement.yPercent}%`,
                           transform: "translate(-50%, -50%)",
                           fontSize: `${getScaledFontSize(nameElement.fontSize)}px`,
-                          fontFamily: nameElement.font.replace(".ttf", ""),
+                          fontFamily: AVAILABLE_FONTS.find(
+                            (f) => f.value === nameElement.font
+                          )?.family,
                           color: nameElement.color,
                         }}
                         className={clsx(

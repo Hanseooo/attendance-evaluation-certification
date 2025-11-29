@@ -552,7 +552,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-from PIL import Image
+from PIL import Image, ImageFont
 from io import BytesIO
 import requests
 import cloudinary.uploader
@@ -560,72 +560,17 @@ import cloudinary.uploader
 from .models import CertificateTemplate
 from .serializers import CertificateTemplateSerializer
 from seminars.models import Seminar
+import os
 
+FONT_DIR = os.path.join(settings.BASE_DIR, "certificates", "fonts")
 
-# class CertificateTemplateViewSet(viewsets.ModelViewSet):
-#     queryset = CertificateTemplate.objects.all()
-#     serializer_class = CertificateTemplateSerializer
-#     permission_classes = [IsAuthenticated]
+def load_font(font_name, size):
+    try:
+        return ImageFont.truetype(os.path.join(FONT_DIR, font_name), size)
+    except Exception as e:
+        print("⚠ Could not load font, using default:", font_name, e)
+        return ImageFont.load_default()
 
-#     def create(self, request, *args, **kwargs):
-#         """Create or update certificate template"""
-#         seminar_id = request.data.get("seminar_id")
-        
-#         if not seminar_id:
-#             return Response(
-#                 {"error": "seminar_id is required"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         try:
-#             seminar = Seminar.objects.get(id=seminar_id)
-#         except Seminar.DoesNotExist:
-#             return Response(
-#                 {"error": "Seminar not found"},
-#                 status=status.HTTP_404_NOT_FOUND
-#             )
-
-#         # Get or create template
-#         try:
-#             template = seminar.certificate_template
-#             # Update existing template
-#             serializer = self.get_serializer(template, data=request.data, partial=True)
-#         except CertificateTemplate.DoesNotExist:
-#             # Create new template
-#             serializer = self.get_serializer(data=request.data)
-
-#         serializer.is_valid(raise_exception=True)
-#         template = serializer.save()
-
-#         # ✅ If new image uploaded, get dimensions from Cloudinary URL
-#         if 'template_image' in request.FILES or template.template_image:
-#             try:
-#                 # Get the Cloudinary URL
-#                 image_url = template.template_image.url
-                
-#                 # Download and read image dimensions
-#                 response = requests.get(image_url)
-#                 response.raise_for_status()
-#                 img = Image.open(BytesIO(response.content))
-                
-#                 template.template_width = img.width
-#                 template.template_height = img.height
-#                 template.default_used = False
-#                 template.save(update_fields=['template_width', 'template_height', 'default_used'])
-                
-#                 print(f"✅ Image uploaded to Cloudinary: {image_url}")
-#                 print(f"✅ Dimensions: {img.width}x{img.height}px")
-#             except Exception as e:
-#                 print(f"❌ Error reading image dimensions: {e}")
-#                 # Don't fail the request, just use defaults
-#                 template.template_width = 2000
-#                 template.template_height = 1414
-#                 template.save(update_fields=['template_width', 'template_height'])
-
-#         return Response(
-#             self.get_serializer(template).data,
-#             status=status.HTTP_201_CREATED
-#         )
 class CertificateTemplateViewSet(viewsets.ModelViewSet):
     queryset = CertificateTemplate.objects.all()
     serializer_class = CertificateTemplateSerializer
@@ -777,12 +722,12 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
             "name_x_percent": 50.0,
             "name_y_percent": 38.9,
             "name_font_size": 128,
-            "name_font": "arial.ttf",
+            "name_font": "Arial.ttf",
             "name_color": "#000000",
             "title_x_percent": 50.0,
             "title_y_percent": 28.3,
             "title_font_size": 80,
-            "title_font": "arial.ttf",
+            "title_font": "Arial.ttf",
             "title_color": "#1a1a1a",
         })
 
@@ -864,12 +809,12 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
             "name_x_percent": 50.0,
             "name_y_percent": 38.9,
             "name_font_size": 128,
-            "name_font": "arial.ttf",
+            "name_font": "Arial.ttf",
             "name_color": "#000000",
             "title_x_percent": 50.0,
             "title_y_percent": 28.3,
             "title_font_size": 80,
-            "title_font": "arial.ttf",
+            "title_font": "Arial.ttf",
             "title_color": "#1a1a1a",
         })
 

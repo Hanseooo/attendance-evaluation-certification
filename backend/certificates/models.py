@@ -7,11 +7,21 @@ User = settings.AUTH_USER_MODEL
 
 # Web-safe fonts
 FONT_CHOICES = [
-    ('arial.ttf', 'Arial'),
-    ('times.ttf', 'Times New Roman'),
-    ('cour.ttf', 'Courier New'),
-    ('verdana.ttf', 'Verdana'),
-    ('georgia.ttf', 'Georgia'),
+    ('Arial.ttf', 'Arial'),
+    ('Poppins-Regular.ttf', 'Poppins'),
+    ('Poppins-Bold.ttf', 'Poppins Bold'),
+    ('Roboto-Regular.ttf', 'Roboto'),
+    ('Roboto-Bold.ttf', 'Roboto Bold'),
+    ('Helvetica.ttf', 'Helvetica'),
+    ('Helvetica-Bold.ttf', 'Helvetica Bold'),
+    ('Calibri.ttf', 'Calibri'),
+    ('Calibri-Bold.ttf', 'Calibri Bold'),
+    ('EBGaramond-Regular.ttf', 'EB Garamond'),
+    ('Baskervville-Regular.ttf', 'Baskervville'),
+    ('Times-New-Roman.ttf', 'Times New Roman'),
+    ('Georgia.ttf', 'Georgia'),
+    ('GreatVibes-Regular.ttf', 'Great Vibes'),
+    ('AlexBrush-Regular.ttf', 'Alex Brush'),
 ]
 
 

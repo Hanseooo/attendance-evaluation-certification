@@ -1,0 +1,74 @@
+@font-face {
+  font-family: "Arial";
+  src: url("./Arial.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins-Regular";
+  src: url("./Poppins-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Poppins-Bold";
+  src: url("./Poppins-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Regular";
+  src: url("./Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url("./Roboto-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("./Helvetica.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Helvetica-Bold";
+  src: url("./Helvetica-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Calibri";
+  src: url("./Calibri.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Calibri-Bold";
+  src: url("./Calibri-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "EBGaramond-Regular";
+  src: url("./EBGaramond-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Baskervville-Regular";
+  src: url("./Baskervville-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Times New Roman";
+  src: url("./Times-New-Roman.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Georgia";
+  src: url("./Georgia.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "GreatVibes-Regular";
+  src: url("./GreatVibes-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "AlexBrush-Regular";
+  src: url("./AlexBrush-Regular.ttf") format("truetype");
+}

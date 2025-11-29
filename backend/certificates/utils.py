@@ -12,6 +12,20 @@ from sib_api_v3_sdk.rest import ApiException
 from .models import CertificateTemplate, CertificateRecord
 
 
+from django.conf import settings
+import os
+
+FONT_DIR = os.path.join(settings.BASE_DIR, "certificates", "fonts")
+
+def _load_font(font_path, font_size):
+    font_full_path = os.path.join(FONT_DIR, font_path)
+    try:
+        return ImageFont.truetype(font_full_path, font_size)
+    except (OSError, IOError):
+        print(f"Warning: Could not load font {font_path}, using default")
+        return ImageFont.load_default()
+
+
 def generate_certificate(attendance):
     """Generate certificate WITHOUT saving to Cloudinary."""
     seminar = attendance.seminar
