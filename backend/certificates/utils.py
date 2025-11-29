@@ -198,35 +198,47 @@ def send_certificate_email(user, seminar, certificate_bytes):
     to = [{"email": user.email, "name": f"{user.first_name} {user.last_name}".strip() or user.username}]
     
     html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-            .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white; }}
-            .content {{ padding: 30px; background: #f9f9f9; }}
-            .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>HCDC The Podium</h1>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ 
+                    background-color: #f5f5f5;  /* Soft white color */
+                    padding: 30px; 
+                    text-align: center; 
+                    color: transparent;  /* Set the text color to transparent so the gradient can show */
+                    border: 3px solid #00b7ff;  /* Blueish cyan border */
+                    border-radius: 10px;  /* Optional: rounded corners for a cleaner look */
+                    -webkit-background-clip: text;  /* Apply gradient to text (Safari/Chrome) */
+                    background-clip: text;  /* Apply gradient to text (Firefox) */
+                    font-weight: bold;  /* Optional: bold text for emphasis */
+                    font-size: 2.5em;  /* Larger text size for visibility */
+                    background: linear-gradient(135deg, #800000, #dc143c, #800000); /* Maroon red gradient for the text */
+                }}
+                .content {{ padding: 30px; background: #f9f9f9; }}
+                .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>HCDC The Podium</h1>
+                </div>
+                <div class="content">
+                    <p>Good day {user.first_name or user.username},</p>
+                    <p>Congratulations! 🎉</p>
+                    <p>Your certificate for attending <strong>"{seminar.title}"</strong> is now ready and attached to this email.</p>
+                    <p>Thank you for your participation!</p>
+                </div>
+                <div class="footer">
+                    <p>Best regards,<br>The Podium</p>
+                    <p>This is an automated message, please do not reply.</p>
+                </div>
             </div>
-            <div class="content">
-                <p>Good day {user.first_name or user.username},</p>
-                <p>Congratulations! 🎉</p>
-                <p>Your certificate for attending <strong>"{seminar.title}"</strong> is now ready and attached to this email.</p>
-                <p>Thank you for your participation!</p>
-            </div>
-            <div class="footer">
-                <p>Best regards,<br>The Podium</p>
-                <p>This is an automated message, please do not reply.</p>
-            </div>
-        </div>
-    </body>
-    </html>
+        </body>
+        </html>
     """
     
     # Attachment
