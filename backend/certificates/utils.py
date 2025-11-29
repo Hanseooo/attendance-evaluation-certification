@@ -28,7 +28,7 @@ def generate_certificate(attendance):
 
     # ✅ Load image
     if use_default or not template or not template.template_image:
-        # Use default template
+        # Load default base image
         default_url = getattr(
             settings,
             "DEFAULT_CERTIFICATE_TEMPLATE_URL",
@@ -37,17 +37,16 @@ def generate_certificate(attendance):
         response = requests.get(default_url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
-        
-        # Default settings (percentages converted to pixels)
+
         img_width, img_height = img.size
-        
+
+        # 👉 ALWAYS use template settings if the seminar HAS a template object
         if template:
-            # Use saved percentages
             name_x = int((template.name_x_percent / 100) * img_width)
             name_y = int((template.name_y_percent / 100) * img_height)
             title_x = int((template.title_x_percent / 100) * img_width)
             title_y = int((template.title_y_percent / 100) * img_height)
-            
+
             name_config = {
                 'x': name_x,
                 'y': name_y,
@@ -62,22 +61,24 @@ def generate_certificate(attendance):
                 'font_path': template.title_font,
                 'color': template.title_color,
             }
+
         else:
-            # Absolute defaults
+            # Absolutely no template stored in DB → use real defaults
             name_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.39),  # 39%
+                'y': int(img_height * 0.39),
                 'font_size': 128,
-                'font_path': 'arial.ttf',
-                'color': '#000000',
+                'font_path': "arial.ttf",
+                'color': "#000000"
             }
             title_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.60),  # 60%
+                'y': int(img_height * 0.60),
                 'font_size': 80,
-                'font_path': 'arial.ttf',
-                'color': '#1a1a1a',
+                'font_path': "arial.ttf",
+                'color': "#1a1a1a"
             }
+
     else:
         # Use custom template with saved percentages
         response = requests.get(template.template_image.url)
@@ -198,47 +199,35 @@ def send_certificate_email(user, seminar, certificate_bytes):
     to = [{"email": user.email, "name": f"{user.first_name} {user.last_name}".strip() or user.username}]
     
     html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                .header {{ 
-                    background-color: #f5f5f5;  /* Soft white color */
-                    padding: 30px; 
-                    text-align: center; 
-                    color: transparent;  /* Set the text color to transparent so the gradient can show */
-                    border: 3px solid #00b7ff;  /* Blueish cyan border */
-                    border-radius: 10px;  /* Optional: rounded corners for a cleaner look */
-                    -webkit-background-clip: text;  /* Apply gradient to text (Safari/Chrome) */
-                    background-clip: text;  /* Apply gradient to text (Firefox) */
-                    font-weight: bold;  /* Optional: bold text for emphasis */
-                    font-size: 2.5em;  /* Larger text size for visibility */
-                    background: linear-gradient(135deg, #800000, #dc143c, #800000); /* Maroon red gradient for the text */
-                }}
-                .content {{ padding: 30px; background: #f9f9f9; }}
-                .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>HCDC The Podium</h1>
-                </div>
-                <div class="content">
-                    <p>Good day {user.first_name or user.username},</p>
-                    <p>Congratulations! 🎉</p>
-                    <p>Your certificate for attending <strong>"{seminar.title}"</strong> is now ready and attached to this email.</p>
-                    <p>Thank you for your participation!</p>
-                </div>
-                <div class="footer">
-                    <p>Best regards,<br>The Podium</p>
-                    <p>This is an automated message, please do not reply.</p>
-                </div>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #800000, #ff0000, #800000); padding: 30px; text-align: center; color: white; }}
+            .content {{ padding: 30px; background: #f9f9f9; }}
+            .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>HCDC The Podium</h1>
             </div>
-        </body>
-        </html>
+            <div class="content">
+                <p>Good day {user.first_name or user.username},</p>
+                <p>Congratulations! 🎉</p>
+                <p>Your certificate for attending <strong>"{seminar.title}"</strong> is now ready and attached to this email.</p>
+                <p>Thank you for your participation!</p>
+            </div>
+            <div class="footer">
+                <p>Best regards,<br>The Podium</p>
+                <p>This is an automated message, please do not reply.</p>
+            </div>
+        </div>
+    </body>
+    </html>
     """
     
     # Attachment
