@@ -9,11 +9,11 @@ export default function LandingPage() {
   const { openLogin, openRegister } = useAuthModal();
   const { redirectTo } = useAuth();
 
-    useEffect(() => {
-      if (redirectTo) {
-        openLogin();
-      }
-    }, [redirectTo]);
+  useEffect(() => {
+    if (redirectTo) {
+      openLogin();
+    }
+  }, [redirectTo, openLogin]);
 
   return (
     <>
