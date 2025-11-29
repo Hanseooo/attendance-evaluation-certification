@@ -283,7 +283,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_HOST_PASSWORD = os.getenv("BREVO_EMAIL_HOST_PASSWORD")
 # DEFAULT_FROM_EMAIL = os.getenv("BREVO_DEFAULT_FROM_EMAIL")
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+# Brevo API Configuration
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = "hans.amoguis@hcdc.edu.ph"
 BREVO_SENDER_NAME = "HCDC The Podium"
 
