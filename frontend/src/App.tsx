@@ -15,7 +15,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 
 export default function App() {
-  const { isAuthenticated, loadingUser, user } = useAuth();
+  const { isAuthenticated, loadingUser, user, redirectTo } = useAuth();
 
   if (loadingUser) {
     return (
@@ -35,6 +35,8 @@ export default function App() {
             isAuthenticated ? (
               user?.role === "admin" ? (
                 <Navigate to="/admin" replace />
+              ) : redirectTo ? (
+                <Navigate to={redirectTo} replace />
               ) : (
                 <Navigate to="/home" replace />
               )
@@ -43,6 +45,7 @@ export default function App() {
             )
           }
         />
+
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route path="/attendance" element={<AttendancePage />} />
