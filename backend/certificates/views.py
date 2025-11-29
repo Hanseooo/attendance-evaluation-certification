@@ -630,7 +630,6 @@ class ResendCertificateAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Check if the user has completed the evaluation
         evaluation_done = Evaluation.objects.filter(
             seminar_id=seminar_id,
             user_id=user_id,
@@ -646,11 +645,11 @@ class ResendCertificateAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Generate certificate (this automatically sends email via generate_certificate)
+        # Generate certificate (automatically sends email)
         cert = CertificateService.generate(attendance)
 
         return Response({
             "status": "success",
             "message": f"Certificate sent to {attendance.user.email}",
-            "certificate_base64": cert["base64"],  # Format: "data:image/png;base64,..."
+            "certificate_base64": cert["base64"],
         })

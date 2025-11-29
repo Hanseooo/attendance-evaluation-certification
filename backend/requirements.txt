@@ -20,13 +20,16 @@ pillow==12.0.0
 psycopg2-binary==2.9.10
 pycparser==2.23
 PyJWT==2.10.1
+python-dateutil==2.9.0.post0
 python-decouple==3.8
 python-dotenv==1.1.1
 qrcode==8.2
 requests==2.32.5
 requests-oauthlib==2.0.0
+sib-api-v3-sdk==7.6.0
 six==1.17.0
 sqlparse==0.5.3
+typing_extensions==4.15.0
 tzdata==2025.2
 urllib3==2.5.0
 whitenoise==6.11.0

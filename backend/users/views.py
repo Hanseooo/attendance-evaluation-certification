@@ -17,6 +17,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import CustomUser
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -115,22 +117,37 @@ class ForgotPasswordView(APIView):
             'reset_url': reset_url,
             'site_name': 'The Podium',
         })
-        plain_message = strip_tags(html_message)
 
-        # Send email
-        email_message = EmailMessage(
+        # Configure Brevo API
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = settings.BREVO_API_KEY
+        
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        
+        # Prepare email
+        sender = {
+            "name": settings.BREVO_SENDER_NAME,
+            "email": settings.BREVO_SENDER_EMAIL
+        }
+        to = [{"email": user.email, "name": f"{user.first_name} {user.last_name}".strip() or user.username}]
+        
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            sender=sender,
             subject='Reset Your Password - The Podium',
-            body=plain_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[user.email],
+            html_content=html_message
         )
-        email_message.content_subtype = 'html'
-        email_message.body = html_message
 
         try:
-            email_message.send()
-        except Exception as e:
-            print(f"Error sending password reset email: {e}")
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            print(f"✅ Password reset email sent successfully to {user.email}")
+            print(f"   Brevo Message ID: {api_response.message_id}")
+        except ApiException as e:
+            print(f"   Failed to send password reset email to {user.email}")
+            print(f"   Error: {e}")
+            print(f"   Status: {e.status}")
+            print(f"   Reason: {e.reason}")
+            print(f"   Body: {e.body}")
             return Response(
                 {'error': 'Failed to send reset email. Please try again later.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

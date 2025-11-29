@@ -6,6 +6,9 @@ from django.conf import settings
 import requests
 import base64
 
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
 from .models import CertificateTemplate, CertificateRecord
 
 
@@ -175,25 +178,79 @@ def _load_font(font_path, font_size):
 
 
 def send_certificate_email(user, seminar, certificate_bytes):
-    """Send the generated certificate via email."""
-    email = EmailMessage(
-        subject=f"Your Certificate for {seminar.title}",
-        body=(
-            f"Good day {user.first_name or user.username},\n\n"
-            f"Congratulations! Here is your certificate for attending '{seminar.title}'.\n\n"
-            f"Best regards,\n"
-            f"The Podium"
-        ),
-        to=[user.email],
+    """Send the generated certificate via Brevo API."""
+    
+    # Configure Brevo API
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = settings.BREVO_API_KEY
+    
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    
+    # Convert bytes to base64 for Brevo API
+    certificate_base64 = base64.b64encode(certificate_bytes).decode('utf-8')
+    
+    # Prepare email
+    subject = f"Your Certificate for {seminar.title}"
+    sender = {
+        "name": settings.BREVO_SENDER_NAME,
+        "email": settings.BREVO_SENDER_EMAIL
+    }
+    to = [{"email": user.email, "name": f"{user.first_name} {user.last_name}".strip() or user.username}]
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white; }}
+            .content {{ padding: 30px; background: #f9f9f9; }}
+            .footer {{ padding: 20px; text-align: center; font-size: 12px; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>HCDC The Podium</h1>
+            </div>
+            <div class="content">
+                <p>Good day {user.first_name or user.username},</p>
+                <p>Congratulations! 🎉</p>
+                <p>Your certificate for attending <strong>"{seminar.title}"</strong> is now ready and attached to this email.</p>
+                <p>Thank you for your participation!</p>
+            </div>
+            <div class="footer">
+                <p>Best regards,<br>The Podium</p>
+                <p>This is an automated message, please do not reply.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Attachment
+    attachment = [{
+        "content": certificate_base64,
+        "name": f"{seminar.title}_Certificate.png"
+    }]
+    
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=to,
+        sender=sender,
+        subject=subject,
+        html_content=html_content,
+        attachment=attachment
     )
-
-    email.attach(
-        filename=f"{seminar.title}_Certificate.png",
-        content=certificate_bytes,
-        mimetype="image/png"
-    )
-
+    
     try:
-        email.send()
-    except Exception as e:
-        print(f"Failed to send certificate email to {user.email}: {e}")
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"   Certificate email sent successfully to {user.email}")
+        print(f"   Brevo Message ID: {api_response.message_id}")
+    except ApiException as e:
+        print(f"   Failed to send certificate email to {user.email}")
+        print(f"   Error: {e}")
+        print(f"   Status: {e.status}")
+        print(f"   Reason: {e.reason}")
+        print(f"   Body: {e.body}")
+        raise
