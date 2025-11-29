@@ -49,14 +49,14 @@ class CertificateTemplate(models.Model):
     name_x_percent = models.FloatField(default=50.0)
     name_y_percent = models.FloatField(default=38.9)
     name_font_size = models.IntegerField(default=128)
-    name_font = models.CharField(max_length=50, choices=FONT_CHOICES, default='arial.ttf')
+    name_font = models.CharField(max_length=50, choices=FONT_CHOICES, default='Arial.ttf')
     name_color = models.CharField(max_length=20, default='#000000')
     
     # Title placeholder settings (percentages)
     title_x_percent = models.FloatField(default=50.0)
     title_y_percent = models.FloatField(default=28.3)
     title_font_size = models.IntegerField(default=80)
-    title_font = models.CharField(max_length=50, choices=FONT_CHOICES, default='arial.ttf')
+    title_font = models.CharField(max_length=50, choices=FONT_CHOICES, default='Arial.ttf')
     title_color = models.CharField(max_length=20, default='#1a1a1a')
     
     # Metadata
