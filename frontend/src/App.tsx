@@ -11,6 +11,7 @@ import AdminPage from "./pages/AdminPage";
 import LoadingPage from "./pages/LoadingPage";
 import AttendancePage from "./pages/AttendancePage";
 import FeedbackPage from "./pages/FeedbackPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
             )
           }
         />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route path="/attendance" element={<AttendancePage />} />
 
