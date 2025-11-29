@@ -111,7 +111,7 @@ export function CertificateEditorModal({
     xPercent: 50,
     yPercent: 44.2,
     fontSize: 128,
-    font: "arial.ttf",
+    font: "Poppins-Regular.ttf",
     color: "#000000",
   });
 
@@ -121,7 +121,7 @@ export function CertificateEditorModal({
     xPercent: 50,
     yPercent: 63.6,
     fontSize: 80,
-    font: "arial.ttf",
+    font: "Poppins-Regular.ttf",
     color: "#1a1a1a",
   });
 
