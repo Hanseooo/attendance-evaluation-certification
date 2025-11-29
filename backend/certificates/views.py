@@ -332,129 +332,94 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
 
     def _delete_old_cloudinary_image(self, template):
         """Delete old image from Cloudinary to save storage"""
-        if template.template_image:
-            try:
-                # Extract public_id from Cloudinary URL
-                # CloudinaryField has a public_id attribute
-                if hasattr(template.template_image, 'public_id'):
-                    public_id = template.template_image.public_id
-                    result = cloudinary.uploader.destroy(public_id)
-                    print(f"🗑️ Deleted old image from Cloudinary: {public_id}")
-                    print(f"   Result: {result}")
-                else:
-                    print(f"⚠️ Could not extract public_id from template_image")
-            except Exception as e:
-                print(f"❌ Error deleting old image from Cloudinary: {e}")
+        try:
+            if template.template_image and hasattr(template.template_image, "public_id"):
+                public_id = template.template_image.public_id
+                cloudinary.uploader.destroy(public_id)
+                print("🗑️ Deleted:", public_id)
+        except Exception as e:
+            print("Cloudinary delete error:", e)
+
+    def _update_dimensions(self, template):
+        """Update width/height using Cloudinary URL WITHOUT changing coordinates"""
+        try:
+            url = template.template_image.url
+            response = requests.get(url)
+            response.raise_for_status()
+            img = Image.open(BytesIO(response.content))
+
+            template.template_width = img.width
+            template.template_height = img.height
+            template.default_used = False
+
+            template.save(
+                update_fields=[
+                    "template_width",
+                    "template_height",
+                    "default_used",
+                ]
+            )
+
+            print(f"📐 Dimensions updated: {img.width}x{img.height}")
+        except Exception as e:
+            print("Dimension update error:", e)
 
     def create(self, request, *args, **kwargs):
-        """Create or update certificate template"""
+        """Create or update template with pixel-perfect behavior"""
         seminar_id = request.data.get("seminar_id")
-        
+
         if not seminar_id:
-            return Response(
-                {"error": "seminar_id is required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "seminar_id is required"}, status=400)
 
         try:
             seminar = Seminar.objects.get(id=seminar_id)
         except Seminar.DoesNotExist:
-            return Response(
-                {"error": "Seminar not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Seminar not found"}, status=404)
 
-        # Get or create template
+        # Existing template?
         try:
             template = seminar.certificate_template
-            
-            # ✅ If new image is being uploaded, delete the old one from Cloudinary
-            if 'template_image' in request.FILES and template.template_image:
+
+            # If new image, delete old Cloudinary file
+            if "template_image" in request.FILES:
                 self._delete_old_cloudinary_image(template)
-            
-            # Update existing template
+
             serializer = self.get_serializer(template, data=request.data, partial=True)
+
         except CertificateTemplate.DoesNotExist:
-            # Create new template
             serializer = self.get_serializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
         template = serializer.save()
 
-        # ✅ If new image uploaded, get dimensions from Cloudinary URL
-        if 'template_image' in request.FILES or template.template_image:
-            try:
-                # Get the Cloudinary URL
-                image_url = template.template_image.url
-                
-                # Download and read image dimensions (into memory only)
-                response = requests.get(image_url)
-                response.raise_for_status()
-                img = Image.open(BytesIO(response.content))
-                
-                template.template_width = img.width
-                template.template_height = img.height
-                template.default_used = False
-                template.save(update_fields=['template_width', 'template_height', 'default_used'])
-                
-                print(f"✅ Image uploaded to Cloudinary: {image_url}")
-                print(f"✅ Dimensions: {img.width}x{img.height}px")
-            except Exception as e:
-                print(f"❌ Error reading image dimensions: {e}")
-                # Don't fail the request, just use defaults
-                template.template_width = 2000
-                template.template_height = 1414
-                template.save(update_fields=['template_width', 'template_height'])
+        # Update width/height if new image uploaded
+        if "template_image" in request.FILES:
+            self._update_dimensions(template)
 
-        return Response(
-            self.get_serializer(template).data,
-            status=status.HTTP_201_CREATED
-        )
+        return Response(self.get_serializer(template).data, status=201)
 
     def update(self, request, *args, **kwargs):
-        """Update existing template"""
-        partial = kwargs.pop('partial', True)
+        """Update template WITHOUT resetting coordinates"""
         instance = self.get_object()
-        
-        # ✅ If new image is being uploaded, delete the old one from Cloudinary
-        if 'template_image' in request.FILES and instance.template_image:
+
+        # If new image uploaded → delete old one
+        if "template_image" in request.FILES:
             self._delete_old_cloudinary_image(instance)
-        
-        serializer = self.get_serializer(
-            instance,
-            data=request.data,
-            partial=partial
-        )
+
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         template = serializer.save()
 
-        # ✅ If new image uploaded, update dimensions
-        if 'template_image' in request.FILES or template.template_image:
-            try:
-                image_url = template.template_image.url
-                response = requests.get(image_url)
-                response.raise_for_status()
-                img = Image.open(BytesIO(response.content))
-                
-                template.template_width = img.width
-                template.template_height = img.height
-                template.default_used = False
-                template.save(update_fields=['template_width', 'template_height', 'default_used'])
-                
-                print(f"✅ Image updated in Cloudinary: {image_url}")
-                print(f"✅ Dimensions: {img.width}x{img.height}px")
-            except Exception as e:
-                print(f"❌ Error reading image dimensions: {e}")
+        # If image changed → update dimensions
+        if "template_image" in request.FILES:
+            self._update_dimensions(template)
 
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        """Delete template and its Cloudinary image"""
+        """Delete template + Cloudinary file"""
         instance = self.get_object()
-        
-        # ✅ Delete image from Cloudinary before deleting template
         self._delete_old_cloudinary_image(instance)
-        
         return super().destroy(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'])
@@ -537,10 +502,10 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
                 template.default_used = False
                 template.save(update_fields=['template_width', 'template_height', 'default_used'])
                 
-                print(f"✅ Image updated in Cloudinary: {image_url}")
-                print(f"✅ Dimensions: {img.width}x{img.height}px")
+                print(f"Image updated in Cloudinary: {image_url}")
+                print(f"Dimensions: {img.width}x{img.height}px")
             except Exception as e:
-                print(f"❌ Error reading image dimensions: {e}")
+                print(f"Error reading image dimensions: {e}")
 
         return Response(serializer.data)
 
