@@ -148,12 +148,12 @@ export default function ResetPasswordPage() {
           </CardHeader>
           <CardContent className="text-center">
             <p className="text-sm text-muted-foreground">
-              You will be redirected to the home page in a few seconds...
+              You will be redirected to the landing page in a few seconds...
             </p>
           </CardContent>
           <CardFooter>
             <Button onClick={() => navigate("/")} className="w-full">
-              Go to Home
+              back to landing page
             </Button>
           </CardFooter>
         </Card>
@@ -276,7 +276,7 @@ export default function ResetPasswordPage() {
               className="w-full"
               onClick={() => navigate("/")}
             >
-              Back to Home
+              Back to Landing Page
             </Button>
           </CardFooter>
         </form>

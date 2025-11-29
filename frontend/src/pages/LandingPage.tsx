@@ -2,9 +2,18 @@ import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/overlay/AuthModal";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 export default function LandingPage() {
   const { openLogin, openRegister } = useAuthModal();
+  const { redirectTo } = useAuth();
+
+    useEffect(() => {
+      if (redirectTo) {
+        openLogin();
+      }
+    }, [redirectTo]);
 
   return (
     <>
