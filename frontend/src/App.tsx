@@ -33,10 +33,10 @@ export default function App() {
           path="/"
           element={
             isAuthenticated ? (
-              user?.role === "admin" ? (
-                <Navigate to="/admin" replace />
-              ) : redirectTo ? (
+              redirectTo ? (
                 <Navigate to={redirectTo} replace />
+              ) : user?.role === "admin" ? (
+                <Navigate to="/admin" replace />
               ) : (
                 <Navigate to="/home" replace />
               )

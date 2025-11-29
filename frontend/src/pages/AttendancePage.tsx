@@ -14,16 +14,11 @@ export default function AttendancePage() {
   const { recordAttendance } = useAttendanceApi();
 
   useEffect(() => {
+    // Parse query params inside useEffect
     const query = new URLSearchParams(location.search);
     const action = query.get("action") as "check_in" | "check_out" | null;
     const seminarId = query.get("seminar");
-    let qrToken = query.get("token");
-
-
-  if (!qrToken) {
-    qrToken = authToken ?? "";
-  }
-
+    const qrToken = query.get("token") ?? authToken;
 
     if (!action || !seminarId || !qrToken) {
       setMessage("Invalid QR Code.");
@@ -37,15 +32,19 @@ export default function AttendancePage() {
         const response = await recordAttendance(
           parseInt(seminarId),
           action,
-          (qrToken ?? authToken) as string
+          qrToken
         );
 
         if (response.status === 200) {
           setMessage(response.data.success || "Attendance recorded.");
           setSuccess(true);
+
+          // Only clear redirectTo after successful attendance
           setRedirectTo(null);
+
+          // Redirect to /home after 5 seconds
           setTimeout(() => {
-            navigate("/", { replace: true });
+            navigate("/home", { replace: true });
           }, 5000);
         } else {
           setMessage(response.data.error || "Failed to record attendance.");
@@ -60,7 +59,7 @@ export default function AttendancePage() {
     };
 
     submitAttendance();
-  }, [authToken, location, navigate, recordAttendance]);
+  }, [authToken, location, navigate, recordAttendance, setRedirectTo]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-background p-4">

@@ -53,7 +53,7 @@ export default function AuthModal() {
   });
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
-  const { redirectTo, setRedirectTo } = useAuth();
+  const { redirectTo } = useAuth();
 
   const ids = {
     firstName: useId(),
@@ -150,8 +150,8 @@ export default function AuthModal() {
         });
       }
       if (redirectTo) {
-        navigate(redirectTo, { replace: true });
-        setRedirectTo(null);
+        navigate(redirectTo!, { replace: true });
+        closeModal();
       } else {
         closeModal();
       }
