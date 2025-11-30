@@ -8,3 +8,5 @@ router.register(r'attended-seminars', AttendedSeminarViewSet, basename='attended
 urlpatterns = [
     path("present-users/<int:seminar_id>/", get_present_users, name="present-users"),
 ]
+
+urlpatterns += router.urls
