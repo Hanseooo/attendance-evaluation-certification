@@ -8,6 +8,7 @@ import type {
   AttendedSeminarListResponse,
 } from "@/utils/types";
 import { useAuth } from "@/context/AuthContext";
+import AttendedSeminarsModal from "@/components/overlay/AttendedSeminarsModal";
 
 const BASE_API =
   "https://attendance-evaluation-certification-production.up.railway.app/api";
@@ -17,6 +18,8 @@ export default function AttendedSeminarsSection() {
   const [items, setItems] = useState<AttendedSeminar[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+
 
   const fetchAttended = useCallback(async () => {
     setLoading(true);
@@ -67,10 +70,7 @@ export default function AttendedSeminarsSection() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              // go to attended seminars page
-              window.location.href = "/attended";
-            }}
+            onClick={() => setOpenModal(true)}
             className="group hover:bg-primary/10"
           >
             View All
@@ -95,9 +95,7 @@ export default function AttendedSeminarsSection() {
                 key={att.id}
                 className="snap-start flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-[220px]"
               >
-                <AttendedSeminarCard
-                  attended={att}
-                />
+                <AttendedSeminarCard attended={att} />
               </div>
             ))}
           </div>
@@ -133,6 +131,13 @@ export default function AttendedSeminarsSection() {
             a seminar it will appear here.
           </p>
         </div>
+      )}
+      {items && (
+        <AttendedSeminarsModal
+          open={openModal}
+          onOpenChange={setOpenModal}
+          items={items}
+        />
       )}
 
       <style>{`
