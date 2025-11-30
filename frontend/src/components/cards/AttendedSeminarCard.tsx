@@ -21,7 +21,7 @@ export default function AttendedSeminarCard({
       className={`p-4 border border-primary h-[260px] flex flex-col justify-between ${className}`}
     >
       <CardHeader className="p-0">
-        <h3 className="font-semibold text-lg line-clamp-2">{s.title}</h3>
+        <h3 className="font-semibold text-lg line-clamp-2 mb-2">{s.title}</h3>
       </CardHeader>
 
       <CardContent className="p-0 flex flex-col gap-2 text-sm flex-1">
