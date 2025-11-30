@@ -23,7 +23,8 @@ export default function AttendedSeminarsSection() {
     setError(null);
     try {
       const res = await fetch(
-        `${BASE_API}/attended-seminars/my_attended_seminars/`,
+        `${BASE_API}/attendance/attended-seminars/my_attended_seminars/`,
+
         {
           method: "GET",
           headers: {
