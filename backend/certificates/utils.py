@@ -53,7 +53,6 @@ def generate_certificate(attendance):
 
     # ✅ Load image
     if use_default or not template or not template.template_image:
-        # Load default base image
         default_url = getattr(
             settings,
             "DEFAULT_CERTIFICATE_TEMPLATE_URL",
@@ -65,7 +64,6 @@ def generate_certificate(attendance):
 
         img_width, img_height = img.size
 
-        # 👉 ALWAYS use template settings if the seminar HAS a template object
         if template:
             name_x = int((template.name_x_percent / 100) * img_width)
             name_y = int((template.name_y_percent / 100) * img_height)
@@ -86,9 +84,7 @@ def generate_certificate(attendance):
                 'font_path': template.title_font,
                 'color': template.title_color,
             }
-
         else:
-            # Absolutely no template stored in DB → use real defaults
             name_config = {
                 'x': img_width // 2,
                 'y': int(img_height * 0.39),
@@ -103,16 +99,13 @@ def generate_certificate(attendance):
                 'font_path': "Arial.ttf",
                 'color': "#1a1a1a"
             }
-
     else:
-        # Use custom template with saved percentages
         response = requests.get(template.template_image.url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
         
         img_width, img_height = img.size
         
-        # Convert percentages to actual pixels
         name_x = int((template.name_x_percent / 100) * img_width)
         name_y = int((template.name_y_percent / 100) * img_height)
         title_x = int((template.title_x_percent / 100) * img_width)
@@ -136,22 +129,26 @@ def generate_certificate(attendance):
     draw = ImageDraw.Draw(img)
     img_width, img_height = img.size
 
-    # ✅ Draw seminar title (centered horizontally around x position)
-    title_font = _load_font(title_config['font_path'], title_config['font_size'])
-    title_text = seminar.title
+    # ✅ Draw seminar title ONLY if show_title is True
+    # 👉 Check template.show_title, default to True if no template
+    should_show_title = template.show_title if template else True
     
-    title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
-    title_width = title_bbox[2] - title_bbox[0]
-    title_x_centered = title_config['x'] - (title_width // 2)
-    
-    draw.text(
-        (title_x_centered, title_config['y']),
-        title_text,
-        font=title_font,
-        fill=title_config['color']
-    )
+    if should_show_title:
+        title_font = _load_font(title_config['font_path'], title_config['font_size'])
+        title_text = seminar.title
+        
+        title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
+        title_width = title_bbox[2] - title_bbox[0]
+        title_x_centered = title_config['x'] - (title_width // 2)
+        
+        draw.text(
+            (title_x_centered, title_config['y']),
+            title_text,
+            font=title_font,
+            fill=title_config['color']
+        )
 
-    # ✅ Draw participant name (centered horizontally around x position)
+    # ✅ Draw participant name (always shown)
     name_font = _load_font(name_config['font_path'], name_config['font_size'])
     
     name_bbox = draw.textbbox((0, 0), full_name, font=name_font)

@@ -116,6 +116,7 @@ const handleSaveCertificateTemplate = async (
     title_font_size: templateData.title_font_size,
     title_font: templateData.title_font,
     title_color: templateData.title_color,
+    show_title: templateData.show_title,
   };
 
   const result = await saveTemplate(payload);

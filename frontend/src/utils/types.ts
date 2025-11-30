@@ -134,21 +134,22 @@ export interface CertificateTemplate {
   template_image_url: string | null;
   template_width: number;
   template_height: number;
-  
+
   // Name placeholder (percentages)
   name_x_percent: number;
   name_y_percent: number;
   name_font_size: number;
   name_font: string;
   name_color: string;
-  
+
   // Title placeholder (percentages)
   title_x_percent: number;
   title_y_percent: number;
   title_font_size: number;
   title_font: string;
   title_color: string;
-  
+  show_title: boolean;
+
   // Metadata
   default_used?: boolean;
   uploaded_at?: string;
@@ -160,20 +161,21 @@ export interface CertificateTemplatePayload {
   template_image?: File;
   template_width?: number;
   template_height?: number;
-  
+
   // Name settings (percentages)
   name_x_percent: number;
   name_y_percent: number;
   name_font_size: number;
   name_font: string;
   name_color: string;
-  
+
   // Title settings (percentages)
   title_x_percent: number;
   title_y_percent: number;
   title_font_size: number;
   title_font: string;
   title_color: string;
+  show_title: boolean;
 }
 
 export interface Attendee {

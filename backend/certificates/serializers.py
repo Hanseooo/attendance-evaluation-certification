@@ -39,6 +39,7 @@ class CertificateTemplateSerializer(serializers.ModelSerializer):
             "title_font_size",
             "title_font",
             "title_color",
+            "show_title",
             
             # Metadata
             "default_used",

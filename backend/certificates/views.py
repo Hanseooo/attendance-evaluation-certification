@@ -198,6 +198,7 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
             "title_font_size": 80,
             "title_font": "Arial.ttf",
             "title_color": "#1a1a1a",
+            "show_title": True,
         })
 
     @action(detail=False, methods=['get'])
@@ -285,6 +286,7 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
             "title_font_size": 80,
             "title_font": "Arial.ttf",
             "title_color": "#1a1a1a",
+            "show_title": True,
         })
 
     @action(detail=False, methods=['get'])

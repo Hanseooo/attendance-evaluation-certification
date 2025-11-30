@@ -58,6 +58,10 @@ class CertificateTemplate(models.Model):
     title_font_size = models.IntegerField(default=80)
     title_font = models.CharField(max_length=50, choices=FONT_CHOICES, default='Arial.ttf')
     title_color = models.CharField(max_length=20, default='#1a1a1a')
+    show_title = models.BooleanField(
+        default=True,
+        help_text="Whether to display the seminar title on the certificate"
+    )
     
     # Metadata
     uploaded_at = models.DateTimeField(auto_now_add=True)

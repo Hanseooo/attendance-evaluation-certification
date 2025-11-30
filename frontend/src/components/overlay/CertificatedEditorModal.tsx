@@ -23,6 +23,7 @@ import { Upload, ImageIcon, Save, AlertCircle, Loader2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import clsx from "clsx";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
 import { type CertificateTemplate, type FontOption } from "@/utils/types";
 
 interface TextElement {
@@ -99,6 +100,7 @@ export function CertificateEditorModal({
   const [imageFile, setImageFile] = useState<File | undefined>(undefined);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showTitle, setShowTitle] = useState(true);
 
   // Image dimensions
   const [imgNaturalWidth, setImgNaturalWidth] = useState(2000);
@@ -137,6 +139,7 @@ export function CertificateEditorModal({
       setImageSrc(initialTemplate.template_image_url || undefined);
       setImgNaturalWidth(initialTemplate.template_width);
       setImgNaturalHeight(initialTemplate.template_height);
+      setShowTitle(initialTemplate.show_title ?? true);
 
       setNameElement({
         id: "name",
@@ -279,6 +282,7 @@ export function CertificateEditorModal({
         title_font_size: titleElement.fontSize,
         title_font: titleElement.font,
         title_color: titleElement.color,
+        show_title: showTitle,
       };
 
       await onSave(template);
@@ -350,7 +354,6 @@ export function CertificateEditorModal({
 
             {imageSrc && (
               <div className="space-y-3">
-                {/* Image info */}
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground px-2">
                   <span>
                     Original: {imgNaturalWidth}×{imgNaturalHeight}px
@@ -367,7 +370,6 @@ export function CertificateEditorModal({
                   )}
                 </div>
 
-                {/* Canvas */}
                 <div className="relative w-full flex justify-center items-center overflow-hidden rounded-xl border-2 border-border bg-muted/30 shadow-sm p-4">
                   <img
                     ref={imgRef}
@@ -379,37 +381,38 @@ export function CertificateEditorModal({
 
                   {imgLoaded && imgRef.current && (
                     <>
-                      {/* Title Element */}
-                      <div
-                        onMouseDown={() => {
-                          draggingRef.current = "title";
-                          setActiveElement("title");
-                        }}
-                        onTouchStart={() => {
-                          draggingRef.current = "title";
-                          setActiveElement("title");
-                        }}
-                        onClick={() => setActiveElement("title")}
-                        style={{
-                          left: `${titleElement.xPercent}%`,
-                          top: `${titleElement.yPercent}%`,
-                          transform: "translate(-50%, -50%)",
-                          fontSize: `${getScaledFontSize(titleElement.fontSize)}px`,
-                          fontFamily: AVAILABLE_FONTS.find(
-                            (f) => f.value === titleElement.font
-                          )?.family,
-
-                          color: titleElement.color,
-                        }}
-                        className={clsx(
-                          "absolute cursor-grab active:cursor-grabbing select-none whitespace-nowrap px-2 py-1 rounded transition-all",
-                          activeElement === "title"
-                            ? "bg-blue-500/20 border-2 border-blue-500 ring-2 ring-blue-300"
-                            : "bg-primary/10 border border-primary/30 hover:bg-primary/20"
-                        )}
-                      >
-                        {seminarTitle}
-                      </div>
+                      {/* Title Element - Only render if showTitle is true */}
+                      {showTitle && (
+                        <div
+                          onMouseDown={() => {
+                            draggingRef.current = "title";
+                            setActiveElement("title");
+                          }}
+                          onTouchStart={() => {
+                            draggingRef.current = "title";
+                            setActiveElement("title");
+                          }}
+                          onClick={() => setActiveElement("title")}
+                          style={{
+                            left: `${titleElement.xPercent}%`,
+                            top: `${titleElement.yPercent}%`,
+                            transform: "translate(-50%, -50%)",
+                            fontSize: `${getScaledFontSize(titleElement.fontSize)}px`,
+                            fontFamily: AVAILABLE_FONTS.find(
+                              (f) => f.value === titleElement.font
+                            )?.family,
+                            color: titleElement.color,
+                          }}
+                          className={clsx(
+                            "absolute cursor-grab active:cursor-grabbing select-none whitespace-nowrap px-2 py-1 rounded transition-all",
+                            activeElement === "title"
+                              ? "bg-blue-500/20 border-2 border-blue-500 ring-2 ring-blue-300"
+                              : "bg-primary/10 border border-primary/30 hover:bg-primary/20"
+                          )}
+                        >
+                          {seminarTitle}
+                        </div>
+                      )}
 
                       {/* Name Element */}
                       <div
@@ -445,7 +448,6 @@ export function CertificateEditorModal({
                   )}
                 </div>
 
-                {/* Change Template Button */}
                 <div className="flex justify-center">
                   <Button
                     variant="outline"
@@ -465,109 +467,6 @@ export function CertificateEditorModal({
 
           {/* Right: Controls */}
           <div className="space-y-6">
-            {/* Title Controls */}
-            <div className="space-y-4 p-4 border rounded-lg bg-foreground/5">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm">Seminar Title</h3>
-                <Button
-                  size="sm"
-                  variant={activeElement === "title" ? "default" : "outline"}
-                  onClick={() => setActiveElement("title")}
-                  className="text-xs"
-                >
-                  Select
-                </Button>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs">Font Size</Label>
-                  <Input
-                    type="number"
-                    min="10"
-                    max="500"
-                    value={titleElement.fontSize}
-                    onChange={(e) =>
-                      setTitleElement((prev) => ({
-                        ...prev,
-                        fontSize: parseInt(e.target.value) || 80,
-                      }))
-                    }
-                    className="text-sm"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs">Font</Label>
-                  <Select
-                    value={titleElement.font}
-                    onValueChange={(value) =>
-                      setTitleElement((prev) => ({ ...prev, font: value }))
-                    }
-                  >
-                    <SelectTrigger className="text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AVAILABLE_FONTS.map((font) => (
-                        <SelectItem
-                          key={font.value}
-                          value={font.value}
-                          className="text-sm"
-                        >
-                          {font.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-xs">Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="color"
-                      value={titleElement.color}
-                      onChange={(e) =>
-                        setTitleElement((prev) => ({
-                          ...prev,
-                          color: e.target.value,
-                        }))
-                      }
-                      className="w-16 h-10 p-1"
-                    />
-                    <Input
-                      type="text"
-                      value={titleElement.color}
-                      onChange={(e) =>
-                        setTitleElement((prev) => ({
-                          ...prev,
-                          color: e.target.value,
-                        }))
-                      }
-                      className="flex-1 text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                  <div>X: {titleElement.xPercent.toFixed(1)}%</div>
-                  <div>Y: {titleElement.yPercent.toFixed(1)}%</div>
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() =>
-                    setTitleElement((prev) => ({ ...prev, xPercent: 50 }))
-                  }
-                  className="w-full text-xs"
-                >
-                  Center Horizontally
-                </Button>
-              </div>
-            </div>
-
             {/* Name Controls */}
             <div className="space-y-4 p-4 border rounded-lg bg-foreground/5">
               <div className="flex items-center justify-between">
@@ -663,6 +562,125 @@ export function CertificateEditorModal({
                   variant="secondary"
                   onClick={() =>
                     setNameElement((prev) => ({ ...prev, xPercent: 50 }))
+                  }
+                  className="w-full text-xs"
+                >
+                  Center Horizontally
+                </Button>
+              </div>
+            </div>
+
+            {/* Title Controls */}
+            <div className="space-y-4 p-4 border rounded-lg bg-foreground/5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm">Seminar Title</h3>
+                <div className="flex items-center gap-2">
+                  {/* ✅ ADD THIS TOGGLE */}
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="show-title"
+                      checked={showTitle}
+                      onCheckedChange={setShowTitle}
+                    />
+                    <Label
+                      htmlFor="show-title"
+                      className="text-xs cursor-pointer"
+                    >
+                      Show
+                    </Label>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={activeElement === "title" ? "default" : "outline"}
+                    onClick={() => setActiveElement("title")}
+                    className="text-xs"
+                  >
+                    Select
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs">Font Size</Label>
+                  <Input
+                    type="number"
+                    min="10"
+                    max="500"
+                    value={titleElement.fontSize}
+                    onChange={(e) =>
+                      setTitleElement((prev) => ({
+                        ...prev,
+                        fontSize: parseInt(e.target.value) || 80,
+                      }))
+                    }
+                    className="text-sm"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs">Font</Label>
+                  <Select
+                    value={titleElement.font}
+                    onValueChange={(value) =>
+                      setTitleElement((prev) => ({ ...prev, font: value }))
+                    }
+                  >
+                    <SelectTrigger className="text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AVAILABLE_FONTS.map((font) => (
+                        <SelectItem
+                          key={font.value}
+                          value={font.value}
+                          className="text-sm"
+                        >
+                          {font.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-xs">Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      value={titleElement.color}
+                      onChange={(e) =>
+                        setTitleElement((prev) => ({
+                          ...prev,
+                          color: e.target.value,
+                        }))
+                      }
+                      className="w-16 h-10 p-1"
+                    />
+                    <Input
+                      type="text"
+                      value={titleElement.color}
+                      onChange={(e) =>
+                        setTitleElement((prev) => ({
+                          ...prev,
+                          color: e.target.value,
+                        }))
+                      }
+                      className="flex-1 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                  <div>X: {titleElement.xPercent.toFixed(1)}%</div>
+                  <div>Y: {titleElement.yPercent.toFixed(1)}%</div>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() =>
+                    setTitleElement((prev) => ({ ...prev, xPercent: 50 }))
                   }
                   className="w-full text-xs"
                 >
