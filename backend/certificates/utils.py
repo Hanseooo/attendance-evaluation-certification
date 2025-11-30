@@ -43,6 +43,7 @@ def generate_certificate(attendance):
     user = attendance.user
     full_name = f"{user.first_name} {user.last_name}".strip() or user.username
 
+    # Try to get the seminar's custom template
     try:
         template = seminar.certificate_template
         use_default = False
@@ -50,28 +51,24 @@ def generate_certificate(attendance):
         template = None
         use_default = True
 
-    # Load image (default or custom)
+    # Load image
     if use_default or not template or not template.template_image:
-        default_url = getattr(settings, "DEFAULT_CERTIFICATE_TEMPLATE_URL", "...")
+        default_url = getattr(
+            settings,
+            "DEFAULT_CERTIFICATE_TEMPLATE_URL",
+            "https://res.cloudinary.com/dcoc9jepl/image/upload/v1761304008/default_certificate_h09vbq.png"
+        )
         response = requests.get(default_url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
-        
-        # ✅ GET ACTUAL IMAGE DIMENSIONS (not scaled)
         img_width, img_height = img.size
-        print(f"📐 Image dimensions: {img_width}x{img_height}px")
-        
+
         if template:
-            # ✅ CRITICAL: Convert percentages to pixels on ORIGINAL image
             name_x = int((template.name_x_percent / 100) * img_width)
             name_y = int((template.name_y_percent / 100) * img_height)
             title_x = int((template.title_x_percent / 100) * img_width)
             title_y = int((template.title_y_percent / 100) * img_height)
-            
-            # ✅ DEBUG: Print calculated positions
-            print(f"📍 Name position: {template.name_x_percent}% → {name_x}px, {template.name_y_percent}% → {name_y}px")
-            print(f"📍 Title position: {template.title_x_percent}% → {title_x}px, {template.title_y_percent}% → {title_y}px")
-            
+
             name_config = {
                 'x': name_x,
                 'y': name_y,
@@ -87,7 +84,6 @@ def generate_certificate(attendance):
                 'color': template.title_color,
             }
         else:
-            # Default values
             name_config = {
                 'x': img_width // 2,
                 'y': int(img_height * 0.39),
@@ -103,23 +99,15 @@ def generate_certificate(attendance):
                 'color': "#1a1a1a"
             }
     else:
-        # Custom uploaded template
         response = requests.get(template.template_image.url)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))
-        
-        # ✅ GET ACTUAL IMAGE DIMENSIONS
         img_width, img_height = img.size
-        print(f"📐 Custom image dimensions: {img_width}x{img_height}px")
         
-        # ✅ CRITICAL: Convert percentages to pixels
         name_x = int((template.name_x_percent / 100) * img_width)
         name_y = int((template.name_y_percent / 100) * img_height)
         title_x = int((template.title_x_percent / 100) * img_width)
         title_y = int((template.title_y_percent / 100) * img_height)
-        
-        print(f"📍 Name: {template.name_x_percent}% → {name_x}px, {template.name_y_percent}% → {name_y}px")
-        print(f"📍 Title: {template.title_x_percent}% → {title_x}px, {template.title_y_percent}% → {title_y}px")
         
         name_config = {
             'x': name_x,
@@ -138,49 +126,39 @@ def generate_certificate(attendance):
 
     draw = ImageDraw.Draw(img)
 
-    # ✅ Draw title (if enabled)
+    # Draw seminar title (if enabled)
     should_show_title = template.show_title if template else True
     
     if should_show_title:
         title_font = _load_font(title_config['font_path'], title_config['font_size'])
         title_text = seminar.title
         
-        # ✅ IMPORTANT: Get text width to center it
-        title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
-        title_width = title_bbox[2] - title_bbox[0]
-        
-        # ✅ Center the text around the X position
-        title_x_centered = title_config['x'] - (title_width // 2)
-        
-        print(f"🎯 Title: width={title_width}px, x_center={title_config['x']}px, x_final={title_x_centered}px")
-        
+        # ✅ Use anchor='mt' for accurate centering
         draw.text(
-            (title_x_centered, title_config['y']),
+            (title_config['x'], title_config['y']),
             title_text,
             font=title_font,
-            fill=title_config['color']
+            fill=title_config['color'],
+            anchor='mt'  # Middle-top: centers horizontally, Y is top edge
         )
+        
+        print(f"📍 Title: '{title_text}' at ({title_config['x']}, {title_config['y']}) [centered]")
 
-    # ✅ Draw name (always shown)
+    # Draw participant name (always shown)
     name_font = _load_font(name_config['font_path'], name_config['font_size'])
     
-    # ✅ Get text width to center it
-    name_bbox = draw.textbbox((0, 0), full_name, font=name_font)
-    name_width = name_bbox[2] - name_bbox[0]
-    
-    # ✅ Center the text around the X position
-    name_x_centered = name_config['x'] - (name_width // 2)
-    
-    print(f"🎯 Name: width={name_width}px, x_center={name_config['x']}px, x_final={name_x_centered}px")
-    
+    # ✅ Use anchor='mt' for accurate centering
     draw.text(
-        (name_x_centered, name_config['y']),
+        (name_config['x'], name_config['y']),
         full_name,
         font=name_font,
-        fill=name_config['color']
+        fill=name_config['color'],
+        anchor='mt'  # Middle-top: centers horizontally, Y is top edge
     )
+    
+    print(f"📍 Name: '{full_name}' at ({name_config['x']}, {name_config['y']}) [centered]")
 
-    # Save and return...
+    # Save to BytesIO
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     buffer.seek(0)
@@ -189,12 +167,14 @@ def generate_certificate(attendance):
     certificate_base64 = base64.b64encode(certificate_bytes).decode('utf-8')
     certificate_data_url = f"data:image/png;base64,{certificate_base64}"
 
+    # Track certificate generation
     CertificateRecord.objects.get_or_create(
         seminar=attendance.seminar,
         user=attendance.user,
         defaults={'email': attendance.user.email}
     )
 
+    # Send email
     send_certificate_email(user, seminar, certificate_bytes)
     
     return certificate_data_url
