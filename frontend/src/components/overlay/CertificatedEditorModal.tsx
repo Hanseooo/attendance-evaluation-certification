@@ -57,8 +57,8 @@ const AVAILABLE_FONTS: FontOption[] = [
     label: "Helvetica Bold",
     family: "Helvetica-Bold",
   },
-  { value: "Calibri.ttf", label: "Calibri", family: "Calibri" },
-  { value: "Calibri-Bold.ttf", label: "Calibri Bold", family: "Calibri-Bold" },
+  { value: "Calibri-Regular.ttf", label: "Calibri", family: "Calibri" },
+  { value: "Calibri-bold.ttf", label: "Calibri Bold", family: "Calibri-Bold" },
   {
     value: "EBGaramond-Regular.ttf",
     label: "EB Garamond",
