@@ -3,18 +3,19 @@ import qrcode
 from io import BytesIO
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Attendance, SeminarQRCode
+from .models import Attendance, SeminarQRCode, AttendedSeminar
+from users.models import CustomUser
 from seminars.models import Seminar
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from django.utils import timezone
 from datetime import timedelta
 from PIL import Image, ImageDraw, ImageFont
 from django.conf import settings
 import base64
-from attendance.serializers import AttendanceUserSerializer
+from attendance.serializers import AttendanceUserSerializer, AttendedSeminarSerializer
 
 
 base_url = settings.BASE_URL
@@ -30,7 +31,7 @@ def get_present_users(request, seminar_id):
     attendances = Attendance.objects.filter(
         seminar_id=seminar_id,
         is_present=True,
-        user__role="participant"  # ✅ filters only participants
+        user__role="participant"  
     ).select_related("user")
 
     users = [a.user for a in attendances]
@@ -203,3 +204,163 @@ def record_attendance(request, seminar_id, action):
         attendance.check_out = timezone.now()
         attendance.save()
         return Response({"success": "Check-out successful."})
+
+
+class AttendedSeminarViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for AttendedSeminar model (Read-Only)
+    Records are automatically created via signals, not manually
+    """
+    queryset = AttendedSeminar.objects.all()
+    serializer_class = AttendedSeminarSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Filter based on user role and query parameters"""
+        user = self.request.user
+        queryset = AttendedSeminar.objects.select_related('user', 'seminar')
+        
+        # Filter by role
+        if user.role != 'admin':
+            queryset = queryset.filter(user=user)
+        
+        # Filter by seminar_id if provided
+        seminar_id = self.request.query_params.get('seminar_id')
+        if seminar_id:
+            queryset = queryset.filter(seminar_id=seminar_id)
+        
+        # Filter by user_id if provided (admin only)
+        user_id = self.request.query_params.get('user_id')
+        if user_id and user.role == 'admin':
+            queryset = queryset.filter(user_id=user_id)
+        
+        # Filter by certificate status
+        certificate_issued = self.request.query_params.get('certificate_issued')
+        if certificate_issued is not None:
+            queryset = queryset.filter(certificate_issued=certificate_issued.lower() == 'true')
+        
+        return queryset
+
+    @action(detail=False, methods=['get'])
+    def my_attended_seminars(self, request):
+        """
+        Get all seminars the current user has attended
+        GET /api/attended-seminars/my_attended_seminars/
+        """
+        attended_seminars = AttendedSeminar.objects.filter(
+            user=request.user
+        ).select_related('seminar')
+        
+        serializer = self.get_serializer(attended_seminars, many=True)
+        return Response({
+            'count': attended_seminars.count(),
+            'results': serializer.data
+        })
+
+    @action(detail=False, methods=['get'], url_path='seminar/(?P<seminar_id>[^/.]+)')
+    def by_seminar(self, request, seminar_id=None):
+        """
+        Get all users who attended a specific seminar
+        GET /api/attended-seminars/seminar/{seminar_id}/
+        Admin only
+        """
+        if request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can view seminar attendees'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        seminar = get_object_or_404(Seminar, id=seminar_id)
+        attended_seminars = AttendedSeminar.objects.filter(
+            seminar=seminar
+        ).select_related('user', 'seminar')
+        
+        serializer = self.get_serializer(attended_seminars, many=True)
+        return Response({
+            'seminar_id': seminar.id,
+            'seminar_title': seminar.title,
+            'total_attendees': attended_seminars.count(),
+            'attendees': serializer.data
+        })
+
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
+    def by_user(self, request, user_id=None):
+        """
+        Get all seminars attended by a specific user
+        GET /api/attended-seminars/user/{user_id}/
+        Admin only
+        """
+        if request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can view other users\' attendance'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        user = get_object_or_404(CustomUser, id=user_id)
+        attended_seminars = AttendedSeminar.objects.filter(
+            user=user
+        ).select_related('seminar')
+        
+        serializer = self.get_serializer(attended_seminars, many=True)
+        return Response({
+            'user_id': user.id,
+            'username': user.username,
+            'total_attended': attended_seminars.count(),
+            'seminars': serializer.data
+        })
+
+    @action(detail=False, methods=['get'])
+    def statistics(self, request):
+        """
+        Get attendance statistics
+        GET /api/attended-seminars/statistics/
+        Admin only
+        """
+        if request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can view statistics'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        total_attended = AttendedSeminar.objects.count()
+        certificates_issued = AttendedSeminar.objects.filter(certificate_issued=True).count()
+        certificates_pending = AttendedSeminar.objects.filter(certificate_issued=False).count()
+        
+        # Average duration
+        from django.db.models import Avg
+        avg_duration = AttendedSeminar.objects.aggregate(
+            avg=Avg('duration_minutes')
+        )['avg'] or 0
+        
+        return Response({
+            'total_attended': total_attended,
+            'certificates_issued': certificates_issued,
+            'certificates_pending': certificates_pending,
+            'average_duration_minutes': round(avg_duration, 2),
+        })
+
+    @action(detail=True, methods=['post'])
+    def mark_certificate_issued(self, request, pk=None):
+        """
+        Mark certificate as issued for a specific attended seminar
+        POST /api/attended-seminars/{id}/mark_certificate_issued/
+        Admin only
+        """
+        if request.user.role != 'admin':
+            return Response(
+                {'error': 'Only admins can mark certificates as issued'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        attended_seminar = self.get_object()
+        
+        from django.utils import timezone
+        attended_seminar.certificate_issued = True
+        attended_seminar.certificate_issued_at = timezone.now()
+        attended_seminar.save()
+        
+        serializer = self.get_serializer(attended_seminar)
+        return Response({
+            'message': 'Certificate marked as issued',
+            'data': serializer.data
+        })

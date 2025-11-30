@@ -117,7 +117,6 @@ export interface EvaluationAnalytics {
   evaluations: Evaluation[];
 }
 
-
 // src/utils/types.ts (additions)
 
 export interface FontOption {
@@ -184,4 +183,23 @@ export interface Attendee {
   first_name: string;
   last_name: string;
   email: string;
+}
+
+export interface AttendedSeminar {
+  id: number;
+  user: number; // user id
+  user_name?: string; // full name or username
+  seminar: Seminar;
+  check_in_time: string | null; // ISO datetime
+  check_out_time: string | null; // ISO datetime
+  attended_at: string; // ISO datetime when record created
+  duration_minutes?: number | null;
+  duration_display?: string; // "1h 20m" or "45m" or "N/A"
+  certificate_issued: boolean;
+  certificate_issued_at?: string | null;
+}
+
+export interface AttendedSeminarListResponse {
+  count: number;
+  results: AttendedSeminar[];
 }

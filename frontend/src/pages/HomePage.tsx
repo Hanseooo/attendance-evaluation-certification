@@ -10,6 +10,7 @@ import { useState } from 'react';
 import SettingsModal from '@/components/overlay/SettingsModal';
 import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AttendedSeminarsSection from '@/Sections/AttendedSeminarsSection';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -112,6 +113,7 @@ export default function HomePage() {
 
           {/* My Seminars Section */}
           <MySeminarsSection />
+          <AttendedSeminarsSection />
         </div>
       </div>
     </div>
