@@ -19,7 +19,7 @@ export default function AttendedSeminarCard({
 
 
   return (
-    <Card className={`p-4 ${className}`}>
+    <Card className={`p-4 border-2 border-primary min-h-[300px] ${className}`}>
       <CardHeader className="p-0 mb-3">
         <h3 className="font-semibold text-lg">{s.title}</h3>
       </CardHeader>

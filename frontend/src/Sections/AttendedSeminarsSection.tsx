@@ -55,7 +55,7 @@ export default function AttendedSeminarsSection() {
   }, [fetchAttended]);
 
   return (
-    <section className="w-full">
+    <section className="w-full min-h-[350px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
