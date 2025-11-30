@@ -58,7 +58,7 @@ const AVAILABLE_FONTS: FontOption[] = [
     family: "Helvetica-Bold",
   },
   { value: "Calibri-Regular.ttf", label: "Calibri", family: "Calibri" },
-  { value: "Calibri-bold.ttf", label: "Calibri Bold", family: "Calibri-Bold" },
+  // { value: "Calibri-bold.ttf", label: "Calibri Bold", family: "Calibri-Bold" }, console says failed to download font
   {
     value: "EBGaramond-Regular.ttf",
     label: "EB Garamond",
@@ -74,7 +74,7 @@ const AVAILABLE_FONTS: FontOption[] = [
     label: "Times New Roman",
     family: "Times New Roman",
   },
-  { value: "Georgia.ttf", label: "Georgia", family: "Georgia" },
+  // { value: "Georgia.ttf", label: "Georgia", family: "Georgia" },
   {
     value: "GreatVibes-Regular.ttf",
     label: "Great Vibes",
@@ -201,28 +201,26 @@ export function CertificateEditorModal({
       const clientY =
         "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
 
-      // Calculate percentage position
+      // ✅ IMPORTANT: Calculate position relative to the DISPLAYED image
+      // These are pixel positions on the scaled preview
+      const xPixelOnPreview = clientX - rect.left;
+      const yPixelOnPreview = clientY - rect.top;
+
+      // ✅ Convert to percentage of the DISPLAYED image
+      // This ensures positions are resolution-independent
       const xPercent = Math.max(
         5,
-        Math.min(95, ((clientX - rect.left) / rect.width) * 100)
+        Math.min(95, (xPixelOnPreview / rect.width) * 100)
       );
       const yPercent = Math.max(
         5,
-        Math.min(95, ((clientY - rect.top) / rect.height) * 100)
+        Math.min(95, (yPixelOnPreview / rect.height) * 100)
       );
 
       if (draggingRef.current === "name") {
-        setNameElement((prev) => ({
-          ...prev,
-          xPercent,
-          yPercent,
-        }));
+        setNameElement((prev) => ({ ...prev, xPercent, yPercent }));
       } else if (draggingRef.current === "title") {
-        setTitleElement((prev) => ({
-          ...prev,
-          xPercent,
-          yPercent,
-        }));
+        setTitleElement((prev) => ({ ...prev, xPercent, yPercent }));
       }
     };
 
@@ -241,7 +239,7 @@ export function CertificateEditorModal({
       window.removeEventListener("mouseup", stopDrag);
       window.removeEventListener("touchend", stopDrag);
     };
-  }, []);
+  }, []); //
 
   // Calculate scaled font size for preview
   const getScaledFontSize = useCallback(
@@ -259,8 +257,27 @@ export function CertificateEditorModal({
       alert("Please upload an image first");
       return;
     }
+    console.log("🔍 Saving template with positions:");
+    console.log("Name:", {
+      x: nameElement.xPercent.toFixed(2) + "%",
+      y: nameElement.yPercent.toFixed(2) + "%",
+      fontSize: nameElement.fontSize,
+    });
+    console.log("Title:", {
+      x: titleElement.xPercent.toFixed(2) + "%",
+      y: titleElement.yPercent.toFixed(2) + "%",
+      fontSize: titleElement.fontSize,
+    });
+    console.log("Original image:", imgNaturalWidth, "x", imgNaturalHeight);
+    console.log(
+      "Preview image:",
+      imgRef.current?.width,
+      "x",
+      imgRef.current?.height
+    );
 
     setSaving(true);
+
     try {
       const template: CertificateTemplate = {
         seminar_id: seminarId,
