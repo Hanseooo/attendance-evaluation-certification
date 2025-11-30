@@ -1,4 +1,3 @@
-// src/components/cards/AttendedSeminarCard.tsx
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Calendar, Clock, MapPin, User } from "lucide-react";
 import type { AttendedSeminar } from "@/utils/types";
@@ -17,44 +16,43 @@ export default function AttendedSeminarCard({
   const dateStart = s.date_start ? new Date(s.date_start) : null;
   const dateEnd = s.date_end ? new Date(s.date_end) : null;
 
-
   return (
-    <Card className={`p-4 border border-primary min-h-[275px] ${className}`}>
-      <CardHeader className="p-0 mb-3">
-        <h3 className="font-semibold text-lg">{s.title}</h3>
+    <Card
+      className={`p-4 border border-primary h-[260px] flex flex-col justify-between ${className}`}
+    >
+      <CardHeader className="p-0">
+        <h3 className="font-semibold text-lg line-clamp-2">{s.title}</h3>
       </CardHeader>
 
-      <CardContent className="p-0 flex flex-col gap-3 text-sm">
-        {/* Speaker */}
+      <CardContent className="p-0 flex flex-col gap-2 text-sm flex-1">
         <div className="flex items-center gap-2">
           <User className="w-4 h-4" />
-          <span>{s.speaker}</span>
+          <span className="truncate">{s.speaker}</span>
         </div>
 
-        {/* Venue */}
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4" />
-          <span>{s.venue}</span>
+          <span className="truncate">{s.venue}</span>
         </div>
 
-        {/* Date & Time */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-xs">
           <Calendar className="w-4 h-4" />
-          <span>
+          <span className="truncate">
             {dateStart
-              ? `${format(dateStart, "PPP p")} – ${dateEnd ? format(dateEnd, "p") : ""}`
+              ? `${format(dateStart, "PPP p")} – ${
+                  dateEnd ? format(dateEnd, "p") : ""
+                }`
               : "TBA"}
           </span>
         </div>
 
-        {/* Duration */}
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4" />
           <span>{s.duration_minutes} minutes</span>
         </div>
 
         {/* Check in/out */}
-        <div className="mt-2 text-xs text-muted-foreground">
+        <div className="mt-auto text-xs text-muted-foreground">
           <p>
             Check-in:{" "}
             <span className="font-medium">

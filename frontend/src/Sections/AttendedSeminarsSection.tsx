@@ -93,7 +93,7 @@ export default function AttendedSeminarsSection() {
             {items.slice(0, 6).map((att) => (
               <div
                 key={att.id}
-                className="snap-start flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-[220px]"
+                className="snap-start flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-[260px]"
               >
                 <AttendedSeminarCard attended={att} />
               </div>
