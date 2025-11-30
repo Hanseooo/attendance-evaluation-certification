@@ -139,7 +139,7 @@ def generate_certificate(attendance):
             title_text,
             font=title_font,
             fill=title_config['color'],
-            anchor='mt'  # Middle-top: centers horizontally, Y is top edge
+            anchor='mm' 
         )
         
         print(f"📍 Title: '{title_text}' at ({title_config['x']}, {title_config['y']}) [centered]")
@@ -153,7 +153,7 @@ def generate_certificate(attendance):
         full_name,
         font=name_font,
         fill=name_config['color'],
-        anchor='mt'  # Middle-top: centers horizontally, Y is top edge
+        anchor='mm' 
     )
     
     print(f"📍 Name: '{full_name}' at ({name_config['x']}, {name_config['y']}) [centered]")
