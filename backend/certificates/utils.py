@@ -147,7 +147,7 @@ def generate_certificate(attendance):
     # Draw participant name (always shown)
     name_font = _load_font(name_config['font_path'], name_config['font_size'])
     
-    # ✅ Use anchor='mt' for accurate centering
+    # ✅ Use anchor='mm' for accurate centering
     draw.text(
         (name_config['x'], name_config['y']),
         full_name,
