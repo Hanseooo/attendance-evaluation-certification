@@ -156,7 +156,7 @@ def generate_certificate(attendance):
         anchor='mm' 
     )
     
-    print(f"📍 Name: '{full_name}' at ({name_config['x']}, {name_config['y']}) [centered]")
+    print(f"Name: '{full_name}' at ({name_config['x']}, {name_config['y']}) [centered]")
 
     # Save to BytesIO
     buffer = BytesIO()
