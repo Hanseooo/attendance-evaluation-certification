@@ -54,12 +54,12 @@ class CertificateTemplateViewSet(viewsets.ModelViewSet):
                 if hasattr(template.template_image, 'public_id'):
                     public_id = template.template_image.public_id
                     result = cloudinary.uploader.destroy(public_id)
-                    print(f"🗑️ Deleted old image from Cloudinary: {public_id}")
+                    print(f"Deleted old image from Cloudinary: {public_id}")
                     print(f"   Result: {result}")
                 else:
-                    print(f"⚠️ Could not extract public_id from template_image")
+                    print(f"Could not extract public_id from template_image")
             except Exception as e:
-                print(f"❌ Error deleting old image from Cloudinary: {e}")
+                print(f"Error deleting old image from Cloudinary: {e}")
 
     def create(self, request, *args, **kwargs):
         """Create or update certificate template"""

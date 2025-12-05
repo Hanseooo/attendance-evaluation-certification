@@ -86,14 +86,14 @@ def generate_certificate(attendance):
         else:
             name_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.39),
+                'y': int(img_height * 0.44),
                 'font_size': 128,
                 'font_path': "Arial.ttf",
                 'color': "#000000"
             }
             title_config = {
                 'x': img_width // 2,
-                'y': int(img_height * 0.60),
+                'y': int(img_height * 0.65),
                 'font_size': 80,
                 'font_path': "Arial.ttf",
                 'color': "#1a1a1a"
@@ -142,7 +142,7 @@ def generate_certificate(attendance):
             anchor='mm' 
         )
         
-        print(f"📍 Title: '{title_text}' at ({title_config['x']}, {title_config['y']}) [centered]")
+        print(f"Title: '{title_text}' at ({title_config['x']}, {title_config['y']}) [centered]")
 
     # Draw participant name (always shown)
     name_font = _load_font(name_config['font_path'], name_config['font_size'])
