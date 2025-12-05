@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your New Email</title>
+    <title>Verify Your Email Change</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
@@ -12,7 +12,7 @@
                 <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     <!-- Header -->
                     <tr>
-                        <td style="background-color: #dc2626; padding: 40px 30px; text-align: center;">
+                        <td style="background-color: #B22222; padding: 40px 30px; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">The Podium</h1>
                         </td>
                     </tr>
@@ -20,15 +20,28 @@
                     <!-- Content -->
                     <tr>
                         <td style="padding: 40px 30px;">
-                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px;">Verify Your New Email Address</h2>
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px;">Verify Your Email Change Request</h2>
                             
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
                                 Hello <strong>{{ user.first_name }} {{ user.last_name }}</strong>,
                             </p>
                             
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                                You've requested to change your email address from your current email to:
+                            </p>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
+                                <tr>
+                                    <td align="center" style="background-color: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px; padding: 20px;">
+                                        <div style="font-size: 18px; font-weight: bold; color: #0284c7;">
+                                            {{ new_email }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
                             <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                                You've requested to change your email address to <strong>{{ new_email }}</strong>. 
-                                Please use the verification code below to complete this change:
+                                To complete this change, please use the verification code below:
                             </p>
                             
                             <!-- Verification Code Box -->
@@ -43,7 +56,11 @@
                             </table>
                             
                             <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
-                                This code will expire in <strong>1 hour</strong>. If you didn't request this change, please ignore this email or contact support if you have concerns.
+                                This code will expire in <strong>1 hour</strong>. If you didn't request this change, please ignore this email or contact support if you have concerns about your account security.
+                            </p>
+                            
+                            <p style="color: #dc2626; font-size: 13px; line-height: 1.6; margin: 15px 0 0 0; padding: 12px; background-color: #fef2f2; border-radius: 6px;">
+                                <strong>⚠️ Important:</strong> This email was sent to your <strong>current</strong> email address to verify that you own this account. After verification, your new email will become your primary login email.
                             </p>
                         </td>
                     </tr>

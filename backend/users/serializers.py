@@ -53,8 +53,19 @@ class CustomLoginSerializer(serializers.Serializer):
             if not user:
                 # Try to authenticate with email as username
                 try:
-                    user_obj = CustomUser.objects.get(email=username)
-                    user = authenticate(username=user_obj.username, password=password)
+                    # FIX: Get the user by email and check uniqueness
+                    user_queryset = CustomUser.objects.filter(email=username)
+                    
+                    # Check if multiple users have this email (data integrity issue)
+                    if user_queryset.count() > 1:
+                        raise serializers.ValidationError(
+                            'Multiple accounts found with this email. Please contact support.'
+                        )
+                    
+                    # Get the single user with this email
+                    if user_queryset.exists():
+                        user_obj = user_queryset.first()
+                        user = authenticate(username=user_obj.username, password=password)
                 except CustomUser.DoesNotExist:
                     pass
 
@@ -67,5 +78,4 @@ class CustomLoginSerializer(serializers.Serializer):
                 raise serializers.ValidationError('Unable to log in with provided credentials.')
         else:
             raise serializers.ValidationError('Must include "username" and "password".')
-
         return attrs

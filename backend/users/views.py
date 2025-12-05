@@ -241,7 +241,7 @@ class RequestEmailChangeView(APIView):
             )
         
         # Check if email is already taken by another user
-        if CustomUser.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+        if CustomUser.objects.filter(email=new_email).exists():
             return Response(
                 {'error': 'This email is already in use by another account'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -272,7 +272,7 @@ class RequestEmailChangeView(APIView):
             new_email=new_email
         )
         
-        # Render HTML email template
+        # Render HTML email template - SEND TO OLD/CURRENT EMAIL
         html_message = render_to_string('emails/email_change_verification.html', {
             'user': request.user,
             'new_email': new_email,
@@ -285,27 +285,27 @@ class RequestEmailChangeView(APIView):
         
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         
-        # Prepare email
+        # Prepare email - SEND TO CURRENT EMAIL (not new email)
         sender = {
             "name": settings.BREVO_SENDER_NAME,
             "email": settings.BREVO_SENDER_EMAIL
         }
-        to = [{"email": new_email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
+        to = [{"email": request.user.email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
         
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=to,
             sender=sender,
-            subject='Verify Your New Email - The Podium',
+            subject='Verify Your Email Change - The Podium',
             html_content=html_message
         )
         
         try:
             api_response = api_instance.send_transac_email(send_smtp_email)
-            print(f"Email verification code sent successfully to {new_email}")
+            print(f"Email verification code sent successfully to {request.user.email}")
             print(f"   Brevo Message ID: {api_response.message_id}")
             print(f"   Verification Code: {email_change_request.verification_code}")  # For testing
         except ApiException as e:
-            print(f"Failed to send verification email to {new_email}")
+            print(f"Failed to send verification email to {request.user.email}")
             print(f" Error: {e}")
             # Clean up the failed request
             email_change_request.delete()
@@ -316,7 +316,7 @@ class RequestEmailChangeView(APIView):
         
         return Response(
             {
-                'message': 'Verification code sent to your new email address',
+                'message': 'Verification code sent to your current email address',
                 'expires_in': 3600  # expiration
             },
             status=status.HTTP_200_OK
@@ -379,13 +379,13 @@ class VerifyEmailChangeView(APIView):
             )
         
         # Double-check email is still available
-        if CustomUser.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+        if CustomUser.objects.filter(email=new_email).exists():
             return Response(
                 {'error': 'This email is already in use by another account'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Store old email for notification
+        # Store old email for reference
         old_email = request.user.email
         
         # Update user email
@@ -396,9 +396,10 @@ class VerifyEmailChangeView(APIView):
         email_change_request.is_used = True
         email_change_request.save()
         
-        # Send notification to old email
+        # Send notification to NEW email (success confirmation)
         html_notification = render_to_string('emails/email_change_notification.html', {
             'user': request.user,
+            'old_email': old_email,
             'new_email': new_email,
         })
         
@@ -411,20 +412,20 @@ class VerifyEmailChangeView(APIView):
             "name": settings.BREVO_SENDER_NAME,
             "email": settings.BREVO_SENDER_EMAIL
         }
-        to = [{"email": old_email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
+        to = [{"email": new_email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
         
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
             to=to,
             sender=sender,
-            subject='Your Email Address Has Been Changed - The Podium',
+            subject='Email Address Changed Successfully - The Podium',
             html_content=html_notification
         )
         
         try:
             api_instance.send_transac_email(send_smtp_email)
-            print(f"Email change notification sent to old email: {old_email}")
+            print(f"Email change notification sent to new email: {new_email}")
         except ApiException as e:
-            print(f"Failed to send notification to old email: {old_email}")
+            print(f"Failed to send notification to new email: {new_email}")
             print(f"Error: {e}")
             # Don't fail the request if notification fails
         
