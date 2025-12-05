@@ -5,6 +5,8 @@ import {
   subMonths,
   startOfMonth,
   endOfMonth,
+  startOfWeek,
+  endOfWeek,
   eachDayOfInterval,
   isSameDay,
   isSameMonth,
@@ -20,7 +22,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Seminar } from "@/utils/types";
+
+interface Seminar {
+  id: string;
+  title: string;
+  date_start: string;
+  date_end?: string;
+}
 
 interface CalendarProps {
   seminars: Seminar[];
@@ -35,7 +43,11 @@ export default function Calendar({ seminars }: CalendarProps) {
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // 0 = Sunday
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+
+  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const handlePrevMonth = () => {
     setDirection("left");
@@ -84,7 +96,6 @@ export default function Calendar({ seminars }: CalendarProps) {
         ))}
       </div>
 
-      {/* Days grid with direction-aware animation */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentMonth.toISOString()}
@@ -124,7 +135,6 @@ export default function Calendar({ seminars }: CalendarProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Drawer for seminars */}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="bg-background border-t mx-auto border-border p-4 sm:max-w-[95vw] rounded-t-3xl shadow-lg">
           <DrawerHeader className="flex justify-between items-center border-b border-border/40 pb-2">
