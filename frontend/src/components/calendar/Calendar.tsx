@@ -22,13 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { type Seminar } from "@/utils/types";
 
-interface Seminar {
-  id: string;
-  title: string;
-  date_start: string;
-  date_end?: string;
-}
 
 interface CalendarProps {
   seminars: Seminar[];
