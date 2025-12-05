@@ -38,9 +38,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 
 class CustomLoginSerializer(serializers.Serializer):
-    """
-    Custom login serializer that accepts username and password
-    """
+
     username = serializers.CharField(required=True)
     password = serializers.CharField(style={'input_type': 'password'})
 

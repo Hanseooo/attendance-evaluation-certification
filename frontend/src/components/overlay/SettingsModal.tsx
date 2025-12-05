@@ -17,7 +17,15 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { Moon, Sun, Monitor, CheckCircle, XCircle } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Monitor,
+  CheckCircle,
+  XCircle,
+  Mail,
+  Clock,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -35,7 +43,11 @@ interface ProfileForm {
   first_name: string;
   last_name: string;
   username: string;
-  email: string;
+}
+
+interface EmailChangeForm {
+  new_email: string;
+  code: string;
 }
 
 interface PasswordForm {
@@ -53,7 +65,7 @@ export default function SettingsModal({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const { user, token } = useAuth();
+  const { user, token, refreshUser } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "system");
   const [loading, setLoading] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -64,12 +76,30 @@ export default function SettingsModal({
     "success" | "error" | null
   >(null);
 
+  // Email change states
+  const [emailChangeStatus, setEmailChangeStatus] = useState<
+    "success" | "error" | null
+  >(null);
+  const [sendingCode, setSendingCode] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(
+    null
+  );
+
   const profileForm = useForm<ProfileForm>({
     defaultValues: {
       first_name: user?.first_name || "",
       last_name: user?.last_name || "",
       username: user?.username || "",
-      email: user?.email || "",
+    },
+  });
+
+  const emailChangeForm = useForm<EmailChangeForm>({
+    defaultValues: {
+      new_email: "",
+      code: "",
     },
   });
 
@@ -82,16 +112,25 @@ export default function SettingsModal({
   const passwordsMismatch =
     password && confirmPassword && password.trim() !== confirmPassword.trim();
 
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldownTime > 0) {
+      const timer = setTimeout(() => setCooldownTime(cooldownTime - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownTime]);
+
   // Fade out alerts after a few seconds
   useEffect(() => {
-    if (passwordStatus || profileStatus) {
+    if (passwordStatus || profileStatus || emailChangeStatus) {
       const timer = setTimeout(() => {
         setPasswordStatus(null);
         setProfileStatus(null);
+        setEmailChangeStatus(null);
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [passwordStatus, profileStatus]);
+  }, [passwordStatus, profileStatus, emailChangeStatus]);
 
   // 🌙 THEME SWITCHER
   const handleThemeChange = (mode: string) => {
@@ -133,12 +172,123 @@ export default function SettingsModal({
 
       setProfileStatus("success");
       toast.success("Profile updated successfully!");
+      await refreshUser?.();
     } catch (err) {
       console.error("Error saving profile:", err);
       setProfileStatus("error");
       toast.error("Network error: Unable to update profile.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 📧 REQUEST EMAIL CHANGE CODE
+  const handleSendCode = async () => {
+    const newEmail = emailChangeForm.getValues("new_email");
+
+    if (!newEmail || !newEmail.trim()) {
+      toast.error("Please enter a new email address");
+      return;
+    }
+
+    if (!token) return toast.error("You must be logged in.");
+
+    setSendingCode(true);
+    setEmailChangeStatus(null);
+    setRemainingAttempts(null);
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/request-email-change/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({ new_email: newEmail }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          // Rate limited
+          const match = data.error?.match(/(\d+) seconds/);
+          if (match) {
+            setCooldownTime(parseInt(match[1]));
+          }
+        }
+        toast.error(data.error || "Failed to send verification code.");
+        return;
+      }
+
+      setCodeSent(true);
+      setCooldownTime(60);
+      toast.success("Verification code sent to your new email!");
+    } catch (err) {
+      console.error("Error sending code:", err);
+      toast.error("Network error: Unable to send verification code.");
+    } finally {
+      setSendingCode(false);
+    }
+  };
+
+  // ✅ VERIFY EMAIL CHANGE
+  const handleVerifyEmailChange = async (values: EmailChangeForm) => {
+    if (!token) return toast.error("You must be logged in.");
+
+    if (!values.new_email || !values.code) {
+      toast.error("Please enter both email and verification code");
+      return;
+    }
+
+    setVerifyingCode(true);
+    setEmailChangeStatus(null);
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/verify-email-change/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          new_email: values.new_email,
+          code: values.code,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setEmailChangeStatus("error");
+        if (data.remaining_attempts !== undefined) {
+          setRemainingAttempts(data.remaining_attempts);
+          toast.error(
+            `${data.error} (${data.remaining_attempts} attempts remaining)`
+          );
+        } else {
+          toast.error(data.error || "Failed to verify code.");
+        }
+        return;
+      }
+
+      setEmailChangeStatus("success");
+      toast.success("Email updated successfully!");
+
+      // Reset form and states
+      emailChangeForm.reset();
+      setCodeSent(false);
+      setCooldownTime(0);
+      setRemainingAttempts(null);
+
+      // Refresh user data
+      await refreshUser?.();
+    } catch (err) {
+      console.error("Error verifying code:", err);
+      setEmailChangeStatus("error");
+      toast.error("Network error: Unable to verify code.");
+    } finally {
+      setVerifyingCode(false);
     }
   };
 
@@ -151,20 +301,17 @@ export default function SettingsModal({
     setPasswordStatus(null);
 
     try {
-      const res = await fetch(
-        `${BASE_URL}/dj-rest-auth/password/change/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-          body: JSON.stringify({
-            new_password1: values.password,
-            new_password2: values.confirm_password,
-          }),
-        }
-      );
+      const res = await fetch(`${BASE_URL}/dj-rest-auth/password/change/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify({
+          new_password1: values.password,
+          new_password2: values.confirm_password,
+        }),
+      });
 
       if (!res.ok) {
         setPasswordStatus("error");
@@ -294,19 +441,29 @@ export default function SettingsModal({
                           )}
                         />
 
-                        <FormField
-                          control={profileForm.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email</FormLabel>
-                              <FormControl>
-                                <Input {...field} type="email" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        {/* READ-ONLY EMAIL */}
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="email"
+                                value={user?.email || ""}
+                                disabled
+                                className="bg-muted/50 cursor-not-allowed"
+                              />
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                                  Current
+                                </span>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Use the "Change Email" section below to update your
+                            email
+                          </p>
+                        </FormItem>
                       </div>
                     </CardContent>
 
@@ -330,6 +487,168 @@ export default function SettingsModal({
                               profileStatus === "success"
                                 ? "Your profile was successfully updated."
                                 : "Something went wrong. Please try again."
+                            }
+                          />
+                        </CardContent>
+                      )}
+                    </AnimatePresence>
+                  </Card>
+                </form>
+              </Form>
+
+              {/* EMAIL CHANGE FORM */}
+              <Form {...emailChangeForm}>
+                <form
+                  onSubmit={emailChangeForm.handleSubmit(
+                    handleVerifyEmailChange
+                  )}
+                  className="space-y-4"
+                >
+                  <Card>
+                    <CardHeader>
+                      <h3 className="text-lg font-semibold flex items-center gap-2">
+                        <Mail className="w-5 h-5" />
+                        Change Email
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Enter a new email address and verify with a code.
+                      </p>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 gap-4">
+                        <FormField
+                          control={emailChangeForm.control}
+                          name="new_email"
+                          rules={{
+                            required: "Email is required",
+                            pattern: {
+                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                              message: "Invalid email format",
+                            },
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>New Email Address</FormLabel>
+                              <div className="flex gap-2">
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    type="email"
+                                    placeholder="new.email@example.com"
+                                    disabled={codeSent}
+                                  />
+                                </FormControl>
+                                <Button
+                                  type="button"
+                                  onClick={handleSendCode}
+                                  disabled={
+                                    sendingCode || cooldownTime > 0 || codeSent
+                                  }
+                                  variant="outline"
+                                  className="whitespace-nowrap"
+                                >
+                                  {sendingCode ? (
+                                    "Sending..."
+                                  ) : cooldownTime > 0 ? (
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="w-4 h-4" />
+                                      {cooldownTime}s
+                                    </span>
+                                  ) : codeSent ? (
+                                    "Code Sent"
+                                  ) : (
+                                    "Send Code"
+                                  )}
+                                </Button>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {codeSent && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <FormField
+                              control={emailChangeForm.control}
+                              name="code"
+                              rules={{
+                                required: "Verification code is required",
+                                pattern: {
+                                  value: /^\d{6}$/,
+                                  message: "Code must be 6 digits",
+                                },
+                              }}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Verification Code</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      type="text"
+                                      placeholder="123456"
+                                      maxLength={6}
+                                      className="font-mono text-lg tracking-widest"
+                                    />
+                                  </FormControl>
+                                  {remainingAttempts !== null && (
+                                    <p className="text-sm text-destructive">
+                                      {remainingAttempts} attempts remaining
+                                    </p>
+                                  )}
+                                  <FormMessage />
+                                  <p className="text-xs text-muted-foreground">
+                                    Code expires in 1 hour. Check your new email
+                                    inbox.
+                                  </p>
+                                </FormItem>
+                              )}
+                            />
+                          </motion.div>
+                        )}
+                      </div>
+                    </CardContent>
+
+                    {codeSent && (
+                      <CardFooter className="flex justify-between">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            emailChangeForm.reset();
+                            setCodeSent(false);
+                            setCooldownTime(0);
+                            setRemainingAttempts(null);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={verifyingCode}>
+                          {verifyingCode
+                            ? "Verifying..."
+                            : "Verify & Change Email"}
+                        </Button>
+                      </CardFooter>
+                    )}
+
+                    <AnimatePresence>
+                      {emailChangeStatus && (
+                        <CardContent>
+                          <GradientAlert
+                            status={emailChangeStatus}
+                            title={
+                              emailChangeStatus === "success"
+                                ? "Email Changed"
+                                : "Error Changing Email"
+                            }
+                            description={
+                              emailChangeStatus === "success"
+                                ? "Your email was successfully updated."
+                                : "Failed to verify code. Please try again."
                             }
                           />
                         </CardContent>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Address Changed</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #dc2626; padding: 40px 30px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">The Podium</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <h2 style="color: #1f2937; margin: 0 0 20px 0; font-size: 24px;">Email Address Changed</h2>
+                            
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                                Hello <strong>{{ user.first_name }} {{ user.last_name }}</strong>,
+                            </p>
+                            
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                                This is to inform you that the email address associated with your account has been successfully changed to:
+                            </p>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
+                                <tr>
+                                    <td align="center" style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 20px;">
+                                        <div style="font-size: 18px; font-weight: bold; color: #dc2626;">
+                                            {{ new_email }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin: 20px 0 0 0;">
+                                <strong>If you did not make this change,</strong> please contact our support team immediately as your account may be compromised.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
+                                This is an automated message from The Podium
+                            </p>
+                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                                © 2024 The Podium. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

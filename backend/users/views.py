@@ -19,6 +19,10 @@ from django.utils.html import strip_tags
 from .models import CustomUser
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+from django.utils import timezone
+from datetime import timedelta
+from .models import EmailChangeRequest
+
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -202,5 +206,234 @@ class ResetPasswordView(APIView):
 
         return Response(
             {'message': 'Password has been reset successfully'},
+            status=status.HTTP_200_OK
+        )
+    
+
+class RequestEmailChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        new_email = request.data.get('new_email', '').strip().lower()
+        
+        if not new_email:
+            return Response(
+                {'error': 'New email is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate email format
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError as DjangoValidationError
+        try:
+            validate_email(new_email)
+        except DjangoValidationError:
+            return Response(
+                {'error': 'Invalid email format'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if new email is same as current
+        if new_email == request.user.email:
+            return Response(
+                {'error': 'New email must be different from current email'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if email is already taken by another user
+        if CustomUser.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+            return Response(
+                {'error': 'This email is already in use by another account'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Rate limiting: Check for recent requests (60 seconds cooldown)
+        recent_request = EmailChangeRequest.objects.filter(
+            user=request.user,
+            created_at__gte=timezone.now() - timedelta(seconds=60)
+        ).first()
+        
+        if recent_request:
+            seconds_remaining = 60 - (timezone.now() - recent_request.created_at).seconds
+            return Response(
+                {'error': f'Please wait {seconds_remaining} seconds before requesting a new code'},
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+        
+        # Invalidate any previous unused requests for this user
+        EmailChangeRequest.objects.filter(
+            user=request.user,
+            is_used=False
+        ).update(is_used=True)
+        
+        # Create new verification request
+        email_change_request = EmailChangeRequest.objects.create(
+            user=request.user,
+            new_email=new_email
+        )
+        
+        # Render HTML email template
+        html_message = render_to_string('emails/email_change_verification.html', {
+            'user': request.user,
+            'new_email': new_email,
+            'verification_code': email_change_request.verification_code,
+        })
+        
+        # Configure Brevo API
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = settings.BREVO_API_KEY
+        
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        
+        # Prepare email
+        sender = {
+            "name": settings.BREVO_SENDER_NAME,
+            "email": settings.BREVO_SENDER_EMAIL
+        }
+        to = [{"email": new_email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
+        
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            sender=sender,
+            subject='Verify Your New Email - The Podium',
+            html_content=html_message
+        )
+        
+        try:
+            api_response = api_instance.send_transac_email(send_smtp_email)
+            print(f"Email verification code sent successfully to {new_email}")
+            print(f"   Brevo Message ID: {api_response.message_id}")
+            print(f"   Verification Code: {email_change_request.verification_code}")  # For testing
+        except ApiException as e:
+            print(f"Failed to send verification email to {new_email}")
+            print(f" Error: {e}")
+            # Clean up the failed request
+            email_change_request.delete()
+            return Response(
+                {'error': 'Failed to send verification email. Please try again later.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+        return Response(
+            {
+                'message': 'Verification code sent to your new email address',
+                'expires_in': 3600  # expiration
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+class VerifyEmailChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        new_email = request.data.get('new_email', '').strip().lower()
+        code = request.data.get('code', '').strip()
+        
+        if not new_email or not code:
+            return Response(
+                {'error': 'Both new email and verification code are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Find the most recent valid request
+        try:
+            email_change_request = EmailChangeRequest.objects.filter(
+                user=request.user,
+                new_email=new_email,
+                is_used=False
+            ).latest('created_at')
+        except EmailChangeRequest.DoesNotExist:
+            return Response(
+                {'error': 'No pending email change request found'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if expired
+        if email_change_request.is_expired():
+            return Response(
+                {'error': 'Verification code has expired. Please request a new one.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check attempts limit
+        if email_change_request.attempts >= 5:
+            return Response(
+                {'error': 'Maximum verification attempts exceeded. Please request a new code.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Increment attempts
+        email_change_request.attempts += 1
+        email_change_request.save()
+        
+        # Verify code
+        if email_change_request.verification_code != code:
+            remaining_attempts = 5 - email_change_request.attempts
+            return Response(
+                {
+                    'error': 'Invalid verification code',
+                    'remaining_attempts': remaining_attempts
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Double-check email is still available
+        if CustomUser.objects.filter(email=new_email).exclude(pk=request.user.pk).exists():
+            return Response(
+                {'error': 'This email is already in use by another account'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Store old email for notification
+        old_email = request.user.email
+        
+        # Update user email
+        request.user.email = new_email
+        request.user.save()
+        
+        # Mark request as used
+        email_change_request.is_used = True
+        email_change_request.save()
+        
+        # Send notification to old email
+        html_notification = render_to_string('emails/email_change_notification.html', {
+            'user': request.user,
+            'new_email': new_email,
+        })
+        
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = settings.BREVO_API_KEY
+        
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        
+        sender = {
+            "name": settings.BREVO_SENDER_NAME,
+            "email": settings.BREVO_SENDER_EMAIL
+        }
+        to = [{"email": old_email, "name": f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username}]
+        
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=to,
+            sender=sender,
+            subject='Your Email Address Has Been Changed - The Podium',
+            html_content=html_notification
+        )
+        
+        try:
+            api_instance.send_transac_email(send_smtp_email)
+            print(f"Email change notification sent to old email: {old_email}")
+        except ApiException as e:
+            print(f"Failed to send notification to old email: {old_email}")
+            print(f"Error: {e}")
+            # Don't fail the request if notification fails
+        
+        # Return updated user data
+        serializer = UserSerializer(request.user)
+        return Response(
+            {
+                'message': 'Email address updated successfully',
+                'user': serializer.data
+            },
             status=status.HTTP_200_OK
         )

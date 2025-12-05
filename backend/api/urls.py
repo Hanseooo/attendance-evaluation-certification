@@ -5,7 +5,7 @@ from django.conf import settings
 from users.views import CurrentUserView
 from seminars.views import SeminarListCreateAPIView, SeminarDetailAPIView, PlannedSeminarAPIView, PlannedSeminarDetailAPIView
 from attendance.views import generate_qr_code, record_attendance, download_qr_code
-from users.views import CurrentUserView, ForgotPasswordView, ResetPasswordView
+from users.views import CurrentUserView, ForgotPasswordView, ResetPasswordView, RequestEmailChangeView, VerifyEmailChangeView
 
 urlpatterns = [
     path('user/', CurrentUserView.as_view(), name='current-user'),
@@ -24,4 +24,6 @@ urlpatterns = [
     path('user/', CurrentUserView.as_view(), name='current-user'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('request-email-change/', RequestEmailChangeView.as_view(), name='request-email-change'),
+    path('verify-email-change/', VerifyEmailChangeView.as_view(), name='verify-email-change'),
 ] 

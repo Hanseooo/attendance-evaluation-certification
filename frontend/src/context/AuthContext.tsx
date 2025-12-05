@@ -12,6 +12,7 @@ interface AuthContextType {
   token: string | null;
   redirectTo: string | null;
   setRedirectTo: (path: string | null) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,6 +67,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoadingUser(false);
     }
   }, [token]);
+
+
+  //refresh
+
+    const refreshUser = async () => {
+      if (token) {
+        await fetchUser(token);
+      }
+    };
 
   // Login
   const login = async (usernameOrEmail: string, password: string) => {
@@ -148,6 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         token,
         redirectTo,
         setRedirectTo,
+        refreshUser,
       }}
     >
       {children}
