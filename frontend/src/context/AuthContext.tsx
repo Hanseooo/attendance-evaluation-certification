@@ -69,9 +69,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Login
   const login = async (usernameOrEmail: string, password: string) => {
-    const payload = usernameOrEmail.includes("@")
-      ? { email: usernameOrEmail, password }
-      : { username: usernameOrEmail, password };
+    // const payload = usernameOrEmail.includes("@")
+    //   ? { email: usernameOrEmail, password }
+    //   : { username: usernameOrEmail, password };
+    const payload = {
+      username: usernameOrEmail, 
+      password: password,
+    };
 
     const res = await fetch(`${BASE_URL}/dj-rest-auth/login/`, {
       method: "POST",

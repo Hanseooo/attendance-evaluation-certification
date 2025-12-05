@@ -286,12 +286,12 @@ export default function AuthModal() {
 
                     {isLogin && (
                       <div>
-                        <Label htmlFor={ids.username}>Username</Label>
+                        <Label htmlFor={ids.username}>Username or email</Label>
                         <Input
                           id="username"
                           value={formData.username}
                           onChange={handleChange}
-                          placeholder="Enter username"
+                          placeholder="Enter username or email"
                         />
                       </div>
                     )}
