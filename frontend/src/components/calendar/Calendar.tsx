@@ -113,10 +113,18 @@ export default function Calendar({ seminars }: CalendarProps) {
                 transition={{ type: "spring", stiffness: 300, damping: 18 }}
                 className={cn(
                   "aspect-square flex items-center justify-center rounded-md text-center transition-all relative select-none",
-                  !isCurrentMonth && "text-muted-foreground/40",
-                  hasSeminar
-                    ? "bg-primary text-primary-foreground cursor-pointer hover:brightness-110"
-                    : "text-foreground/80 cursor-default",
+                  isCurrentMonth &&
+                    hasSeminar &&
+                    "bg-primary text-primary-foreground cursor-pointer hover:brightness-110",
+                  isCurrentMonth &&
+                    !hasSeminar &&
+                    "text-foreground/80 cursor-default",
+                  !isCurrentMonth &&
+                    hasSeminar &&
+                    "bg-primary/40 text-primary-foreground/50 cursor-pointer",
+                  !isCurrentMonth &&
+                    !hasSeminar &&
+                    "text-muted-foreground/30 cursor-default",
                   !hasSeminar && "hover:bg-transparent"
                 )}
               >
