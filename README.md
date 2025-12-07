@@ -98,7 +98,7 @@ Backend (Django REST API): *(Deployed on Railway)*
     ├── certificates/
     ├── evaluation/
     ├── users/
-    ├── .env.example
+    ├── .env
     ├── requirements.txt
     └── manage.py
 ```
