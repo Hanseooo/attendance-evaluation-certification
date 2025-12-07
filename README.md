@@ -87,7 +87,6 @@ Backend (Django REST API): *(Deployed on Railway)*
 ---
 
 ## 📁 Project Structure
-## 📁 Project Structure
 
 ```plaintext
 ├── frontend/                # React application
