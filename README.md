@@ -18,7 +18,6 @@ Backend (Django REST API): *(Deployed on Railway)*
 ### ✅ **User Roles**
 - **Participant** — Attend seminars, view history, download certificates  
 - **Admin** — Manage seminars, track attendance, view analytics  
-- **Certificate Editor** — Upload templates, adjust text, fonts, and colors
 
 ---
 
@@ -32,6 +31,7 @@ Backend (Django REST API): *(Deployed on Railway)*
 ---
 
 ### 📄 **Certificate Generation**
+- #### **Built-in Certificate Editor** — Upload templates, adjust text, fonts, and colors
 - Certificates rendered as **PNG files**
 - Generated using:
   - **Pillow (PIL)** for text rendering on templates
@@ -40,7 +40,8 @@ Backend (Django REST API): *(Deployed on Railway)*
   - Font family  
   - Font size  
   - Font color  
-  - Text position  
+  - Text position
+  - Show or hide event name
 
 ---
 
