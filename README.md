@@ -3,7 +3,10 @@
 A full-stack web platform built for the **Vice President for Academic Affairs (VPAA)** of **Holy Cross of Davao College**.  
 This system streamlines seminar management, QR-based attendance, certificate generation, email notifications, and evaluation analytics.
 
-> **Note:** This project is developed for **academic purposes only**.
+---
+
+## 📄 License
+This project is licensed under the MIT License – see the LICENSE file for details.
 
 ---
 
