@@ -9,9 +9,9 @@ import type {
 } from "@/utils/types";
 import { useAuth } from "@/context/AuthContext";
 import AttendedSeminarsModal from "@/components/overlay/AttendedSeminarsModal";
+import { API_BASE_URL } from "@/api/baseUrl";
 
-const BASE_API =
-  "https://attendance-evaluation-certification-production.up.railway.app/api";
+const BASE_API = API_BASE_URL;
 
 export default function AttendedSeminarsSection() {
   const { token } = useAuth();
@@ -26,7 +26,7 @@ export default function AttendedSeminarsSection() {
     setError(null);
     try {
       const res = await fetch(
-        `${BASE_API}/attendance/attended-seminars/my_attended_seminars/`,
+        `${BASE_API}/api/attendance/attended-seminars/my_attended_seminars/`,
 
         {
           method: "GET",

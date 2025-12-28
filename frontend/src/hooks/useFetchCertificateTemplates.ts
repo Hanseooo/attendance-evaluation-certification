@@ -1,9 +1,9 @@
 // src/hooks/useCertificateTemplate.ts
 import { useState, useCallback } from "react";
 import { type CertificateTemplate, type CertificateTemplatePayload } from "@/utils/types";
+import { API_BASE_URL } from "@/api/baseUrl";
 
-const API_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app/api"; //added /api
+const API_URL = API_BASE_URL;
 
 export function useFetchCertificateTemplates() {
   const [templates, setTemplates] = useState<CertificateTemplate[]>([]);
@@ -11,7 +11,7 @@ export function useFetchCertificateTemplates() {
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true);
-    const res = await fetch(`${API_URL}/certificate-templates/`);
+    const res = await fetch(`${API_URL}/api/certificate-templates/`);
     const data = await res.json();
     setTemplates(data);
     setLoading(false);
@@ -30,7 +30,7 @@ export function useUploadCertificateTemplate() {
     });
 
 
-    const res = await fetch(`${API_URL}/certificate-templates/`, {
+    const res = await fetch(`${API_URL}/api/certificate-templates/`, {
       method: "POST",
       body: formData,
     });

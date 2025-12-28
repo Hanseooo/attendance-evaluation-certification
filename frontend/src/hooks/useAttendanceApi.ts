@@ -1,4 +1,5 @@
 // src/hooks/useAttendanceApi.ts
+import { API_BASE_URL } from "@/api/baseUrl";
 import { useAuth } from "@/context/AuthContext";
 import {
   type AttendanceAction,
@@ -6,8 +7,7 @@ import {
   type Attendee,
 } from "@/utils/types";
 
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app/api";
+const BASE_URL = API_BASE_URL;
 
 interface ApiResponse<T> {
   status: number;
@@ -34,7 +34,7 @@ export function useAttendanceApi(): UseAttendanceApi {
   ): Promise<ApiResponse<RecordAttendanceResponse>> => {
     if (!token) throw new Error("Authentication token is missing");
 
-    const res = await fetch(`${BASE_URL}/attendance/${seminarId}/${action}/`, {
+    const res = await fetch(`${BASE_URL}/api/attendance/${seminarId}/${action}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -51,14 +51,14 @@ export function useAttendanceApi(): UseAttendanceApi {
     seminarId: number,
     action: AttendanceAction
   ): string => {
-    return `${BASE_URL}/generate-qr/${seminarId}/${action}/`;
+    return `${BASE_URL}/api/generate-qr/${seminarId}/${action}/`;
   };
 
   const getPresentUsers = async (seminarId: number): Promise<ApiResponse<Attendee[]>> => {
     if (!token) throw new Error("Missing authentication token");
 
     const res = await fetch(
-      `${BASE_URL}/attendance/present-users/${seminarId}/`,
+      `${BASE_URL}/api/attendance/present-users/${seminarId}/`,
       {
         headers: { Authorization: `Token ${token}` },
       }

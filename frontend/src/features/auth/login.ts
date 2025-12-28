@@ -1,11 +1,14 @@
+import { API_BASE_URL } from "@/api/baseUrl";
 
+
+const BASE_URL = API_BASE_URL
 
 export default async function login(name: string, password: string) {
     // let isEmail = name.includes('@');
     // let payload = isEmail ? { email: name, password } : { username: name, password };
     const payload = { username: name, password };
     const response = await fetch(
-      "https://attendance-evaluation-certification-production.up.railway.app/dj-rest-auth/login/",
+      `${BASE_URL}/dj-rest-auth/login/`,
       {
         method: "POST",
         headers: {

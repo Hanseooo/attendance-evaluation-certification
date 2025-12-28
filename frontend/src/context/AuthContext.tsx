@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import type { User, RegisterPayload } from "../utils/types";
 import LoadingPage from "@/pages/LoadingPage";
+import { API_BASE_URL } from "@/api/baseUrl";
 
 interface AuthContextType {
   user: User | null;
@@ -17,8 +18,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY = "authToken";
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app";
+const BASE_URL = API_BASE_URL;
 
 // Loading screen component
 export const LoadingScreen = () => (

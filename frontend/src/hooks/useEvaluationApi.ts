@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/api/baseUrl";
 import { useAuth } from "@/context/AuthContext";
 import {
   type Evaluation,
@@ -6,8 +7,7 @@ import {
 } from "@/utils/types";
 import { type EvaluationAnalytics } from "@/utils/types";
 
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app/api";
+const BASE_URL = API_BASE_URL;
 
 interface ApiResponse<T> {
   status: number;
@@ -36,7 +36,7 @@ export function useEvaluationApi(): UseEvaluationApi {
   > => {
     if (!token) throw new Error("Missing authentication token");
 
-    const res = await fetch(`${BASE_URL}/evaluations/available-evaluations/`, {
+    const res = await fetch(`${BASE_URL}/api/evaluations/available-evaluations/`, {
       headers: { Authorization: `Token ${token}` },
     });
 
@@ -60,7 +60,7 @@ export function useEvaluationApi(): UseEvaluationApi {
       suggestions: payload.suggestions,
     };
 
-    const res = await fetch(`${BASE_URL}/evaluations/`, {
+    const res = await fetch(`${BASE_URL}/api/evaluations/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -78,7 +78,7 @@ export function useEvaluationApi(): UseEvaluationApi {
   ): Promise<SubmitEvaluationResponse> => {
     if (!token) throw new Error("Missing authentication token");
 
-    const res = await fetch(`${BASE_URL}/evaluations/`, {
+    const res = await fetch(`${BASE_URL}/api/evaluations/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export function useEvaluationApi(): UseEvaluationApi {
   ): Promise<ApiResponse<EvaluationAnalytics>> => {
     if (!token) throw new Error("Missing authentication token");
     const res = await fetch(
-      `${BASE_URL}/evaluations/seminar/${seminarId}/analytics/`,
+      `${BASE_URL}/api/evaluations/seminar/${seminarId}/analytics/`,
       {
         headers: { Authorization: `Token ${token}` },
       }

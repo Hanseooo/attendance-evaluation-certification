@@ -1,7 +1,7 @@
+import { API_BASE_URL } from "@/api/baseUrl";
 import { useAuth } from "@/context/AuthContext";
 
-const BACKEND_BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app/api";
+const BACKEND_BASE_URL = API_BASE_URL;
 
 export interface QrData {
   qr_image: string;
@@ -22,7 +22,7 @@ export function useGenerateQrCode() {
     if (!token) throw new Error("No auth token available. Please log in.");
 
     const response = await fetch(
-      `${BACKEND_BASE_URL}/generate-qr/${seminarId}/`,
+      `${BACKEND_BASE_URL}/api/generate-qr/${seminarId}/`,
       {
         method: "POST",
         headers: {

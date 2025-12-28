@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE_URL } from "@/api/baseUrl";
 
 interface ProfileForm {
   first_name: string;
@@ -55,8 +56,7 @@ interface PasswordForm {
   confirm_password: string;
 }
 
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app";
+const BASE_URL = API_BASE_URL;
 
 export default function SettingsModal({
   open,

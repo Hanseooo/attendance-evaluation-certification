@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useMySeminarList } from "@/stores/SeminarStore";
 import type { MySeminar, Seminar } from "@/utils/types";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/api/baseUrl";
 
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app";
+const BASE_URL = API_BASE_URL;
 
 export function useFetchMySeminars() {
   const { setSeminar } = useMySeminarList(); // get setter from Zustand

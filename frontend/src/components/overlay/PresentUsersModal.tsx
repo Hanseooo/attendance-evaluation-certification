@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { type Attendee } from "@/utils/types";
+import { API_BASE_URL } from "@/api/baseUrl";
 
 interface PresentUsersModalProps {
   seminarId: number;
@@ -35,6 +36,8 @@ interface PresentUsersModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const BASE_URL = API_BASE_URL
 
 export function PresentUsersModal({
   seminarId,
@@ -113,7 +116,7 @@ export function PresentUsersModal({
 
     try {
       const res = await fetch(
-        `https://attendance-evaluation-certification-production.up.railway.app/api/resend-certificate/${seminarId}/${user.id}/`,
+        `${BASE_URL}/api/resend-certificate/${seminarId}/${user.id}/`,
 
         {
           method: "POST",
