@@ -12,11 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/api/baseUrl";
 
 interface ForgotPasswordDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const BASE_URL = API_BASE_URL
 
 export default function ForgotPasswordDialog({
   isOpen,
@@ -46,7 +49,7 @@ export default function ForgotPasswordDialog({
 
     try {
       const response = await fetch(
-        "https://attendance-evaluation-certification-production.up.railway.app/api/forgot-password/",
+        `${BASE_URL}/api/forgot-password/`,
         {
           method: "POST",
           headers: {

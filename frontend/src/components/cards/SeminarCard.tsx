@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Calendar, Clock } from "lucide-react";
+import { MapPin, Calendar, Clock, LayoutList } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { SeminarDetailsModal } from "@/components/overlay/SeminarDetailsModal";
 import { type Seminar } from "@/utils/types";
@@ -58,6 +58,11 @@ export default function SeminarCard({ seminar, onClick }: SeminarCardProps) {
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <Clock className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm">{seminar.duration_minutes} min</span>
+            </div>
+
+            <div className="flex items-center gap-2.5 text-muted-foreground">
+              <LayoutList className="h-4 w-4 flex-shrink-0" />
+              <span className="text-sm">{seminar.category?.name}</span>
             </div>
           </div>
         </CardContent>

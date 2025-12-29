@@ -5,9 +5,9 @@ import {
   type CertificateTemplate,
   type CertificateTemplatePayload,
 } from "@/utils/types";
+import { API_BASE_URL } from "@/api/baseUrl";
 
-const API_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app/api";
+const API_URL = API_BASE_URL;
 
 export function useFetchCertificateTemplate() {
   const [template, setTemplate] = useState<CertificateTemplate | null>(null);
@@ -27,7 +27,7 @@ export function useFetchCertificateTemplate() {
 
       try {
         const res = await fetch(
-          `${API_URL}/certificate-templates/by_seminar/?seminar_id=${seminarId}`,
+          `${API_URL}/api/certificate-templates/by_seminar/?seminar_id=${seminarId}`,
           {
             headers: {
               Authorization: `Token ${token}`,
@@ -87,7 +87,7 @@ export function useSaveCertificateTemplate() {
           }
         });
 
-        const res = await fetch(`${API_URL}/certificate-templates/`, {
+        const res = await fetch(`${API_URL}/api/certificate-templates/`, {
           method: "POST",
           headers: {
             Authorization: `Token ${token}`,
@@ -127,7 +127,7 @@ export function useFetchDefaultConfig() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${API_URL}/certificate-templates/default_config/`,
+        `${API_URL}/api/certificate-templates/default_config/`,
         {
           headers: {
             Authorization: `Token ${token}`,

@@ -1,5 +1,5 @@
 // components/list/SeminarListSection.tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import SeminarCard from "@/components/cards/SeminarCard";
 import { SeminarDetailsModal } from "@/components/overlay/SeminarDetailsModal";
@@ -7,6 +7,9 @@ import FiltersPopover from "@/components/popover/FiltersPopover";
 import { type Seminar, type MySeminar } from "@/utils/types"
 import { type Filters } from "@/utils/types";
 import MySeminarCard from "@/components/cards/MySeminarCard";
+import { useCategoryStore } from "@/stores/categoryStore";
+import { useFetchCategories } from "@/hooks/useFetchCategories";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type Props = {
   seminars: Seminar[] | null;
@@ -27,10 +30,23 @@ export default function SeminarListSection({ seminars, mySeminars, attendingIds 
   const [active, setActive] = useState<Seminar | null>(null);
   const [open, setOpen] = useState(false);
 
+  const { categories } = useCategoryStore();
+  useFetchCategories();
+
+  const [selectedCategory, setSelectedCategory] = useState<number | "all">(
+    "all"
+  );
+
+
   // const openDetails = (s: Seminar) => {
   //   setActive(s);
   //   setOpen(true);
   // };
+
+  useEffect(() => {
+    setSelectedCategory("all");
+  }, [categories.length]);
+
 
   const closeDetails = () => {
     setOpen(false);
@@ -47,10 +63,15 @@ const processed = useMemo(() => {
     isAttending: attendingIds.includes(s.id),
   }));
 
-  // ✅ Apply filter
-  const filtered = filters.hideAttending
+  // ✅ Apply hide attending
+  let filtered = filters.hideAttending
     ? list.filter((s) => !s.isAttending)
     : list;
+
+  // ✅ Apply category filter
+  if (selectedCategory !== "all") {
+    filtered = filtered.filter((s) => s.category?.id === selectedCategory);
+  }
 
   // ✅ Sort
   const dir = filters.sortDir === "asc" ? 1 : -1;
@@ -68,7 +89,7 @@ const processed = useMemo(() => {
   });
 
   return sorted;
-}, [seminars, attendingIds, filters]);
+}, [seminars, attendingIds, filters, selectedCategory]);
 
 
   return (
@@ -84,6 +105,25 @@ const processed = useMemo(() => {
         </div>
 
         <div className="flex items-center gap-3">
+          <Select
+            value={selectedCategory.toString()}
+            onValueChange={(value) =>
+              setSelectedCategory(value === "all" ? "all" : Number(value))
+            }
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id.toString()}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <FiltersPopover value={filters} onChange={setFilters} />
         </div>
       </div>
@@ -131,16 +171,14 @@ const processed = useMemo(() => {
               <>
                 {mySeminars?.map((ms) => (
                   <div key={`my-${ms.id}`} className="h-[220px]">
-                    <MySeminarCard
-                      seminar={ms}
-                    />
+                    <MySeminarCard seminar={ms} />
                   </div>
                 ))}
                 {processed
                   .filter((s) => !attendingIds.includes(s.id))
                   .map((s: Seminar) => (
                     <div key={`other-${s.id}`} className="h-[220px]">
-                      <SeminarCard seminar={s}  />
+                      <SeminarCard seminar={s} />
                     </div>
                   ))}
               </>

@@ -13,10 +13,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/api/baseUrl";
 
 
-const BASE_URL =
-  "https://attendance-evaluation-certification-production.up.railway.app";
+const BASE_URL = API_BASE_URL;
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();

@@ -108,6 +108,7 @@ export default function AdminSeminarCard({
             <p>{new Date(seminar.date_start).toLocaleDateString()}</p>
             <p>Speaker: {seminar.speaker}</p>
             <p>Duration: {seminar.duration_minutes ?? "—"} mins</p>
+            <p>Category: {seminar.category?.name}</p>
             <p>{seminar.venue ?? "—"}</p>
           </div>
 

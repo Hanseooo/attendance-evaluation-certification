@@ -40,6 +40,7 @@ import {
   useSaveCertificateTemplate,
 } from "@/hooks/useCertificateTemplate";
 import SettingsModal from "@/components/overlay/SettingsModal";
+import { ManageCategoriesModal } from "@/components/overlay/ManageCategoriesModal";
 
 const PAGE_SIZE = 9;
 
@@ -277,6 +278,8 @@ const handleSaveCertificateTemplate = async (
                 <PlusCircle className="h-5 w-5" />
                 New Seminar
               </Button>
+
+              <ManageCategoriesModal />
 
               <Button
                 variant="ghost"
