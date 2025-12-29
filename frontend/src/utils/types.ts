@@ -28,6 +28,11 @@ export interface RegisterPayload {
   password2: string;
 }
 
+export type Category = {
+  id: number;
+  name: string;
+};
+
 export type Seminar = {
   id: number;
   title: string;
@@ -38,6 +43,7 @@ export type Seminar = {
   date_end?: string;
   duration_minutes?: number;
   is_done?: boolean;
+  category?: Category;
   certificate_template?: string | null;
   created_at?: string;
 };
@@ -203,3 +209,5 @@ export interface AttendedSeminarListResponse {
   count: number;
   results: AttendedSeminar[];
 }
+
+

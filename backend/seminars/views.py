@@ -8,15 +8,12 @@ from .serializers import SeminarSerializer, PlannedSeminarSerializer
 # GET all seminars / POST new seminar
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .models import Seminar
-from .serializers import SeminarSerializer
+from .models import Seminar, Category
+from .serializers import SeminarSerializer, CategorySerializer
 from django.shortcuts import get_object_or_404
 
 from django.utils import timezone
 from rest_framework import status, permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Seminar
 from .serializers import SeminarSerializer
@@ -26,16 +23,25 @@ class SeminarListCreateAPIView(APIView):
 
     def get(self, request):
         # Automatically mark seminars as done if past end date
-        Seminar.objects.filter(date_end__lt=timezone.now(), is_done=False).update(is_done=True)
+        Seminar.objects.filter(
+            date_end__lt=timezone.now(),
+            is_done=False
+        ).update(is_done=True)
 
-        # Filter based on user role
-        if request.user.role == 'admin':
+        # 1️⃣ Base queryset (role-based)
+        if request.user.role == "admin":
             seminars = Seminar.objects.all()
         else:
             seminars = Seminar.objects.filter(is_done=False)
 
+        # 2️⃣ Optional category filter
+        category_id = request.query_params.get("category")
+        if category_id:
+            seminars = seminars.filter(category_id=category_id)
+
         serializer = SeminarSerializer(seminars, many=True)
         return Response(serializer.data)
+
 
     def post(self, request):
         if request.user.role != 'admin':
@@ -99,4 +105,50 @@ class PlannedSeminarDetailAPIView(APIView):
     def delete(self, request, pk):
         planned_seminar = self.get_object(pk, request.user)
         planned_seminar.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class CategoryListCreateAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if request.user.role != "admin":
+            return Response(
+                {"error": "Only admins can create categories."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class CategoryDeleteAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.role != "admin":
+            return Response(
+                {"error": "Only admins can delete categories."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        category = get_object_or_404(Category, pk=pk)
+
+        # Prevent deleting the default "Other" category
+        if category.name.lower() == "other":
+            return Response(
+                {"error": 'The default "Other" category cannot be deleted.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

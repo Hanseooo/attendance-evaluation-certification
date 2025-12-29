@@ -45,15 +45,25 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+        onClick={onClose}
+      />
 
       <div className="relative z-10 w-full max-w-2xl max-h-[85vh] bg-background border rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="px-6 pt-6 pb-4 bg-background/95 backdrop-blur-sm border-b sticky top-0 z-10">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h2 className="text-2xl font-bold leading-tight pr-2">{seminar?.title ?? "Seminar details"}</h2>
+              <h2 className="text-2xl font-bold leading-tight pr-2">
+                {seminar?.title ?? "Seminar details"}
+              </h2>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-muted flex-shrink-0 -mt-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="rounded-full hover:bg-muted flex-shrink-0 -mt-1"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -62,7 +72,9 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
         <div className="overflow-y-auto detail-scrollbar px-6 py-5">
           {seminar?.description && (
             <>
-              <p className="text-sm text-muted-foreground leading-relaxed">{seminar.description}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {seminar.description}
+              </p>
               <Separator className="my-5" />
             </>
           )}
@@ -74,8 +86,12 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
                   <User className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Speaker</p>
-                  <p className="text-sm font-semibold mt-0.5 truncate">{seminar.speaker}</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Speaker
+                  </p>
+                  <p className="text-sm font-semibold mt-0.5 truncate">
+                    {seminar.speaker}
+                  </p>
                 </div>
               </div>
             )}
@@ -85,8 +101,12 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
                 <MapPin className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Venue</p>
-                <p className="text-sm font-semibold mt-0.5 truncate">{seminar?.venue}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Venue
+                </p>
+                <p className="text-sm font-semibold mt-0.5 truncate">
+                  {seminar?.venue}
+                </p>
               </div>
             </div>
 
@@ -95,9 +115,15 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
                 <Calendar className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Start</p>
-                <p className="text-sm font-semibold mt-0.5">{seminar ? formatDate(seminar.date_start) : ""}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{seminar ? formatTime(seminar.date_start) : ""}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Start
+                </p>
+                <p className="text-sm font-semibold mt-0.5">
+                  {seminar ? formatDate(seminar.date_start) : ""}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {seminar ? formatTime(seminar.date_start) : ""}
+                </p>
               </div>
             </div>
 
@@ -106,9 +132,15 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
                 <Calendar className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">End</p>
-                <p className="text-sm font-semibold mt-0.5">{seminar?.date_end ? formatDate(seminar.date_end) : "TBA"}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{seminar?.date_end ? formatTime(seminar.date_end) : ""}</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  End
+                </p>
+                <p className="text-sm font-semibold mt-0.5">
+                  {seminar?.date_end ? formatDate(seminar.date_end) : "TBA"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {seminar?.date_end ? formatTime(seminar.date_end) : ""}
+                </p>
               </div>
             </div>
 
@@ -117,8 +149,12 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
                 <Clock className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Duration</p>
-                <p className="text-sm font-semibold mt-0.5">{seminar?.duration_minutes ?? "TBA"} minutes</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Duration
+                </p>
+                <p className="text-sm font-semibold mt-0.5">
+                  {seminar?.duration_minutes ?? "TBA"} minutes
+                </p>
               </div>
             </div>
           </div>
@@ -126,7 +162,11 @@ export function SeminarDetailsModal({ seminar, isOpen, onClose,  }: Props) {
 
         <div className="px-6 py-4 bg-background/95 backdrop-blur-sm border-t sticky bottom-0">
           <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
-            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="w-full sm:w-auto"
+            >
               Close
             </Button>
 

@@ -1,6 +1,6 @@
 # seminars/serializers.py
 from rest_framework import serializers
-from .models import Seminar, PlannedSeminar
+from .models import Seminar, PlannedSeminar, Category
 from users.serializers import UserSerializer
 from certificates.models import CertificateTemplate
 
@@ -30,17 +30,33 @@ class CertificateTemplateSerializer(serializers.ModelSerializer):
             return obj.template_image.url
         except (ValueError, AttributeError):
             return str(obj.template_image)
+        
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name"]
 
 
 class SeminarSerializer(serializers.ModelSerializer):
     certificate_template = CertificateTemplateSerializer(read_only=True)
+
+    category = CategorySerializer(read_only=True)
+
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source="category",
+        write_only=True,
+        required=False
+    )
+
 
     class Meta:
         model = Seminar
         fields = [
             "id", "title", "description", "speaker", "venue",
             "date_start", "date_end", "duration_minutes", 
-            "is_done", "certificate_template", "created_at", 
+            "is_done", "category", "category_id", "certificate_template", 
+            "created_at", 
         ]
 
 
@@ -56,3 +72,7 @@ class PlannedSeminarSerializer(serializers.ModelSerializer):
         rep = super().to_representation(instance)
         rep['seminar'] = SeminarSerializer(instance.seminar).data
         return rep
+    
+
+
+

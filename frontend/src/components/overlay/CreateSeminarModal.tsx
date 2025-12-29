@@ -16,6 +16,8 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Seminar } from "@/utils/types"
+import { useCategoryStore } from "@/stores/categoryStore"
+import { useFetchCategories } from "@/hooks/useFetchCategories"
 
 interface CreateSeminarModalProps {
   isOpen: boolean
@@ -33,7 +35,11 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
     date_start: "",
     date_end: "",
     duration_minutes: 60,
+    category: undefined,
   })
+
+    const { categories } = useCategoryStore();
+    useFetchCategories();
 
   useEffect(() => {
     if (seminar) {
@@ -46,7 +52,8 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
         date_start: seminar.date_start,
         date_end: seminar.date_end,
         duration_minutes: seminar.duration_minutes,
-      })
+        category: seminar.category,
+      });
     } else {
       setForm({
         title: "",
@@ -56,7 +63,8 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
         date_start: "",
         date_end: "",
         duration_minutes: 60,
-      })
+        category: undefined,
+      });
     }
   }, [seminar])
 
@@ -70,13 +78,29 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
     }
   }, [form.date_start, form.date_end])
 
+
+  useEffect(() => {
+    if (!form.category && categories.length > 0) {
+      const other = categories.find((c) => c.name === "Other");
+      if (other) {
+        setForm((prev) => ({ ...prev, category: other }));
+      }
+    }
+  }, [categories, form.category]);
+
+
   const handleChange = (field: keyof Seminar, value: string | number | Date) => {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSave = () => {
     if (!form.title || !form.date_start) return
-    const newSeminar = { ...form, id: form.id ?? Date.now() } as Seminar
+    const newSeminar = {
+      ...form,
+      id: form.id ?? Date.now(),
+      category_id: form.category?.id,
+    } as any;
+
     onSave(newSeminar)
     onClose()
   }
@@ -124,14 +148,37 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
             />
           </Field>
 
+          <Field label="Category">
+            <Select
+              value={form.category?.id?.toString()}
+              onValueChange={(value) => {
+                const selected = categories.find((c) => c.id === Number(value));
+                if (selected) {
+                  setForm((prev) => ({ ...prev, category: selected }));
+                }
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id.toString()}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+
           <DateTimePicker
             label="Start Date & Time"
             value={form.date_start}
             onChange={(v) => {
-              handleChange("date_start", v)
-              const start = new Date(v)
-              const end = new Date(start.getTime() + 60 * 60000) // auto +1 hour
-              handleChange("date_end", end.toISOString())
+              handleChange("date_start", v);
+              const start = new Date(v);
+              const end = new Date(start.getTime() + 60 * 60000); // auto +1 hour
+              handleChange("date_end", end.toISOString());
             }}
           />
 
@@ -156,17 +203,25 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
           </Field>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
-            <Button variant="default" onClick={handleSave} className="w-full sm:w-auto">
+            <Button
+              variant="default"
+              onClick={handleSave}
+              className="w-full sm:w-auto"
+            >
               Save
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 /* -------------------- FIELD WRAPPER -------------------- */

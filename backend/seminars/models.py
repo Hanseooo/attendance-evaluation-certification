@@ -7,6 +7,16 @@ from .managers import SeminarManager
 User = settings.AUTH_USER_MODEL
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
 class Seminar(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -19,6 +29,14 @@ class Seminar(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     objects = SeminarManager()
+
+    category = models.ForeignKey(
+        "Category",
+        on_delete=models.SET_NULL,
+        related_name="seminars",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         ordering = ['-date_start']
@@ -37,4 +55,8 @@ class PlannedSeminar(models.Model):
 
     def __str__(self):
         return f"{self.user} plans to attend {self.seminar}"
+
+
+
+
 
