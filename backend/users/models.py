@@ -42,3 +42,18 @@ class EmailChangeRequest(models.Model):
     
     def __str__(self):
         return f"{self.user.username} -> {self.new_email}"
+    
+
+class EmailNotificationPreference(models.Model):
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="email_notification_pref"
+    )
+    enabled = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {'ON' if self.enabled else 'OFF'}"
+

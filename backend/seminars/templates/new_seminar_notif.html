@@ -1,0 +1,20 @@
+<h2>New Seminar Announced 🎉</h2>
+
+<p>Hello {{ user.first_name }},</p>
+
+<p>A new seminar has been created:</p>
+
+<ul>
+  <li><strong>Title:</strong> {{ seminar.title }}</li>
+  <li><strong>Date:</strong> {{ seminar.date_start|date:"F j, Y – g:i A" }}</li>
+  <li><strong>Venue:</strong> {{ seminar.venue }}</li>
+  <li><strong>Speaker:</strong> {{ seminar.speaker }}</li>
+</ul>
+
+<p>
+  You are receiving this because you enabled seminar email notifications.
+</p>
+
+<p style="font-size:12px;color:#888;">
+  You can disable this anytime in Account Settings.
+</p>
