@@ -7,12 +7,12 @@ from django.template.loader import render_to_string
 def get_notification_recipients():
     return CustomUser.objects.filter(
         role="participant",
-        is_email_verified=True,
         email_notification_pref__enabled=True
     ).select_related("email_notification_pref")
 
 def send_new_seminar_emails(seminar):
     recipients = get_notification_recipients()
+    print("function called")
     if not recipients.exists():
         return
 
@@ -29,7 +29,7 @@ def send_new_seminar_emails(seminar):
     }
 
     for user in recipients:
-        html = render_to_string("templates/new_seminar_notif.html", {
+        html = render_to_string("new_seminar_notif.html", {
             "user": user,
             "seminar": seminar,
             "site_name": "The Podium",
@@ -44,5 +44,6 @@ def send_new_seminar_emails(seminar):
 
         try:
             api_instance.send_transac_email(email)
+            print("email sent")
         except ApiException as e:
             print(f"Email failed for {user.email}: {e}")

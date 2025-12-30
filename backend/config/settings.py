@@ -81,7 +81,7 @@ INSTALLED_APPS = [
     'attendance',
     'certificates',
     'evaluation',
-    'seminars',
+    'seminars.apps.SeminarsConfig',
 
     'cloudinary',
     'cloudinary_storage',
