@@ -16,7 +16,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from .models import CustomUser
+from .models import CustomUser, EmailNotificationPreference
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from django.utils import timezone
@@ -438,3 +438,39 @@ class VerifyEmailChangeView(APIView):
             },
             status=status.HTTP_200_OK
         )
+    
+
+
+class EmailNotificationToggleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        pref, _ = EmailNotificationPreference.objects.get_or_create(
+            user=request.user,
+            defaults={"enabled": False}
+        )
+
+        return Response({
+            "enabled": pref.enabled
+        })
+
+    def patch(self, request):
+        enabled = request.data.get("enabled")
+
+        if not isinstance(enabled, bool):
+            return Response(
+                {"error": "enabled must be a boolean"},
+                status=400
+            )
+
+        pref, _ = EmailNotificationPreference.objects.get_or_create(
+            user=request.user
+        )
+
+        pref.enabled = enabled
+        pref.save(update_fields=["enabled"])
+
+        return Response({
+            "enabled": pref.enabled
+        })
+

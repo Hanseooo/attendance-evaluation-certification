@@ -39,6 +39,8 @@ import { toast } from "sonner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL } from "@/api/baseUrl";
+import { Checkbox } from "../ui/checkbox";
+import { useEmailNotifications } from "@/hooks/useEmailNotifications";
 
 interface ProfileForm {
   first_name: string;
@@ -87,6 +89,9 @@ export default function SettingsModal({
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(
     null
   );
+
+  const { enabled, toggle } = useEmailNotifications();
+
 
   const profileForm = useForm<ProfileForm>({
     defaultValues: {
@@ -440,6 +445,43 @@ export default function SettingsModal({
                             </FormItem>
                           )}
                         />
+
+                        <Card>
+                          <CardHeader>
+                            <h3 className="text-lg font-semibold">
+                              Email Notifications
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              Control whether you receive email updates about
+                              seminars.
+                            </p>
+                          </CardHeader>
+
+                          <CardContent>
+                            <div className="flex items-start gap-3">
+                              <Checkbox
+                                id="email-notifications"
+                                checked={enabled}
+                                disabled={loading}
+                                onCheckedChange={(checked) =>
+                                  toggle(Boolean(checked))
+                                }
+                              />
+
+                              <label
+                                htmlFor="email-notifications"
+                                className="text-sm leading-snug cursor-pointer"
+                              >
+                                <span className="font-medium">
+                                  Receive seminar email notifications
+                                </span>
+                                <p className="text-muted-foreground">
+                                  Includes title, date, venue, and speaker.
+                                </p>
+                              </label>
+                            </div>
+                          </CardContent>
+                        </Card>
 
                         {/* READ-ONLY EMAIL */}
                         <FormItem>

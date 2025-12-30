@@ -2,7 +2,7 @@
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
-from users.views import CurrentUserView
+from users.views import CurrentUserView, EmailNotificationToggleView
 from seminars.views import SeminarListCreateAPIView, SeminarDetailAPIView, PlannedSeminarAPIView, PlannedSeminarDetailAPIView, CategoryListCreateAPIView, CategoryDeleteAPIView
 from attendance.views import generate_qr_code, record_attendance, download_qr_code
 from users.views import CurrentUserView, ForgotPasswordView, ResetPasswordView, RequestEmailChangeView, VerifyEmailChangeView
@@ -29,4 +29,5 @@ urlpatterns = [
 
     path("seminars/categories/", CategoryListCreateAPIView.as_view(), name="category-list-create"),
     path("seminars/categories/<int:pk>/", CategoryDeleteAPIView.as_view(), name="category-delete"),
+    path("users/email-notifications/", EmailNotificationToggleView.as_view(), name="email-notifications")
 ] 
