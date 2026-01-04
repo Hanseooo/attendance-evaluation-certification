@@ -44,8 +44,8 @@ ALLOWED_HOSTS = [
     ".railway.app",
     "attendance-evaluation-certification-production.up.railway.app", 
     "localhost",
-    "127.0.0.1"
-    "thepodium.onrender.com"
+    "127.0.0.1",
+    "thepodium.onrender.com",
 ]
 
 # CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -223,7 +223,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://hcdc-podium.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://thepodium.onrender.com"
+    "https://thepodium.onrender.com",
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
