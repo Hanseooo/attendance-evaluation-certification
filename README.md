@@ -68,7 +68,6 @@ Backend (Django REST API): *(Deployed on Railway)*
 - Create, edit, and delete seminars
 - Upload images (stored in **Cloudinary**)
 - View attendance list
-- Export analytics and attendance data
 
 ---
 
