@@ -23,6 +23,10 @@ from corsheaders.defaults import default_headers
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 CERTIFICATE_FONT_DIR = os.path.join(BASE_DIR, "certificates", "fonts")
 
 
@@ -106,6 +110,8 @@ MIDDLEWARE = [
 
 
 ROOT_URLCONF = 'config.urls'
+
+STATIC_ROOT
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
