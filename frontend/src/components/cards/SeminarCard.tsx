@@ -36,7 +36,7 @@ export default function SeminarCard({ seminar, onClick }: SeminarCardProps) {
       >
         <CardContent className="p-5 h-full flex flex-col">
           {/* Title */}
-          <h3 className="font-semibold text-base leading-tight line-clamp-2 mb-4 h-12 group-hover:text-primary transition-colors">
+          <h3 className="font-semibold h-fit text-base leading-tight line-clamp-2 mb-4 group-hover:text-primary transition-colors">
             {seminar.title}
           </h3>
 

@@ -248,7 +248,7 @@ const handleSaveCertificateTemplate = async (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl space-y-8">
         <Card className="border-0 shadow-sm bg-gradient-to-br from-background via-background to-foreground/5">
-          <CardContent className="p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+          <CardContent className="p-4 sm:p-6 md:p-8 flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6">
             {/* Avatar */}
             <Avatar className="h-14 w-14 md:h-16 md:w-16 ring-2 ring-primary/10">
               <AvatarImage src={blankPfp} alt={user?.username} />
@@ -268,8 +268,9 @@ const handleSaveCertificateTemplate = async (
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3">
-              <Button
+            <div className="flex flex-col lg:flex-row items-center gap-3">
+              <div className="flex items-center gap-3">
+                <Button
                 variant="default"
                 size="lg"
                 className="flex items-center gap-2"
@@ -280,8 +281,10 @@ const handleSaveCertificateTemplate = async (
               </Button>
 
               <ManageCategoriesModal />
+              </div>
 
-              <Button
+              <div>
+                <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => fetchSeminars()}
@@ -299,12 +302,13 @@ const handleSaveCertificateTemplate = async (
               >
                 <Settings className="h-5 w-5" />
               </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Controls: Tabs + Search + Filters */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col lg:flex-row md:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-2">
             <Button
               variant={tab === "upcoming" ? "default" : "ghost"}
