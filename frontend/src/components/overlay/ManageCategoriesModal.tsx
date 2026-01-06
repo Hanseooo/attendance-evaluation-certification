@@ -84,6 +84,7 @@ export function ManageCategoriesModal() {
 
                 <Button
                   variant="destructive"
+                  className="text-white"
                   size="sm"
                   disabled={deleting || category.name.toLowerCase() === "other"}
                   onClick={() => deleteCategory(category.id)}
