@@ -52,8 +52,8 @@ export default function AdminPage() {
 
   // Zustand stores
   const seminars = useSeminarList((state) => state.seminars);
-  const setSeminars = useSeminarList((state) => state.setSeminar);
-  const removeSeminar = useSeminarList().removeSeminar;
+  // const setSeminars = useSeminarList((state) => state.setSeminar);
+  // const removeSeminar = useSeminarList().removeSeminar;
 
   // Hooks for fetching and posting
   const { fetchSeminars, loading: fetching } = useFetchSeminars();
@@ -62,7 +62,7 @@ export default function AdminPage() {
   const { deleteSeminar } = useDeleteSeminar();
 
   // Local state for modals
-  const [editing, setEditing] = useState<Seminar | null>(null);
+  const [editing, ] = useState<Seminar | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null);
   const [qrSeminar, setQrSeminar] = useState<Seminar | null>(null);
