@@ -214,28 +214,35 @@ const handleSaveCertificateTemplate = async (
   }, [filteredSeminars.length]);
 
   // Handle save (create or edit)
-  const handleSave = async (updated: Seminar) => {
-    if (isModalOpen) {
-      setSeminars([...(seminars || []), updated]);
-      await postSeminar(updated);
-      setIsModalOpen(false);
-    } else if (editing) {
-      setSeminars(
-        (seminars || []).map((s) => (s.id === updated.id ? updated : s))
-      );
-      await updateSeminar(updated);
-      setEditing(null);
+  const handleSave = async (seminar: Seminar) => {
+    try {
+      if (editingSeminar) {
+        await updateSeminar(seminar); // edit
+      } else {
+        await postSeminar(seminar);   // create
+      }
+
+      handleClose();
+      fetchSeminars(); // always re-sync from backend
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save seminar. Please try again.");
     }
-    fetchSeminars();
   };
+
 
   // Handle delete
   const handleDelete = async (id: number) => {
-    setSeminars((seminars || []).filter((s) => s.id !== id));
-    setDeleteTarget(null);
-    await deleteSeminar(id);
-    removeSeminar(id);
+    try {
+      await deleteSeminar(id);
+      setDeleteTarget(null);
+      fetchSeminars();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete seminar.");
+    }
   };
+
 
   const getInitials = (username: string) =>
     username
@@ -256,6 +263,11 @@ const handleSaveCertificateTemplate = async (
   const handleEdit = (seminar: Seminar) => {
     setEditingSeminar(seminar)   // edit mode
     setIsModalOpen(true)
+  }
+
+  const handleClose = () => {
+    setIsModalOpen(false)
+    setEditingSeminar(null)   // also clear on close for safety
   }
 
   return (
@@ -491,7 +503,7 @@ const handleSaveCertificateTemplate = async (
         <EditSeminarModal
           seminar={editing}
           isOpen={!!editing}
-          onClose={() => setEditing(null)}
+          onClose={() => handleClose()}
           onSave={handleSave}
         />
 
@@ -500,8 +512,7 @@ const handleSaveCertificateTemplate = async (
           isOpen={isModalOpen}
           seminar={editingSeminar}
           onClose={() => {
-            setIsModalOpen(false)
-            setEditingSeminar(null)
+            handleClose();
           }}
           onSave={handleSave}
         />
