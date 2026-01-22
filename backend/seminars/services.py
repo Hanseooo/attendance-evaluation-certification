@@ -3,6 +3,7 @@ from sib_api_v3_sdk.rest import ApiException
 from django.conf import settings
 from users.models import CustomUser
 from django.template.loader import render_to_string
+from django.conf import settings
 
 def get_notification_recipients():
     return CustomUser.objects.filter(
@@ -33,6 +34,7 @@ def send_new_seminar_emails(seminar):
             "user": user,
             "seminar": seminar,
             "site_name": "The Podium",
+            "BASE_URL" : settings.BASE_URL,
         })
 
         email = sib_api_v3_sdk.SendSmtpEmail(

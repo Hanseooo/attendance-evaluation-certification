@@ -1,20 +1,26 @@
+{% load tz %}
+
 <h2>New Seminar Announced!</h2>
 
-<p>Hello {{ user.first_name }},</p>
+<p>Hello {{ user.first_name|default:user.username }},</p>
 
-<p>A new seminar has been created:</p>
+<p>A new seminar has been scheduled:</p>
 
 <ul>
-  <li><strong>Title:</strong> {{ seminar.title }}</li>
-  <li><strong>Date:</strong> {{ seminar.date_start|date:"F j, Y – g:i A" }}</li>
-  <li><strong>Venue:</strong> {{ seminar.venue }}</li>
-  <li><strong>Speaker:</strong> {{ seminar.speaker }}</li>
+  <li><strong>Title:</strong> {{ seminar.title|default:"Untitled Seminar" }}</li>
+  <li><strong>Date:</strong> {{ seminar.date_start|default:"TBA"|localtime|date:"F j, Y - g:i A" }}</li>
+  <li><strong>Venue:</strong> {{ seminar.venue|default:"TBA" }}</li>
+  <li><strong>Speaker:</strong> {{ seminar.speaker|default:"TBA" }}</li>
 </ul>
+
+<p>
+  Please note: seminar details (date, time, venue) may change. For the most up-to-date information, visit <a href="{{ BASE_URL }}">{{ BASE_URL }}</a>.
+</p>
 
 <p>
   You are receiving this because you enabled seminar email notifications.
 </p>
 
 <p style="font-size:12px;color:#888;">
-  You can disable this anytime in Account Settings.
+  You can disable these notifications anytime in your Account Settings.
 </p>
