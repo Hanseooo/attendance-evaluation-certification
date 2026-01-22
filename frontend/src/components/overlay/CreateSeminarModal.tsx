@@ -99,7 +99,7 @@ export default function CreateSeminarModal({ isOpen, onClose, onSave, seminar }:
       ...form,
       id: form.id ?? Date.now(),
       category_id: form.category?.id,
-    } as any;
+    } as Seminar;
 
     onSave(newSeminar)
     onClose()

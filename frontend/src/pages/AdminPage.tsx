@@ -44,6 +44,9 @@ import { ManageCategoriesModal } from "@/components/overlay/ManageCategoriesModa
 
 const PAGE_SIZE = 9;
 
+type FilterDone = "all" | "done" | "not_done"
+type SortField = "date_start" | "created_at" | "duration"
+
 export default function AdminPage() {
   const { user } = useAuth();
 
@@ -60,13 +63,14 @@ export default function AdminPage() {
 
   // Local state for modals
   const [editing, setEditing] = useState<Seminar | null>(null);
-  const [creating, setCreating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Seminar | null>(null);
   const [qrSeminar, setQrSeminar] = useState<Seminar | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [showUploadCertificate, setShowUploadCertificate] = useState(false);
   const [selectedSeminar, setSelectedSeminar] = useState<Seminar | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [editingSeminar, setEditingSeminar] = useState<Seminar | null>(null)
 
   const { template } = useFetchCertificateTemplate();
   const { saveTemplate } = useSaveCertificateTemplate();
@@ -74,11 +78,11 @@ export default function AdminPage() {
   // --- UI state for All Seminars & Upcoming ---
   const [tab, setTab] = useState<"upcoming" | "all">("all");
   const [query, setQuery] = useState("");
-  const [filterDone, setFilterDone] = useState<"all" | "done" | "not_done">(
+  const [filterDone, setFilterDone] = useState<FilterDone>(
     "all"
   );
   const [sortField, setSortField] = useState<
-    "date_start" | "created_at" | "duration"
+    SortField
   >("date_start");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
@@ -211,10 +215,10 @@ const handleSaveCertificateTemplate = async (
 
   // Handle save (create or edit)
   const handleSave = async (updated: Seminar) => {
-    if (creating) {
+    if (isModalOpen) {
       setSeminars([...(seminars || []), updated]);
       await postSeminar(updated);
-      setCreating(false);
+      setIsModalOpen(false);
     } else if (editing) {
       setSeminars(
         (seminars || []).map((s) => (s.id === updated.id ? updated : s))
@@ -244,6 +248,16 @@ const handleSaveCertificateTemplate = async (
   // small helper to toggle sort direction
   const toggleSortDir = () => setSortDir((d) => (d === "asc" ? "desc" : "asc"));
 
+  const handleCreate = () => {
+    setEditingSeminar(null)      // create mode
+    setIsModalOpen(true)
+  }
+
+  const handleEdit = (seminar: Seminar) => {
+    setEditingSeminar(seminar)   // edit mode
+    setIsModalOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 max-w-7xl space-y-8">
@@ -269,12 +283,12 @@ const handleSaveCertificateTemplate = async (
 
             {/* Action Buttons */}
             <div className="flex flex-col lg:flex-row items-center gap-3">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
                 <Button
                 variant="default"
                 size="lg"
                 className="flex items-center gap-2"
-                onClick={() => setCreating(true)}
+                onClick={() => handleCreate()}
               >
                 <PlusCircle className="h-5 w-5" />
                 New Seminar
@@ -340,7 +354,7 @@ const handleSaveCertificateTemplate = async (
             {tab === "all" && (
               <Select
                 value={filterDone}
-                onValueChange={(v) => setFilterDone(v as any)}
+                onValueChange={(v) => setFilterDone(v as FilterDone)}
               >
                 <SelectTrigger className="w-40 hover:cursor-pointer">
                   <SelectValue />
@@ -370,7 +384,7 @@ const handleSaveCertificateTemplate = async (
 
             <Select
               value={sortField}
-              onValueChange={(v) => setSortField(v as any)}
+              onValueChange={(v) => setSortField(v as SortField)}
             >
               <SelectTrigger className="w-44 hover:cursor-pointer">
                 <SelectValue />
@@ -419,7 +433,7 @@ const handleSaveCertificateTemplate = async (
                   <AdminSeminarCard
                     key={s.id}
                     seminar={s}
-                    onEdit={() => setEditing(s)}
+                    onEdit={() => handleEdit(s)}
                     onDelete={() => setDeleteTarget(s)}
                     showQrModal={() => {
                       setQrSeminar(s);
@@ -448,7 +462,7 @@ const handleSaveCertificateTemplate = async (
                 <AdminSeminarCard
                   key={s.id}
                   seminar={s}
-                  onEdit={() => setEditing(s)}
+                  onEdit={() => handleEdit(s)}
                   onDelete={() => setDeleteTarget(s)}
                   showQrModal={() => {
                     setQrSeminar(s);
@@ -483,8 +497,12 @@ const handleSaveCertificateTemplate = async (
 
         {/* New Seminar Modal */}
         <CreateSeminarModal
-          isOpen={creating}
-          onClose={() => setCreating(false)}
+          isOpen={isModalOpen}
+          seminar={editingSeminar}
+          onClose={() => {
+            setIsModalOpen(false)
+            setEditingSeminar(null)
+          }}
           onSave={handleSave}
         />
 

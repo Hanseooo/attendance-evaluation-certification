@@ -117,18 +117,18 @@ export default function AdminSeminarCard({
             <Button
               variant="outline"
               size="sm"
-              className="gap-1 flex-1 sm:flex-none"
+              className="gap-1 flex-1 sm:flex-none py-1 sm:py-0"
               onClick={() => setShowPresentUsers(true)}
             >
-              <Users className="h-4 w-4" /> Attendees
+              <Users className="h-4 w-4 " /> Attendees
             </Button>
             <Button
               variant="default"
               size="sm"
-              className="gap-1 flex-1 sm:flex-none"
+              className="gap-1 flex-1 sm:flex-none py-1 sm:py-0"
               onClick={() => setShowAnalytics(true)}
             >
-              <BarChart3 className="h-4 w-4" /> Analytics
+              <BarChart3 className="h-4 w-4 " /> Analytics
             </Button>
           </div>
         </CardContent>
